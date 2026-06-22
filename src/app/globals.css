@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-casual: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-professional: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-elegant: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* Custom animation untuk Floating Admin Bar */
+@keyframes cus-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: cus-fade-in 200ms ease-out;
+}
+
+/* Smooth scroll untuk anchor links di tenant site */
+html {
+  scroll-behavior: smooth;
+}

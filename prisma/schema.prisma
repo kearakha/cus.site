@@ -1,0 +1,94 @@
+// Cus.site — Prisma Schema
+// Dokumentasi: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"] // untuk Neon/Vercel Postgres serverless
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // Untuk Supabase/Neon production: uncomment baris di bawah
+  // dan set DIRECT_URL di .env ke direct connection (port 5432).
+  // directUrl = env("DIRECT_URL")
+}
+
+/// Akun utama bisnis. Setiap UMKM = 1 row.
+/// Subdomain adalah identifier utama untuk multi-tenant routing.
+model Bisnis {
+  id          String   @id @default(uuid())
+  subdomain   String   @unique
+  namaBisnis  String
+  jenisBisnis String
+  lokasi      String
+  whatsapp    String
+
+  /// Email owner — identifier untuk login. 1 email bisa punya banyak Bisnis.
+  /// Login di /login dengan email ini → set cookie owner → akses semua Bisnis
+  /// dengan email ini di dashboard.
+  email       String
+
+  /// Tone website: "casual" | "professional" | "elegant"
+  vibe        String
+
+  /// Token acak untuk verifikasi Floating Admin Bar (owner-only access).
+  /// Disimpan di httpOnly cookie saat onboarding selesai.
+  ownerToken  String   @unique
+
+  /// Bisa di-unpublish (soft delete) tanpa kehilangan data.
+  published   Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  kontenAI    KontenWebsite?
+  layanan     Layanan[]
+
+  @@index([vibe])
+  @@index([published])
+  @@index([email])
+}
+
+/// Konten hasil generate AI. 1:1 dengan Bisnis.
+model KontenWebsite {
+  id             String  @id @default(uuid())
+  bisnisId       String  @unique
+  bisnis         Bisnis  @relation(fields: [bisnisId], references: [id], onDelete: Cascade)
+
+  heroHeadline   String
+  heroSubtext    String
+  aboutParagraph String
+  ctaText        String
+
+  seoTitle       String
+  seoDescription String
+
+  /// Optional: warna aksen yang dipilih AI sesuai vibe (hex tanpa #).
+  /// Misal: "f59e0b" untuk casual warm, "2563eb" untuk professional.
+  accentColor    String?
+
+  updatedAt      DateTime @updatedAt
+}
+
+/// Layanan/produk yang ditampilkan di website tenant.
+/// Bisa multiple. Input dari user di step 4 wizard.
+model Layanan {
+  id          String  @id @default(uuid())
+  bisnisId    String
+  bisnis      Bisnis  @relation(fields: [bisnisId], references: [id], onDelete: Cascade)
+
+  /// Judul input dari user (mentah). AI akan generate ulang di KontenWebsite.services (JSON).
+  /// Disimpan terpisah supaya owner bisa lihat input original vs output AI.
+  title       String
+
+  /// Deskripsi input mentah dari user.
+  description String
+
+  /// Urutan tampil (0 = pertama).
+  order       Int     @default(0)
+
+  createdAt   DateTime @default(now())
+
+  @@index([bisnisId, order])
+}
