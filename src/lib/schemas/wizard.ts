@@ -24,6 +24,14 @@ export const JENIS_BISNIS = [
 
 export const VIBE = ['casual', 'professional', 'elegant'] as const;
 
+export const HARI_OPERASIONAL = [
+  'Setiap Hari',
+  'Senin - Sabtu',
+  'Senin - Jumat',
+  'Senin - Minggu',
+  'Weekend Saja',
+] as const;
+
 // === Field schemas (reusable) ===
 
 export const slugSchema = z
@@ -50,6 +58,37 @@ export const emailSchema = z
   .max(120)
   .transform((v) => v.toLowerCase().trim());
 
+/**
+ * Validasi username social media (tanpa URL, tanpa @).
+ * Boleh kosong. Kalau ada, harus alphanumeric + underscore + dot, 1-30 char.
+ */
+export const socialHandleSchema = z
+  .string()
+  .max(30)
+  .regex(/^[a-zA-Z0-9_.]*$/, 'Hanya huruf, angka, underscore, dan titik')
+  .optional()
+  .or(z.literal(''));
+
+/**
+ * Validasi format jam "HH:mm". Boleh kosong.
+ */
+export const jamSchema = z
+  .string()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Format harus HH:mm, contoh: 08:00')
+  .optional()
+  .or(z.literal(''));
+
+/**
+ * Validasi path upload internal. Boleh kosong.
+ * Hanya relative path yang dimulai dengan /uploads/.
+ */
+export const uploadPathSchema = z
+  .string()
+  .regex(/^\/uploads\/[a-zA-Z0-9-]+\/[\w.-]+$/, 'Path upload tidak valid')
+  .max(200)
+  .optional()
+  .or(z.literal(''));
+
 // === Step schemas ===
 
 export const step1Schema = z.object({
@@ -57,12 +96,22 @@ export const step1Schema = z.object({
   jenisBisnis: z.enum(JENIS_BISNIS, {
     errorMap: () => ({ message: 'Pilih jenis bisnis' }),
   }),
+  logoUrl: uploadPathSchema,
+  coverUrl: uploadPathSchema,
 });
 
 export const step2Schema = z.object({
   lokasi: z.string().min(3, 'Lokasi minimal 3 karakter').max(120),
   whatsapp: whatsappSchema,
   email: emailSchema,
+  // Social (opsional)
+  instagram: socialHandleSchema,
+  tiktok: socialHandleSchema,
+  facebook: socialHandleSchema,
+  // Operasional (opsional)
+  jamBuka: jamSchema,
+  jamTutup: jamSchema,
+  hariOperasional: z.enum(HARI_OPERASIONAL).optional().or(z.literal('')),
 });
 
 export const step3Schema = z.object({
@@ -74,6 +123,7 @@ export const step3Schema = z.object({
 export const layananItemSchema = z.object({
   title: z.string().min(2, 'Judul layanan minimal 2 karakter').max(60),
   description: z.string().min(5, 'Deskripsi minimal 5 karakter').max(200),
+  imageUrl: uploadPathSchema,
 });
 
 export const step4Schema = z.object({

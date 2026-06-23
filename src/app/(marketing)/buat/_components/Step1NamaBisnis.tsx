@@ -3,9 +3,15 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { step1Schema, JENIS_OPTIONS, type Step1 } from './step-schemas';
+import { ImageUploader } from '@/components/ImageUploader';
 
 type Props = {
-  defaultValues: { namaBisnis: string; jenisBisnis?: string };
+  defaultValues: {
+    namaBisnis: string;
+    jenisBisnis?: string;
+    logoUrl?: string;
+    coverUrl?: string;
+  };
   onNext: (values: Step1) => void;
 };
 
@@ -13,21 +19,28 @@ export function Step1NamaBisnis({ defaultValues, onNext }: Props) {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<Step1>({
     resolver: zodResolver(step1Schema),
     defaultValues: {
       namaBisnis: defaultValues.namaBisnis,
       jenisBisnis: defaultValues.jenisBisnis as Step1['jenisBisnis'] | undefined,
+      logoUrl: defaultValues.logoUrl || '',
+      coverUrl: defaultValues.coverUrl || '',
     },
   });
+
+  const logoUrl = watch('logoUrl');
+  const coverUrl = watch('coverUrl');
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold">Tentang bisnis kamu</h2>
         <p className="mt-1 text-sm text-slate-600">
-          Mulai dari nama dan jenis usaha.
+          Mulai dari nama, jenis usaha, dan branding dasar.
         </p>
       </div>
 
@@ -66,6 +79,25 @@ export function Step1NamaBisnis({ defaultValues, onNext }: Props) {
         {errors.jenisBisnis && (
           <p className="mt-1.5 text-xs text-red-600">{errors.jenisBisnis.message}</p>
         )}
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <ImageUploader
+          label="Logo"
+          value={logoUrl || ''}
+          onChange={(url) => setValue('logoUrl', url, { shouldValidate: true })}
+          aspect="square"
+          hint="Opsional. Square, untuk header."
+        />
+        <div className="sm:col-span-2">
+          <ImageUploader
+            label="Cover / Banner"
+            value={coverUrl || ''}
+            onChange={(url) => setValue('coverUrl', url, { shouldValidate: true })}
+            aspect="wide"
+            hint="Opsional. Banner lebar untuk hero section."
+          />
+        </div>
       </div>
 
       <div className="flex justify-end pt-2">

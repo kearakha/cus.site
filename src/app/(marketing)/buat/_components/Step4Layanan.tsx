@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { step4Schema, type LayananItem } from './step-schemas';
+import { ImageUploader } from '@/components/ImageUploader';
 
 type Props = {
   defaultValues: LayananItem[];
@@ -9,7 +10,7 @@ type Props = {
   onNext: (values: LayananItem[]) => void;
 };
 
-const EMPTY_ITEM: LayananItem = { title: '', description: '' };
+const EMPTY_ITEM: LayananItem = { title: '', description: '', imageUrl: '' };
 
 export function Step4Layanan({ defaultValues, onBack, onNext }: Props) {
   const [items, setItems] = useState<LayananItem[]>(
@@ -49,7 +50,7 @@ export function Step4Layanan({ defaultValues, onBack, onNext }: Props) {
       setErrors(newErrors);
       return;
     }
-    onNext(result.data.layanan);
+    onNext(result.data.layanan as LayananItem[]);
   };
 
   return (
@@ -63,8 +64,8 @@ export function Step4Layanan({ defaultValues, onBack, onNext }: Props) {
 
       <div className="space-y-4">
         {items.map((item, i) => (
-          <div key={i} className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-3">
-            <div className="flex items-center justify-between">
+          <div key={i} className="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+            <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-slate-500">LAYANAN #{i + 1}</span>
               {items.length > 1 && (
                 <button
@@ -77,30 +78,44 @@ export function Step4Layanan({ defaultValues, onBack, onNext }: Props) {
               )}
             </div>
 
-            <div>
-              <input
-                type="text"
-                placeholder="Contoh: Kopi Susu"
-                value={item.title}
-                onChange={(e) => update(i, { title: e.target.value })}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
-              />
-              {errors[i]?.title && (
-                <p className="mt-1 text-xs text-red-600">{errors[i].title}</p>
-              )}
-            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+              <div className="sm:col-span-1">
+                <ImageUploader
+                  label="Foto"
+                  value={item.imageUrl || ''}
+                  onChange={(url) => update(i, { imageUrl: url })}
+                  aspect="square"
+                  hint="Opsional. Square."
+                />
+              </div>
 
-            <div>
-              <textarea
-                placeholder="Deskripsi singkat, contoh: kopi susu kekinian harga ramah di kantong"
-                value={item.description}
-                onChange={(e) => update(i, { description: e.target.value })}
-                rows={2}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 resize-none"
-              />
-              {errors[i]?.description && (
-                <p className="mt-1 text-xs text-red-600">{errors[i].description}</p>
-              )}
+              <div className="sm:col-span-3 space-y-3">
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Kopi Susu"
+                    value={item.title}
+                    onChange={(e) => update(i, { title: e.target.value })}
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                  />
+                  {errors[i]?.title && (
+                    <p className="mt-1 text-xs text-red-600">{errors[i].title}</p>
+                  )}
+                </div>
+
+                <div>
+                  <textarea
+                    placeholder="Deskripsi singkat, contoh: kopi susu kekinian harga ramah di kantong"
+                    value={item.description}
+                    onChange={(e) => update(i, { description: e.target.value })}
+                    rows={3}
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 resize-none"
+                  />
+                  {errors[i]?.description && (
+                    <p className="mt-1 text-xs text-red-600">{errors[i].description}</p>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         ))}

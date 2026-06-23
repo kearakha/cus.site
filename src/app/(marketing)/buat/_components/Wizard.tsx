@@ -22,17 +22,25 @@ import { AccessLinkCard } from '@/components/AccessLinkCard';
 type WizardData = {
   namaBisnis?: string;
   jenisBisnis?: string;
+  logoUrl?: string;
+  coverUrl?: string;
   lokasi?: string;
   whatsapp?: string;
   email?: string;
+  instagram?: string;
+  tiktok?: string;
+  facebook?: string;
+  jamBuka?: string;
+  jamTutup?: string;
+  hariOperasional?: string;
   vibe?: 'casual' | 'professional' | 'elegant';
   layanan: LayananItem[];
   subdomain?: string;
 };
 
 type Action =
-  | { type: 'SET_STEP1'; data: { namaBisnis: string; jenisBisnis: string } }
-  | { type: 'SET_STEP2'; data: { lokasi: string; whatsapp: string; email: string } }
+  | { type: 'SET_STEP1'; data: { namaBisnis: string; jenisBisnis: string; logoUrl?: string; coverUrl?: string } }
+  | { type: 'SET_STEP2'; data: { lokasi: string; whatsapp: string; email: string; instagram?: string; tiktok?: string; facebook?: string; jamBuka?: string; jamTutup?: string; hariOperasional?: string } }
   | { type: 'SET_STEP3'; data: { vibe: 'casual' | 'professional' | 'elegant' } }
   | { type: 'SET_STEP4'; data: { layanan: LayananItem[] } }
   | { type: 'SET_STEP5'; data: { subdomain: string } };
@@ -76,9 +84,17 @@ export function Wizard() {
       const result = await submitBisnisAction({
         namaBisnis: data.namaBisnis!,
         jenisBisnis: data.jenisBisnis!,
+        logoUrl: data.logoUrl || undefined,
+        coverUrl: data.coverUrl || undefined,
         lokasi: data.lokasi!,
         whatsapp: data.whatsapp!,
         email: data.email!,
+        instagram: data.instagram || undefined,
+        tiktok: data.tiktok || undefined,
+        facebook: data.facebook || undefined,
+        jamBuka: data.jamBuka || undefined,
+        jamTutup: data.jamTutup || undefined,
+        hariOperasional: data.hariOperasional || undefined,
         vibe: data.vibe!,
         subdomain: data.subdomain!,
         layanan: data.layanan,
@@ -118,6 +134,8 @@ export function Wizard() {
           defaultValues={{
             namaBisnis: data.namaBisnis ?? '',
             jenisBisnis: data.jenisBisnis,
+            logoUrl: data.logoUrl,
+            coverUrl: data.coverUrl,
           }}
           onNext={(values) => {
             dispatch({ type: 'SET_STEP1', data: values });
@@ -132,6 +150,12 @@ export function Wizard() {
             lokasi: data.lokasi ?? '',
             whatsapp: data.whatsapp ?? '',
             email: data.email,
+            instagram: data.instagram,
+            tiktok: data.tiktok,
+            facebook: data.facebook,
+            jamBuka: data.jamBuka,
+            jamTutup: data.jamTutup,
+            hariOperasional: data.hariOperasional,
           }}
           onBack={goBack}
           onNext={(values) => {

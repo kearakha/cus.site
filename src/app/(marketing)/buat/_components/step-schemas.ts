@@ -10,6 +10,7 @@ import {
   step4Schema,
   step5Schema,
   JENIS_BISNIS,
+  HARI_OPERASIONAL,
   layananItemSchema,
   type LayananItem,
 } from '@/lib/schemas/wizard';
@@ -21,6 +22,7 @@ export {
   step4Schema,
   step5Schema,
   JENIS_BISNIS as JENIS_OPTIONS,
+  HARI_OPERASIONAL as HARI_OPERASIONAL_OPTIONS,
   layananItemSchema,
   LayananItem,
 };
@@ -28,12 +30,20 @@ export {
 export type Step1 = {
   namaBisnis: string;
   jenisBisnis: (typeof JENIS_BISNIS)[number];
+  logoUrl?: string;
+  coverUrl?: string;
 };
 
 export type Step2 = {
   lokasi: string;
   whatsapp: string;
   email: string;
+  instagram?: string;
+  tiktok?: string;
+  facebook?: string;
+  jamBuka?: string;
+  jamTutup?: string;
+  hariOperasional?: (typeof HARI_OPERASIONAL)[number] | '';
 };
 
 export type Step3 = {
@@ -44,5 +54,6 @@ export type Step4 = {
   layanan: Array<{
     title: string;
     description: string;
+    imageUrl?: string;
   }>;
 };
