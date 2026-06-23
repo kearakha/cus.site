@@ -39,6 +39,30 @@ model Bisnis {
   /// Bisa di-unpublish (soft delete) tanpa kehilangan data.
   published   Boolean  @default(true)
 
+  /// === Branding (opsional) ===
+  /// Path relatif ke /uploads/{bisnisId}/{filename}. Disimpan local dulu;
+  /// lihat src/lib/upload.ts untuk migrasi ke cloud storage nanti.
+  logoUrl     String?
+  coverUrl    String?
+
+  /// === Social media (opsional, tanpa https://) ===
+  /// Disimpan sebagai username/handle, template yang bangun URL final.
+  instagram   String?
+  tiktok      String?
+  facebook    String?
+
+  /// === Operasional (opsional) ===
+  /// Jam buka/tutup format "HH:mm" (24-jam), contoh: "08:00" / "21:00".
+  /// hariOperasional: "Setiap Hari" | "Senin-Sabtu" | "Senin-Jumat" | ...
+  jamBuka         String?
+  jamTutup        String?
+  hariOperasional String?
+
+  /// === Geocoding hasil Nominatim (otomatis di-fill dari `lokasi`) ===
+  /// Null = belum di-geocode atau gagal. Template fallback ke link OSM search.
+  latitude   Float?
+  longitude  Float?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -84,6 +108,10 @@ model Layanan {
 
   /// Deskripsi input mentah dari user.
   description String
+
+  /// Path relatif ke /uploads/{bisnisId}/{filename}. Opsional.
+  /// Template render <img> hanya jika ada.
+  imageUrl    String?
 
   /// Urutan tampil (0 = pertama).
   order       Int     @default(0)
