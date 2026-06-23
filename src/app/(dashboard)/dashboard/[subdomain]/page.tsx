@@ -99,10 +99,19 @@ export default async function EditBisnisPage({ params }: Props) {
       {/* Edit form */}
       <EditForm
         subdomain={bisnis.subdomain}
+        bisnisId={bisnis.id}
         initialData={{
           namaBisnis: bisnis.namaBisnis,
+          logoUrl: bisnis.logoUrl,
+          coverUrl: bisnis.coverUrl,
           lokasi: bisnis.lokasi,
           whatsapp: bisnis.whatsapp,
+          instagram: bisnis.instagram,
+          tiktok: bisnis.tiktok,
+          facebook: bisnis.facebook,
+          jamBuka: bisnis.jamBuka,
+          jamTutup: bisnis.jamTutup,
+          hariOperasional: bisnis.hariOperasional,
           heroHeadline: bisnis.kontenAI.heroHeadline,
           heroSubtext: bisnis.kontenAI.heroSubtext,
           aboutParagraph: bisnis.kontenAI.aboutParagraph,
@@ -113,6 +122,7 @@ export default async function EditBisnisPage({ params }: Props) {
           services: bisnis.layanan.map((l) => ({
             title: l.title,
             description: l.description,
+            imageUrl: l.imageUrl,
           })),
         }}
       />

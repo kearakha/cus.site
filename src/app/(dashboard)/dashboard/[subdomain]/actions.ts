@@ -6,12 +6,19 @@ import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { OWNER_COOKIE_NAME } from '@/lib/auth';
 import { Prisma } from '@prisma/client';
+import { geocodeAlamat } from '@/lib/geocode';
 
 // === Update konten schema ===
 
 const serviceInputSchema = z.object({
   title: z.string().min(2).max(60),
   description: z.string().min(5).max(400),
+  imageUrl: z
+    .string()
+    .regex(/^\/uploads\/[a-zA-Z0-9-]+\/[\w.-]+$/, 'Path upload tidak valid')
+    .max(200)
+    .optional()
+    .or(z.literal('')),
 });
 
 const updateKontenSchema = z.object({
@@ -25,6 +32,52 @@ const updateKontenSchema = z.object({
     .max(20)
     .transform((v) => v.replace(/[\s\-+()]/g, ''))
     .refine((v) => /^[0-9]+$/.test(v), 'Hanya angka yang diperbolehkan'),
+  // Branding
+  logoUrl: z
+    .string()
+    .regex(/^\/uploads\/[a-zA-Z0-9-]+\/[\w.-]+$/, 'Path upload tidak valid')
+    .max(200)
+    .optional()
+    .or(z.literal('')),
+  coverUrl: z
+    .string()
+    .regex(/^\/uploads\/[a-zA-Z0-9-]+\/[\w.-]+$/, 'Path upload tidak valid')
+    .max(200)
+    .optional()
+    .or(z.literal('')),
+  // Social (opsional, boleh kosong)
+  instagram: z
+    .string()
+    .max(30)
+    .regex(/^[a-zA-Z0-9_.]*$/, 'Hanya huruf, angka, underscore, dan titik')
+    .optional()
+    .or(z.literal('')),
+  tiktok: z
+    .string()
+    .max(30)
+    .regex(/^[a-zA-Z0-9_.]*$/, 'Hanya huruf, angka, underscore, dan titik')
+    .optional()
+    .or(z.literal('')),
+  facebook: z
+    .string()
+    .max(120)
+    .optional()
+    .or(z.literal('')),
+  // Operasional
+  jamBuka: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Format harus HH:mm')
+    .optional()
+    .or(z.literal('')),
+  jamTutup: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Format harus HH:mm')
+    .optional()
+    .or(z.literal('')),
+  hariOperasional: z
+    .enum(['Setiap Hari', 'Senin - Sabtu', 'Senin - Jumat', 'Senin - Minggu', 'Weekend Saja'])
+    .optional()
+    .or(z.literal('')),
   // Konten
   heroHeadline: z.string().min(10).max(80),
   heroSubtext: z.string().min(15).max(150),
@@ -71,7 +124,7 @@ export async function updateKontenAction(
   // 3. Cari bisnis + verify token match
   const bisnis = await prisma.bisnis.findUnique({
     where: { subdomain: data.subdomain },
-    select: { id: true, ownerToken: true },
+    select: { id: true, ownerToken: true, lokasi: true },
   });
 
   if (!bisnis) {
@@ -81,17 +134,38 @@ export async function updateKontenAction(
     return { success: false, error: 'Kamu bukan owner bisnis ini.' };
   }
 
-  // 4. Update dalam transaction
+  // 4. Re-geocode kalau lokasi berubah (best-effort)
+  let latitude: number | null | undefined = undefined;
+  let longitude: number | null | undefined = undefined;
+  if (data.lokasi && data.lokasi !== bisnis.lokasi) {
+    const geo = await geocodeAlamat(data.lokasi);
+    if (geo) {
+      latitude = geo.latitude;
+      longitude = geo.longitude;
+    }
+  }
+
+  // 5. Update dalam transaction
   try {
     await prisma.$transaction(async (tx) => {
       // Update Bisnis (field yang editable)
       const bisnisUpdate: Prisma.BisnisUpdateInput = {
         lokasi: data.lokasi,
         whatsapp: data.whatsapp,
+        logoUrl: data.logoUrl || null,
+        coverUrl: data.coverUrl || null,
+        instagram: data.instagram || null,
+        tiktok: data.tiktok || null,
+        facebook: data.facebook || null,
+        jamBuka: data.jamBuka || null,
+        jamTutup: data.jamTutup || null,
+        hariOperasional: data.hariOperasional || null,
       };
       if (data.namaBisnis !== undefined) {
         bisnisUpdate.namaBisnis = data.namaBisnis;
       }
+      if (latitude !== undefined) bisnisUpdate.latitude = latitude;
+      if (longitude !== undefined) bisnisUpdate.longitude = longitude;
       await tx.bisnis.update({
         where: { id: bisnis.id },
         data: bisnisUpdate,
@@ -111,19 +185,20 @@ export async function updateKontenAction(
         },
       });
 
-      // Replace layanan
+      // Replace layanan (preserves imageUrl per item)
       await tx.layanan.deleteMany({ where: { bisnisId: bisnis.id } });
       await tx.layanan.createMany({
         data: data.services.map((s, i) => ({
           bisnisId: bisnis.id,
           title: s.title,
           description: s.description,
+          imageUrl: s.imageUrl || null,
           order: i,
         })),
       });
     });
 
-    // 5. Invalidate cache
+    // 6. Invalidate cache
     revalidatePath(`/t/${data.subdomain}`);
     revalidatePath(`/dashboard/${data.subdomain}`);
     revalidatePath('/dashboard');
@@ -181,6 +256,10 @@ export async function hapusBisnisAction(
     await prisma.bisnis.delete({
       where: { id: bisnis.id },
     });
+
+    // Hapus juga folder upload-nya
+    const { deleteBisnisUploads } = await import('@/lib/upload');
+    await deleteBisnisUploads(bisnis.id);
 
     // Invalidate cache
     revalidatePath(`/t/${subResult.data}`);

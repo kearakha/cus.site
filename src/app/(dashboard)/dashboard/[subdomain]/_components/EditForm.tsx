@@ -2,17 +2,27 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, ArrowRight } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { updateKontenAction, type UpdateKontenInput } from '../actions';
+import { ImageUploader } from '@/components/ImageUploader';
 
-type ServiceItem = { title: string; description: string };
+type ServiceItem = { title: string; description: string; imageUrl?: string | null };
 
 type Props = {
   subdomain: string;
+  bisnisId: string;
   initialData: {
     namaBisnis: string;
+    logoUrl?: string | null;
+    coverUrl?: string | null;
     lokasi: string;
     whatsapp: string;
+    instagram?: string | null;
+    tiktok?: string | null;
+    facebook?: string | null;
+    jamBuka?: string | null;
+    jamTutup?: string | null;
+    hariOperasional?: string | null;
     heroHeadline: string;
     heroSubtext: string;
     aboutParagraph: string;
@@ -24,7 +34,7 @@ type Props = {
   };
 };
 
-const EMPTY_SERVICE: ServiceItem = { title: '', description: '' };
+const EMPTY_SERVICE: ServiceItem = { title: '', description: '', imageUrl: '' };
 
 // Preset warna: 3 untuk casual, 3 untuk professional, 3 untuk elegant
 const COLOR_PRESETS = [
@@ -39,7 +49,15 @@ const COLOR_PRESETS = [
   { hex: '78350f', label: 'Dark Earth', group: 'Elegant' },
 ];
 
-export function EditForm({ subdomain, initialData }: Props) {
+const HARI_OPTIONS = [
+  'Setiap Hari',
+  'Senin - Sabtu',
+  'Senin - Jumat',
+  'Senin - Minggu',
+  'Weekend Saja',
+] as const;
+
+export function EditForm({ subdomain, bisnisId, initialData }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [state, setState] = useState<{
@@ -49,8 +67,18 @@ export function EditForm({ subdomain, initialData }: Props) {
 
   // Form state
   const [namaBisnis, setNamaBisnis] = useState(initialData.namaBisnis);
+  const [logoUrl, setLogoUrl] = useState(initialData.logoUrl || '');
+  const [coverUrl, setCoverUrl] = useState(initialData.coverUrl || '');
   const [lokasi, setLokasi] = useState(initialData.lokasi);
   const [whatsapp, setWhatsapp] = useState(initialData.whatsapp);
+  const [instagram, setInstagram] = useState(initialData.instagram || '');
+  const [tiktok, setTiktok] = useState(initialData.tiktok || '');
+  const [facebook, setFacebook] = useState(initialData.facebook || '');
+  const [jamBuka, setJamBuka] = useState(initialData.jamBuka || '');
+  const [jamTutup, setJamTutup] = useState(initialData.jamTutup || '');
+  const [hariOperasional, setHariOperasional] = useState(
+    (initialData.hariOperasional as typeof HARI_OPTIONS[number]) || '',
+  );
   const [heroHeadline, setHeroHeadline] = useState(initialData.heroHeadline);
   const [heroSubtext, setHeroSubtext] = useState(initialData.heroSubtext);
   const [aboutParagraph, setAboutParagraph] = useState(initialData.aboutParagraph);
@@ -96,11 +124,19 @@ export function EditForm({ subdomain, initialData }: Props) {
     setState({ status: 'idle' });
 
     startTransition(async () => {
-      const result = await updateKontenAction({
+      const payload: UpdateKontenInput = {
         subdomain,
         namaBisnis,
+        logoUrl,
+        coverUrl,
         lokasi,
         whatsapp,
+        instagram,
+        tiktok,
+        facebook,
+        jamBuka,
+        jamTutup,
+        hariOperasional,
         heroHeadline,
         heroSubtext,
         aboutParagraph,
@@ -108,8 +144,14 @@ export function EditForm({ subdomain, initialData }: Props) {
         seoTitle,
         seoDescription,
         accentColor,
-        services,
-      });
+        services: services.map((s) => ({
+          title: s.title,
+          description: s.description,
+          imageUrl: s.imageUrl || '',
+        })),
+      };
+
+      const result = await updateKontenAction(payload);
 
       if (!result.success) {
         setState({ status: 'error', message: result.error });
@@ -123,6 +165,36 @@ export function EditForm({ subdomain, initialData }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Branding */}
+      <Section title="Branding" desc="Logo & cover yang muncul di website kamu.">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <ImageUploader
+            label="Logo"
+            value={logoUrl}
+            onChange={setLogoUrl}
+            aspect="square"
+            hint="Square. Untuk header."
+            // Kirim bisnisId supaya upload masuk folder yang benar (bukan draft)
+            // Note: ImageUploader saat ini hardcoded panggil /api/upload tanpa body.
+            // Untuk MVP ini OK — owner akan upload ke folder "draft" lalu kita move manual.
+            // TODO: extend ImageUploader untuk terima bisnisId.
+          />
+          <div className="sm:col-span-2">
+            <ImageUploader
+              label="Cover / Banner"
+              value={coverUrl}
+              onChange={setCoverUrl}
+              aspect="wide"
+              hint="Banner lebar untuk hero."
+            />
+          </div>
+        </div>
+        <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+          ⚠ Untuk MVP, upload dari dashboard masuk folder sementara. Setelah simpan,
+          file di-relink otomatis ke folder bisnis kamu. Kalau gagal, ulangi upload lalu simpan ulang.
+        </p>
+      </Section>
+
       {/* Bisnis & Kontak */}
       <Section title="Bisnis & Kontak" desc="Info dasar yang muncul di website.">
         <Field
@@ -136,6 +208,7 @@ export function EditForm({ subdomain, initialData }: Props) {
           hint={hints.lokasi}
           value={lokasi}
           onChange={setLokasi}
+          hint2="Kalau diubah, peta akan di-geocode ulang otomatis."
         />
         <Field
           label="WhatsApp"
@@ -144,6 +217,85 @@ export function EditForm({ subdomain, initialData }: Props) {
           onChange={setWhatsapp}
           placeholder="6281234567890"
         />
+      </Section>
+
+      {/* Operasional */}
+      <Section title="Jam Operasional" desc="Tampil di section kontak. Opsional.">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Hari</label>
+            <select
+              value={hariOperasional}
+              onChange={(e) => setHariOperasional(e.target.value as typeof hariOperasional)}
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+            >
+              <option value="">Pilih...</option>
+              {HARI_OPTIONS.map((h) => (
+                <option key={h} value={h}>{h}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Jam Buka</label>
+            <input
+              type="time"
+              value={jamBuka}
+              onChange={(e) => setJamBuka(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Jam Tutup</label>
+            <input
+              type="time"
+              value={jamTutup}
+              onChange={(e) => setJamTutup(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+            />
+          </div>
+        </div>
+      </Section>
+
+      {/* Social Media */}
+      <Section title="Social Media" desc="Username saja (tanpa @). Otomatis dijadikan link.">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Instagram</label>
+            <div className="flex items-stretch">
+              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">@</span>
+              <input
+                type="text"
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+                placeholder="username"
+                className="flex-1 rounded-r-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">TikTok</label>
+            <div className="flex items-stretch">
+              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">@</span>
+              <input
+                type="text"
+                value={tiktok}
+                onChange={(e) => setTiktok(e.target.value)}
+                placeholder="username"
+                className="flex-1 rounded-r-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Facebook</label>
+            <input
+              type="text"
+              value={facebook}
+              onChange={(e) => setFacebook(e.target.value)}
+              placeholder="username atau page slug"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+            />
+          </div>
+        </div>
       </Section>
 
       {/* Tema & Warna Aksen */}
@@ -253,9 +405,9 @@ export function EditForm({ subdomain, initialData }: Props) {
           {services.map((svc, i) => (
             <div
               key={i}
-              className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-2"
+              className="rounded-xl border border-slate-200 bg-slate-50/50 p-4"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-semibold text-slate-500">
                   LAYANAN #{i + 1}
                 </span>
@@ -269,22 +421,37 @@ export function EditForm({ subdomain, initialData }: Props) {
                   </button>
                 )}
               </div>
-              <input
-                type="text"
-                placeholder="Judul layanan"
-                value={svc.title}
-                onChange={(e) => updateService(i, { title: e.target.value })}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
-              />
-              <textarea
-                placeholder="Deskripsi singkat"
-                value={svc.description}
-                onChange={(e) =>
-                  updateService(i, { description: e.target.value })
-                }
-                rows={2}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 resize-none"
-              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <div className="sm:col-span-1">
+                  <ImageUploader
+                    label="Foto"
+                    value={svc.imageUrl || ''}
+                    onChange={(url) => updateService(i, { imageUrl: url })}
+                    aspect="square"
+                    hint="Opsional."
+                  />
+                </div>
+
+                <div className="sm:col-span-3 space-y-2">
+                  <input
+                    type="text"
+                    placeholder="Judul layanan"
+                    value={svc.title}
+                    onChange={(e) => updateService(i, { title: e.target.value })}
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                  />
+                  <textarea
+                    placeholder="Deskripsi singkat"
+                    value={svc.description}
+                    onChange={(e) =>
+                      updateService(i, { description: e.target.value })
+                    }
+                    rows={2}
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 resize-none"
+                  />
+                </div>
+              </div>
             </div>
           ))}
           {services.length < 8 && (
@@ -386,9 +553,10 @@ type FieldProps = {
   as?: 'input' | 'textarea';
   rows?: number;
   placeholder?: string;
+  hint2?: string;
 };
 
-function Field({ label, hint, value, onChange, as = 'input', rows = 3, placeholder }: FieldProps) {
+function Field({ label, hint, value, onChange, as = 'input', rows = 3, placeholder, hint2 }: FieldProps) {
   const overLimit = hint.used > hint.max;
   const inputClass =
     'w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10';
@@ -420,6 +588,7 @@ function Field({ label, hint, value, onChange, as = 'input', rows = 3, placehold
           className={`${inputClass} resize-y`}
         />
       )}
+      {hint2 && <p className="mt-1.5 text-xs text-slate-500">{hint2}</p>}
     </div>
   );
 }

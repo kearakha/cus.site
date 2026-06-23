@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Edit3, LogOut, MoreHorizontal, ExternalLink } from 'lucide-react';
+import { Check, Edit3, LogOut, MoreHorizontal, ExternalLink, Copy } from 'lucide-react';
 
 type Props = {
   subdomain: string;
+  /** URL absolut ke tenant site (dari buildSiteUrl). Optional — fallback ke env-based kalau tidak ada */
+  siteUrl?: string;
 };
 
 /**
@@ -12,25 +14,41 @@ type Props = {
  *
  * UX:
  * - Banner top tipis "OWNER MODE" dengan 2 CTA utama: Edit + Lihat Dashboard
- * - Toggle button pojok kanan bawah → expand panel menu (logout, dll)
+ * - Toggle button pojok kanan bawah → expand panel menu (copy link, logout, dll)
  */
-export function FloatingAdminBar({ subdomain }: Props) {
+export function FloatingAdminBar({ subdomain, siteUrl }: Props) {
   const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const visitorUrl = siteUrl ?? `http://${subdomain}.localhost:3000`;
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(visitorUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback: select text
+      window.prompt('Copy URL ini:', visitorUrl);
+    }
+  };
 
   return (
     <>
       {/* Top banner — selalu visible saat owner mode */}
       <div className="fixed top-0 inset-x-0 z-40 bg-slate-900 text-white shadow-lg">
         <div className="mx-auto max-w-6xl px-4 py-2 flex items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 flex-shrink-0">
               <Check className="h-3 w-3 text-slate-900" strokeWidth={3} />
             </span>
             <span className="font-semibold tracking-wide">OWNER MODE</span>
             <span className="hidden sm:inline text-slate-400">—</span>
-            <code className="hidden sm:inline text-emerald-300 font-mono">{subdomain}.cus.site</code>
+            <code className="hidden sm:inline text-emerald-300 font-mono truncate">
+              {subdomain}.cus.site
+            </code>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <a
               href={`/dashboard/${subdomain}`}
               className="inline-flex items-center gap-1.5 rounded-full bg-white text-slate-900 px-3 py-1 font-semibold hover:bg-slate-100 transition"
@@ -66,7 +84,28 @@ export function FloatingAdminBar({ subdomain }: Props) {
                 ✕
               </button>
             </div>
-            <div className="border-t border-slate-800">
+
+            {/* Copy visitor URL */}
+            <button
+              type="button"
+              onClick={copy}
+              className="w-full text-left px-4 py-3 text-sm hover:bg-slate-800 transition border-b border-slate-800 inline-flex items-center gap-2"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-3.5 w-3.5 text-emerald-400" strokeWidth={2.5} />
+                  <span className="text-emerald-400">Tersalin!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="h-3.5 w-3.5" strokeWidth={2} />
+                  Copy URL Website
+                </>
+              )}
+            </button>
+
+            {/* Logout */}
+            <div>
               <form action="/api/owner/logout" method="POST">
                 <button
                   type="submit"
