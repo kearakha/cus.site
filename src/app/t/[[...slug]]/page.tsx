@@ -75,7 +75,9 @@ export default async function TenantSitePage({ params }: Props) {
   return (
     <>
       <TemplateRenderer data={bisnis} siteUrl={buildSiteUrl(bisnis)} />
-      {isOwnerRequest && <FloatingAdminBar subdomain={subdomain} />}
+      {isOwnerRequest && (
+        <FloatingAdminBar subdomain={subdomain} siteUrl={buildSiteUrl(bisnis)} />
+      )}
     </>
   );
 }
