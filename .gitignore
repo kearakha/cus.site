@@ -26,3 +26,11 @@ prisma/*.db-journal
 
 # Vercel
 .vercel
+
+# User uploads (logo, cover, foto layanan) — JANGAN commit
+# Folder ini adalah runtime artifact, bukan source code
+public/uploads/
+
+# TypeScript build cache
+tsconfig.tsbuildinfo
+
