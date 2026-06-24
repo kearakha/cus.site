@@ -1,12 +1,13 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
-import { OWNER_COOKIE_NAME } from '@/lib/auth';
+import { isOwner } from '@/lib/auth';
 import { Prisma } from '@prisma/client';
 import { geocodeAlamat } from '@/lib/geocode';
+import { generateCusWebsite } from '@/lib/openai';
+import type { LayananItem, WizardInput } from '@/lib/schemas/wizard';
 
 // === Update konten schema ===
 
@@ -115,22 +116,16 @@ export async function updateKontenAction(
 
   const data = parsed.data;
 
-  // 2. Verifikasi ownership via cookie
-  const cookieToken = cookies().get(OWNER_COOKIE_NAME)?.value;
-  if (!cookieToken) {
-    return { success: false, error: 'Kamu belum login sebagai owner.' };
-  }
-
-  // 3. Cari bisnis + verify token match
+  // 2. Cari bisnis + verify ownership (session email ATAU ownerToken)
   const bisnis = await prisma.bisnis.findUnique({
     where: { subdomain: data.subdomain },
-    select: { id: true, ownerToken: true, lokasi: true },
+    select: { id: true, email: true, ownerToken: true, lokasi: true },
   });
 
   if (!bisnis) {
     return { success: false, error: 'Bisnis tidak ditemukan.' };
   }
-  if (bisnis.ownerToken !== cookieToken) {
+  if (!isOwner(bisnis)) {
     return { success: false, error: 'Kamu bukan owner bisnis ini.' };
   }
 
@@ -213,6 +208,115 @@ export async function updateKontenAction(
   }
 }
 
+// === Regenerate AI (section-scoped) ===
+
+const regenerateSchema = z.object({
+  subdomain: z.string().min(3).max(32),
+  /** Section yang mau di-regenerate */
+  section: z.enum(['hero', 'about', 'services', 'all']),
+});
+
+export type RegenerateSection = z.infer<typeof regenerateSchema>['section'];
+
+export type RegenerateResult =
+  | {
+      success: true;
+      section: RegenerateSection;
+      /** Field yang di-update (caller replace form state) */
+      data: {
+        heroHeadline?: string;
+        heroSubtext?: string;
+        aboutParagraph?: string;
+        services?: Array<{ title: string; description: string }>;
+      };
+    }
+  | { success: false; error: string };
+
+type RegenerateData = Extract<RegenerateResult, { success: true }>['data'];
+
+/**
+ * Regenerate copywriting untuk section tertentu via AI.
+ * Owner-only (cek cookie ownerToken). Tidak replace form state —
+ * return data baru, caller (EditForm) yang replace field-nya
+ * supaya user bisa review sebelum save.
+ */
+export async function regenerateAIContentAction(
+  input: z.infer<typeof regenerateSchema>,
+): Promise<RegenerateResult> {
+  const parsed = regenerateSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: 'Input tidak valid' };
+  }
+  const { subdomain, section } = parsed.data;
+
+  // 1. Verifikasi ownership — pakai isOwner (cek session email ATAU ownerToken)
+  const bisnis = await prisma.bisnis.findUnique({
+    where: { subdomain },
+    include: {
+      kontenAI: true,
+      layanan: { orderBy: { order: 'asc' } },
+    },
+  });
+
+  if (!bisnis) {
+    return { success: false, error: 'Bisnis tidak ditemukan.' };
+  }
+  if (!isOwner(bisnis)) {
+    return { success: false, error: 'Kamu bukan owner bisnis ini.' };
+  }
+  if (!bisnis.kontenAI) {
+    return { success: false, error: 'Konten website belum ada.' };
+  }
+
+  // 2. Build WizardInput shape dari data existing.
+  //    Data di DB dipercaya valid (insert via wizard + Zod validation).
+  const layanan: LayananItem[] = bisnis.layanan.map((l) => ({
+    title: l.title,
+    description: l.description,
+  }));
+
+  const wizardInput: WizardInput = {
+    namaBisnis: bisnis.namaBisnis,
+    jenisBisnis: bisnis.jenisBisnis as WizardInput['jenisBisnis'],
+    lokasi: bisnis.lokasi,
+    whatsapp: bisnis.whatsapp,
+    email: bisnis.email,
+    vibe: bisnis.vibe as WizardInput['vibe'],
+    subdomain: bisnis.subdomain,
+    layanan,
+  };
+
+  // 3. Call AI — panggil full generation (cost sama kayak wizard,
+  //    tapi gak ngeganggu flow edit. Bisa di-optimize jadi prompt
+  //    section-specific nanti kalo perlu hemat token).
+  const ai = await generateCusWebsite(wizardInput);
+  if (!ai.success) {
+    return { success: false, error: `AI gagal: ${ai.error}` };
+  }
+
+  // 4. Return hanya field yang direquest
+  const data: RegenerateData = {};
+  if (section === 'hero' || section === 'all') {
+    data.heroHeadline = ai.data.heroHeadline;
+    data.heroSubtext = ai.data.heroSubtext;
+  }
+  if (section === 'about' || section === 'all') {
+    data.aboutParagraph = ai.data.aboutParagraph;
+  }
+  if (section === 'services' || section === 'all') {
+    data.services = ai.data.services.map((s) => ({
+      title: s.title,
+      description: s.description,
+    }));
+  }
+
+  return {
+    success: true,
+    section,
+    data,
+  };
+}
+
 // === Hapus bisnis ===
 
 export type DeleteResult =
@@ -234,20 +338,15 @@ export async function hapusBisnisAction(
   }
 
   // Verifikasi ownership
-  const cookieToken = cookies().get(OWNER_COOKIE_NAME)?.value;
-  if (!cookieToken) {
-    return { success: false, error: 'Kamu belum login sebagai owner.' };
-  }
-
   const bisnis = await prisma.bisnis.findUnique({
     where: { subdomain: subResult.data },
-    select: { id: true, ownerToken: true, namaBisnis: true },
+    select: { id: true, email: true, ownerToken: true, namaBisnis: true },
   });
 
   if (!bisnis) {
     return { success: false, error: 'Bisnis tidak ditemukan.' };
   }
-  if (bisnis.ownerToken !== cookieToken) {
+  if (!isOwner(bisnis)) {
     return { success: false, error: 'Kamu bukan owner bisnis ini.' };
   }
 

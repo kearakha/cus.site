@@ -39,6 +39,11 @@ model Bisnis {
   /// Bisa di-unpublish (soft delete) tanpa kehilangan data.
   published   Boolean  @default(true)
 
+  /// Timestamp saat ownerToken pernah dipakai untuk claim. Kalau sudah terisi,
+  /// link claim lama = invalid (one-time use). Owner bisa dapat token baru
+  /// via magic link login kapan saja.
+  ownerTokenUsedAt DateTime?
+
   /// === Branding (opsional) ===
   /// Path relatif ke /uploads/{bisnisId}/{filename}. Disimpan local dulu;
   /// lihat src/lib/upload.ts untuk migrasi ke cloud storage nanti.
@@ -119,4 +124,30 @@ model Layanan {
   createdAt   DateTime @default(now())
 
   @@index([bisnisId, order])
+}
+
+/// Magic link token untuk login pakai email. One-time use, expiry 15 menit.
+///
+/// Flow:
+/// 1. User submit email di /login
+/// 2. Server bikin row baru dengan tokenHash (SHA-256 dari raw token)
+/// 3. Email dikirim berisi URL dengan raw token
+/// 4. User klik → /api/auth/verify?token=xxx
+/// 5. Server hash raw token → cocokin ke tokenHash → validasi expiry & usedAt
+/// 6. Set session cookie, mark usedAt
+///
+/// Raw token HANYA ada di email, tidak pernah disimpan plaintext di DB.
+model LoginToken {
+  id        String    @id @default(uuid())
+  email     String
+
+  /// SHA-256 hash dari raw token (hex). Index unique untuk fast lookup.
+  tokenHash String    @unique
+
+  /// Token expire 15 menit setelah dibuat.
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email, expiresAt])
 }

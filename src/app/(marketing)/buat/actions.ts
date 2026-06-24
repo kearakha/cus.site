@@ -7,7 +7,11 @@ import { prisma } from '@/lib/db';
 import { generateCusWebsite } from '@/lib/openai';
 import { wizardInputSchema } from '@/lib/schemas/wizard';
 import { Prisma } from '@prisma/client';
-import { buildAccessLink, setSessionCookies } from '@/lib/auth';
+import {
+  buildAccessLink,
+  setSessionCookies,
+} from '@/lib/auth';
+import { sendWelcomeEmail } from '@/lib/email';
 import { geocodeAlamat } from '@/lib/geocode';
 
 export type SubmitResult =
@@ -139,10 +143,24 @@ export async function submitBisnisAction(input: unknown): Promise<SubmitResult> 
     //    (misal: cookie di cus.site, bisa diakses dari kopisrawung.cus.site)
     setSessionCookies(data.email, ownerToken);
 
+    // 8. Kirim welcome email dengan claim link (one-time) + link permanen.
+    //    Fire-and-forget — kalo email gagal, user tetap punya cookies + accessLink.
+    //    Dev mode: email.log akan print link ke terminal.
+    const accessLink = buildAccessLink(ownerToken);
+    sendWelcomeEmail({
+      to: data.email,
+      businessName: data.namaBisnis,
+      subdomain: data.subdomain,
+      claimUrl: accessLink,
+      permanentAccessUrl: accessLink, // sama untuk first claim
+    }).catch((err) => {
+      console.error('[submitBisnisAction] Gagal kirim welcome email:', err);
+    });
+
     return {
       success: true,
       subdomain: data.subdomain,
-      accessLink: buildAccessLink(ownerToken),
+      accessLink,
     };
   } catch (err) {
     console.error('[submitBisnisAction] error:', err);

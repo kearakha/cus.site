@@ -130,31 +130,15 @@ export function middleware(request: NextRequest) {
   const subdomain = extractSubdomain(host);
 
   // === Claim access: ?claim=<ownerToken> ===
-  // Set cookie ownerToken tanpa validasi (validasi dilakukan di page /dashboard
-  // yang query DB). Lalu redirect ke URL yang sama tanpa query.
+  // Redirect ke API route yang handle validasi + set cookie + rotate token.
+  // Logic di /api/auth/claim (bukan di middleware) supaya bisa query DB
+  // dan atomic update ownerTokenUsedAt.
   const claimToken = request.nextUrl.searchParams.get('claim');
   if (claimToken) {
-    const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'cus.site').toLowerCase();
-    const isLocal =
-      process.env.NODE_ENV !== 'production' ||
-      rootDomain.endsWith('.localhost');
-
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.searchParams.delete('claim');
-
-    const response = NextResponse.redirect(redirectUrl, { status: 303 });
-    // Set legacy ownerToken cookie (untuk backward compat)
-    response.cookies.set({
-      name: 'cus_owner',
-      value: claimToken,
-      httpOnly: true,
-      secure: !isLocal,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 365,
-      domain: isLocal ? 'localhost' : `.${rootDomain}`,
-    });
-    return response;
+    const claimUrl = request.nextUrl.clone();
+    claimUrl.pathname = '/api/auth/claim';
+    claimUrl.search = `?token=${encodeURIComponent(claimToken)}`;
+    return NextResponse.redirect(claimUrl, { status: 303 });
   }
 
   // Request dari subdomain bisnis → rewrite ke internal route /t/[domain]

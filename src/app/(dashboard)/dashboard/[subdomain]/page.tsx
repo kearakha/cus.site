@@ -2,7 +2,11 @@ import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { prisma } from '@/lib/db';
-import { OWNER_COOKIE_NAME } from '@/lib/auth';
+import {
+  OWNER_COOKIE_NAME,
+  SESSION_COOKIE_NAME_EXPORT,
+  isOwner,
+} from '@/lib/auth';
 import { buildSiteUrl } from '@/components/TenantSite/types';
 import { EditForm } from './_components/EditForm';
 import { VIBE_DESCRIPTIONS } from '@/app/(marketing)/buat/_components/steps';
@@ -24,10 +28,12 @@ export async function generateMetadata({ params }: Props) {
 export default async function EditBisnisPage({ params }: Props) {
   const { subdomain } = params;
 
-  // 1. Verifikasi cookie owner
-  const cookieToken = cookies().get(OWNER_COOKIE_NAME)?.value;
-  if (!cookieToken) {
-    redirect('/');
+  // 1. Verifikasi ada session (email atau ownerToken)
+  const hasSession =
+    cookies().get(OWNER_COOKIE_NAME)?.value ||
+    cookies().get(SESSION_COOKIE_NAME_EXPORT)?.value;
+  if (!hasSession) {
+    redirect('/login');
   }
 
   // 2. Fetch bisnis + konten + layanan
@@ -43,8 +49,8 @@ export default async function EditBisnisPage({ params }: Props) {
     notFound();
   }
 
-  // 3. Verify ownership
-  if (bisnis.ownerToken !== cookieToken) {
+  // 3. Verify ownership (email match ATAU ownerToken match)
+  if (!isOwner(bisnis)) {
     return (
       <div className="rounded-2xl bg-white border border-slate-200 p-8 text-center">
         <h1 className="text-xl font-semibold text-slate-900">Akses ditolak</h1>
