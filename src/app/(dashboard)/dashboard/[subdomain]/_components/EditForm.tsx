@@ -2,8 +2,13 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check } from 'lucide-react';
-import { updateKontenAction, type UpdateKontenInput } from '../actions';
+import { Check, Sparkles, Loader2 } from 'lucide-react';
+import {
+  updateKontenAction,
+  regenerateAIContentAction,
+  type UpdateKontenInput,
+  type RegenerateSection,
+} from '../actions';
 import { ImageUploader } from '@/components/ImageUploader';
 
 type ServiceItem = { title: string; description: string; imageUrl?: string | null };
@@ -90,6 +95,62 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
     initialData.services.length > 0 ? initialData.services : [EMPTY_SERVICE],
   );
 
+  // === AI Regenerate state ===
+  const [regenerating, setRegenerating] = useState<RegenerateSection | null>(null);
+  const [regenError, setRegenError] = useState<string | null>(null);
+  const [regenToast, setRegenToast] = useState<string | null>(null);
+
+  const handleRegenerate = async (section: RegenerateSection) => {
+    if (regenerating) return;
+    if (
+      !window.confirm(
+        section === 'all'
+          ? 'Generate ulang SEMUA konten (hero, about, layanan) dengan AI? Field SEO & warna tidak berubah. Konten yang sekarang di form akan diganti.'
+          : `Generate ulang section ${section} dengan AI? Konten yang sekarang di form akan diganti.`,
+      )
+    ) {
+      return;
+    }
+
+    setRegenerating(section);
+    setRegenError(null);
+    setRegenToast(null);
+
+    try {
+      const result = await regenerateAIContentAction({ subdomain, section });
+      if (!result.success) {
+        setRegenError(result.error);
+        return;
+      }
+
+      // Apply ke form state (kecuali imageUrl — itu tetap)
+      if (result.data.heroHeadline) setHeroHeadline(result.data.heroHeadline);
+      if (result.data.heroSubtext) setHeroSubtext(result.data.heroSubtext);
+      if (result.data.aboutParagraph) setAboutParagraph(result.data.aboutParagraph);
+      if (result.data.services) {
+        // Preserve imageUrl existing per index
+        setServices((prev) =>
+          result.data.services!.map((aiSvc, i) => ({
+            title: aiSvc.title,
+            description: aiSvc.description,
+            imageUrl: prev[i]?.imageUrl || '',
+          })),
+        );
+      }
+
+      setRegenToast(
+        section === 'all'
+          ? 'Semua konten di-regenerate! Review lalu klik Simpan.'
+          : `Section ${section} di-regenerate! Review lalu klik Simpan.`,
+      );
+      setTimeout(() => setRegenToast(null), 4000);
+    } catch (err) {
+      setRegenError(err instanceof Error ? err.message : 'Gagal generate');
+    } finally {
+      setRegenerating(null);
+    }
+  };
+
   // Validation hints
   const hints = {
     namaBisnis: { used: namaBisnis.length, max: 80 },
@@ -165,6 +226,48 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* === AI Regenerate Banner === */}
+      <div className="rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 text-white p-5 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="rounded-full bg-amber-500/20 p-2.5 flex-shrink-0">
+              <Sparkles className="h-5 w-5 text-amber-400" />
+            </div>
+            <div>
+              <h2 className="font-semibold">Generate ulang dengan AI</h2>
+              <p className="text-sm text-slate-300 mt-0.5">
+                AI bisa tulis ulang hero, about, atau layanan. Hasil akan masuk
+                ke form — review dulu baru simpan.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => handleRegenerate('all')}
+            disabled={regenerating !== null}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-400 px-4 py-2.5 text-sm font-semibold text-slate-900 transition disabled:opacity-50 flex-shrink-0"
+          >
+            {regenerating === 'all' ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate Ulang Semua
+              </>
+            )}
+          </button>
+        </div>
+        {regenError && (
+          <p className="mt-3 text-sm text-red-300">⚠ {regenError}</p>
+        )}
+        {regenToast && (
+          <p className="mt-3 text-sm text-emerald-300">✓ {regenToast}</p>
+        )}
+      </div>
+
       {/* Branding */}
       <Section title="Branding" desc="Logo & cover yang muncul di website kamu.">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -363,7 +466,17 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
       </Section>
 
       {/* Hero */}
-      <Section title="Hero Section" desc="Tampil pertama di paling atas website.">
+      <Section
+        title="Hero Section"
+        desc="Tampil pertama di paling atas website."
+        action={
+          <RegenerateSectionButton
+            section="hero"
+            loading={regenerating === 'hero'}
+            onClick={() => handleRegenerate('hero')}
+          />
+        }
+      >
         <Field
           label="Headline"
           hint={hints.heroHeadline}
@@ -385,7 +498,17 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
       </Section>
 
       {/* About */}
-      <Section title="Tentang Bisnis" desc="Paragraf deskripsi tentang bisnis kamu.">
+      <Section
+        title="Tentang Bisnis"
+        desc="Paragraf deskripsi tentang bisnis kamu."
+        action={
+          <RegenerateSectionButton
+            section="about"
+            loading={regenerating === 'about'}
+            onClick={() => handleRegenerate('about')}
+          />
+        }
+      >
         <Field
           label="Paragraf About"
           hint={hints.aboutParagraph}
@@ -400,6 +523,13 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
       <Section
         title="Layanan / Produk"
         desc="Daftar layanan yang kamu tawarkan. Minimal 1, maksimal 8."
+        action={
+          <RegenerateSectionButton
+            section="services"
+            loading={regenerating === 'services'}
+            onClick={() => handleRegenerate('services')}
+          />
+        }
       >
         <div className="space-y-3">
           {services.map((svc, i) => (
@@ -528,20 +658,61 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
 function Section({
   title,
   desc,
+  action,
   children,
 }: {
   title: string;
   desc?: string;
+  /** Optional action button di kanan judul */
+  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <section className="rounded-2xl bg-white border border-slate-200 p-5 sm:p-6 space-y-4">
-      <div>
-        <h2 className="text-base font-semibold text-slate-900">{title}</h2>
-        {desc && <p className="text-xs text-slate-500 mt-0.5">{desc}</p>}
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+          {desc && <p className="text-xs text-slate-500 mt-0.5">{desc}</p>}
+        </div>
+        {action && <div className="flex-shrink-0">{action}</div>}
       </div>
       <div className="space-y-4">{children}</div>
     </section>
+  );
+}
+
+/**
+ * Tombol "Generate Ulang [section]" — pake ini sebagai `action` prop Section.
+ */
+function RegenerateSectionButton({
+  section,
+  loading,
+  onClick,
+}: {
+  section: RegenerateSection;
+  loading: boolean;
+  onClick: () => void;
+}) {
+  const labels: Record<RegenerateSection, string> = {
+    hero: 'Buat Ulang Hero',
+    about: 'Buat Ulang About',
+    services: 'Buat Ulang Layanan',
+    all: 'Generate Ulang Semua',
+  };
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={loading}
+      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50"
+    >
+      {loading ? (
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+      ) : (
+        <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+      )}
+      {labels[section]}
+    </button>
   );
 }
 
