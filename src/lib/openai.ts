@@ -277,7 +277,6 @@ type AttemptResult =
 
 async function tryStructuredOutput(input: WizardInput): Promise<AttemptResult> {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-explicit-any
     const { zodResponseFormat } = require('openai/helpers/zod') as {
       zodResponseFormat: (s: z.ZodTypeAny, n: string) => any;
     };
