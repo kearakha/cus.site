@@ -1,15 +1,17 @@
-import { notFound, redirect } from 'next/navigation';
-import Link from 'next/link';
-import { cookies } from 'next/headers';
-import { prisma } from '@/lib/db';
+import { notFound, redirect } from "next/navigation";
+import Link from "next/link";
+import { cookies } from "next/headers";
+
+export const dynamic = "force-dynamic";
+import { prisma } from "@/lib/db";
 import {
   OWNER_COOKIE_NAME,
   SESSION_COOKIE_NAME_EXPORT,
   isOwner,
-} from '@/lib/auth';
-import { buildSiteUrl } from '@/components/TenantSite/types';
-import { EditForm } from './_components/EditForm';
-import { VIBE_DESCRIPTIONS } from '@/app/(marketing)/buat/_components/steps';
+} from "@/lib/auth";
+import { buildSiteUrl } from "@/components/TenantSite/types";
+import { EditForm } from "./_components/EditForm";
+import { VIBE_DESCRIPTIONS } from "@/app/(marketing)/buat/_components/steps";
 
 type Props = {
   params: { subdomain: string };
@@ -21,7 +23,9 @@ export async function generateMetadata({ params }: Props) {
     select: { namaBisnis: true },
   });
   return {
-    title: bisnis ? `Edit ${bisnis.namaBisnis} — Dashboard` : 'Edit — Dashboard',
+    title: bisnis
+      ? `Edit ${bisnis.namaBisnis} — Dashboard`
+      : "Edit — Dashboard",
   };
 }
 
@@ -33,7 +37,7 @@ export default async function EditBisnisPage({ params }: Props) {
     cookies().get(OWNER_COOKIE_NAME)?.value ||
     cookies().get(SESSION_COOKIE_NAME_EXPORT)?.value;
   if (!hasSession) {
-    redirect('/login');
+    redirect("/login");
   }
 
   // 2. Fetch bisnis + konten + layanan
@@ -41,7 +45,7 @@ export default async function EditBisnisPage({ params }: Props) {
     where: { subdomain },
     include: {
       kontenAI: true,
-      layanan: { orderBy: { order: 'asc' } },
+      layanan: { orderBy: { order: "asc" } },
     },
   });
 
@@ -87,8 +91,10 @@ export default async function EditBisnisPage({ params }: Props) {
               {bisnis.namaBisnis}
             </h1>
             <p className="mt-1 text-sm text-slate-500 font-mono">
-              {bisnis.subdomain}.cus.site ·{' '}
-              <span className="text-slate-700">{vibeInfo?.title || bisnis.vibe}</span>
+              {bisnis.subdomain}.cus.site ·{" "}
+              <span className="text-slate-700">
+                {vibeInfo?.title || bisnis.vibe}
+              </span>
             </p>
           </div>
           <a
@@ -124,7 +130,7 @@ export default async function EditBisnisPage({ params }: Props) {
           ctaText: bisnis.kontenAI.ctaText,
           seoTitle: bisnis.kontenAI.seoTitle,
           seoDescription: bisnis.kontenAI.seoDescription,
-          accentColor: bisnis.kontenAI.accentColor || 'f59e0b',
+          accentColor: bisnis.kontenAI.accentColor || "f59e0b",
           services: bisnis.layanan.map((l) => ({
             title: l.title,
             description: l.description,

@@ -1,5 +1,7 @@
-import Link from 'next/link';
-import { cookies } from 'next/headers';
+import Link from "next/link";
+import { cookies } from "next/headers";
+
+export const dynamic = "force-dynamic";
 import {
   Zap,
   ArrowRight,
@@ -21,11 +23,11 @@ import {
   ShoppingBag,
   Briefcase,
   Heart,
-} from 'lucide-react';
-import { OWNER_COOKIE_NAME, SESSION_COOKIE_NAME_EXPORT } from '@/lib/auth';
-import { buildSiteUrl } from '@/components/TenantSite/types';
+} from "lucide-react";
+import { OWNER_COOKIE_NAME, SESSION_COOKIE_NAME_EXPORT } from "@/lib/auth";
+import { buildSiteUrl } from "@/components/TenantSite/types";
 
-const DEMO_SUBDOMAIN = 'kopisrawung';
+const DEMO_SUBDOMAIN = "kopisrawung";
 
 export default function HomePage() {
   // Check apakah user sudah login
@@ -54,10 +56,10 @@ export default function HomePage() {
               Login
             </Link>
             <Link
-              href={isLoggedIn ? '/dashboard' : '/buat'}
+              href={isLoggedIn ? "/dashboard" : "/buat"}
               className="inline-flex items-center justify-center rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 transition"
             >
-              {isLoggedIn ? 'Dashboard' : 'Bikin Website'}
+              {isLoggedIn ? "Dashboard" : "Bikin Website"}
             </Link>
           </nav>
         </div>
@@ -68,8 +70,8 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.08),transparent_50%)]" />
         <div className="relative mx-auto max-w-4xl px-4 py-16 sm:py-24 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800 mb-6">
-            <Zap className="h-3.5 w-3.5" strokeWidth={2.5} />
-            5 menit jadi, AI yang nulis
+            <Zap className="h-3.5 w-3.5" strokeWidth={2.5} />5 menit jadi, AI
+            yang nulis
           </span>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-slate-900 leading-[1.1]">
             Website untuk bisnis kamu,
@@ -79,9 +81,12 @@ export default function HomePage() {
             </span>
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Isi 5 langkah singkat. AI yang nulis copywriting-nya. Website UMKM kamu
-            langsung jadi di{' '}
-            <code className="text-amber-700 font-mono text-base">nama.cus.site</code>.
+            Isi 5 langkah singkat. AI yang nulis copywriting-nya. Website UMKM
+            kamu langsung jadi di{" "}
+            <code className="text-amber-700 font-mono text-base">
+              nama.cus.site
+            </code>
+            .
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
@@ -114,26 +119,28 @@ export default function HomePage() {
             <h2 className="text-3xl font-bold tracking-tight text-slate-900">
               3 langkah, website langsung jadi
             </h2>
-            <p className="mt-3 text-slate-600">Gak perlu skill coding atau design.</p>
+            <p className="mt-3 text-slate-600">
+              Gak perlu skill coding atau design.
+            </p>
           </div>
           <div className="grid sm:grid-cols-3 gap-6">
             {[
               {
-                step: '01',
-                title: 'Isi Form Wizard',
-                desc: 'Nama bisnis, jenis, lokasi, WhatsApp, pilih vibe. Cuma 5 menit.',
+                step: "01",
+                title: "Isi Form Wizard",
+                desc: "Nama bisnis, jenis, lokasi, WhatsApp, pilih vibe. Cuma 5 menit.",
                 Icon: Edit3,
               },
               {
-                step: '02',
-                title: 'AI Generate Copy',
-                desc: 'Cus Engine nulis headline, tentang bisnis, dan layanan sesuai vibe kamu.',
+                step: "02",
+                title: "AI Generate Copy",
+                desc: "Cus Engine nulis headline, tentang bisnis, dan layanan sesuai vibe kamu.",
                 Icon: Sparkles,
               },
               {
-                step: '03',
-                title: 'Langsung Live',
-                desc: 'Website kamu otomatis online di nama.cus.site. Bisa langsung di-edit.',
+                step: "03",
+                title: "Langsung Live",
+                desc: "Website kamu otomatis online di nama.cus.site. Bisa langsung di-edit.",
                 Icon: Rocket,
               },
             ].map((item) => (
@@ -144,9 +151,16 @@ export default function HomePage() {
                 <span className="absolute -top-3 -left-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white text-xs font-bold">
                   {item.step}
                 </span>
-                <item.Icon className="h-8 w-8 text-slate-700 mb-3" strokeWidth={1.5} />
-                <h3 className="font-semibold text-slate-900 mb-1.5">{item.title}</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">{item.desc}</p>
+                <item.Icon
+                  className="h-8 w-8 text-slate-700 mb-3"
+                  strokeWidth={1.5}
+                />
+                <h3 className="font-semibold text-slate-900 mb-1.5">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  {item.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -161,41 +175,41 @@ export default function HomePage() {
               Bukan cuma jadi, tapi siap jualan
             </h2>
             <p className="mt-3 text-slate-600 max-w-xl mx-auto">
-              Setiap website Cus.site punya fitur yang langsung bisa dipakai untuk
-              jualan & dapat pelanggan.
+              Setiap website Cus.site punya fitur yang langsung bisa dipakai
+              untuk jualan & dapat pelanggan.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             {[
               {
                 Icon: Sparkles,
-                title: '3 Template Profesional',
-                desc: 'Casual (kafe/laundry), Professional (klinik/bimbel), Elegant (spa/butik). Masing-masing dengan font & warna yang sesuai.',
+                title: "3 Template Profesional",
+                desc: "Casual (kafe/laundry), Professional (klinik/bimbel), Elegant (spa/butik). Masing-masing dengan font & warna yang sesuai.",
               },
               {
                 Icon: Heart,
-                title: 'AI Copywriting Indonesia',
-                desc: 'Bukan terjemahan feel. Cus Engine paham kultur lokal, pakai bahasa yang natural untuk target market kamu.',
+                title: "AI Copywriting Indonesia",
+                desc: "Bukan terjemahan feel. Cus Engine paham kultur lokal, pakai bahasa yang natural untuk target market kamu.",
               },
               {
                 Icon: Edit3,
-                title: 'Edit Langsung dari Website',
-                desc: 'Owner punya Floating Admin Bar rahasia. Klik tombol, langsung edit copy & warna. Gak perlu login ke dashboard.',
+                title: "Edit Langsung dari Website",
+                desc: "Owner punya Floating Admin Bar rahasia. Klik tombol, langsung edit copy & warna. Gak perlu login ke dashboard.",
               },
               {
                 Icon: Smartphone,
-                title: 'Mobile-First Design',
-                desc: '90% traffic UMKM dari HP. Website otomatis optimal di semua ukuran layar, loading cepat, CTA WhatsApp langsung bisa diklik.',
+                title: "Mobile-First Design",
+                desc: "90% traffic UMKM dari HP. Website otomatis optimal di semua ukuran layar, loading cepat, CTA WhatsApp langsung bisa diklik.",
               },
               {
                 Icon: Search,
-                title: 'SEO Lokal Ready',
+                title: "SEO Lokal Ready",
                 desc: 'Setiap website punya SEO title, description, dan struktur yang dioptimasi untuk "kafe di [kota kamu]" di Google.',
               },
               {
                 Icon: Zap,
-                title: 'Live dalam Hitungan Detik',
-                desc: 'Begitu klik Generate, website langsung online. Share link ke customer, masuk WhatsApp, post IG — langsung bisa.',
+                title: "Live dalam Hitungan Detik",
+                desc: "Begitu klik Generate, website langsung online. Share link ke customer, masuk WhatsApp, post IG — langsung bisa.",
               },
             ].map((f) => (
               <div
@@ -207,7 +221,9 @@ export default function HomePage() {
                   strokeWidth={1.5}
                 />
                 <h3 className="font-semibold text-slate-900 mb-1">{f.title}</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">{f.desc}</p>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  {f.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -224,14 +240,14 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
             {[
-              { Icon: Coffee, label: 'Kafe / Restoran' },
-              { Icon: Scissors, label: 'Salon / Barbershop' },
-              { Icon: Shirt, label: 'Laundry' },
-              { Icon: BookOpen, label: 'Bimbel / Kursus' },
-              { Icon: Stethoscope, label: 'Klinik' },
-              { Icon: ShoppingBag, label: 'Toko Retail' },
-              { Icon: Briefcase, label: 'Jasa Profesional' },
-              { Icon: Sparkles, label: 'Spa / Butik' },
+              { Icon: Coffee, label: "Kafe / Restoran" },
+              { Icon: Scissors, label: "Salon / Barbershop" },
+              { Icon: Shirt, label: "Laundry" },
+              { Icon: BookOpen, label: "Bimbel / Kursus" },
+              { Icon: Stethoscope, label: "Klinik" },
+              { Icon: ShoppingBag, label: "Toko Retail" },
+              { Icon: Briefcase, label: "Jasa Profesional" },
+              { Icon: Sparkles, label: "Spa / Butik" },
             ].map((c) => (
               <div
                 key={c.label}
@@ -255,7 +271,8 @@ export default function HomePage() {
             Website kamu nungguin.
           </h2>
           <p className="mt-3 text-slate-300 text-lg max-w-xl mx-auto">
-            5 menit lagi, customer bisa klik WhatsApp kamu dari website yang baru.
+            5 menit lagi, customer bisa klik WhatsApp kamu dari website yang
+            baru.
           </p>
           <div className="mt-8">
             <Link
@@ -268,7 +285,7 @@ export default function HomePage() {
           </div>
           {isLoggedIn && (
             <p className="mt-4 text-sm text-slate-400">
-              Sudah login ·{' '}
+              Sudah login ·{" "}
               <Link
                 href="/dashboard"
                 className="text-amber-300 hover:text-amber-200 underline"
@@ -313,7 +330,10 @@ export default function HomePage() {
           <div className="mt-6 pt-6 border-t border-slate-100 text-xs text-slate-400 flex flex-col sm:flex-row justify-between gap-2">
             <p className="inline-flex items-center gap-1">
               © {new Date().getFullYear()} Cus.site. Made with
-              <Zap className="h-3 w-3 fill-amber-400 text-amber-500" strokeWidth={2} />
+              <Zap
+                className="h-3 w-3 fill-amber-400 text-amber-500"
+                strokeWidth={2}
+              />
               in Indonesia.
             </p>
             <p>Dibuat otomatis oleh Cus.site</p>

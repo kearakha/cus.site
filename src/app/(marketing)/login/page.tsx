@@ -1,11 +1,13 @@
-import Link from 'next/link';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { OWNER_COOKIE_NAME, SESSION_COOKIE_NAME_EXPORT } from '@/lib/auth';
-import { LoginForm } from './_components/LoginForm';
+import Link from "next/link";
+import { cookies } from "next/headers";
+
+export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
+import { OWNER_COOKIE_NAME, SESSION_COOKIE_NAME_EXPORT } from "@/lib/auth";
+import { LoginForm } from "./_components/LoginForm";
 
 export const metadata = {
-  title: 'Login — Cus.site',
+  title: "Login — Cus.site",
 };
 
 type Props = {
@@ -18,7 +20,7 @@ export default function LoginPage({ searchParams }: Props) {
     cookies().get(SESSION_COOKIE_NAME_EXPORT)?.value ||
     cookies().get(OWNER_COOKIE_NAME)?.value;
   if (hasSession) {
-    redirect('/dashboard');
+    redirect("/dashboard");
   }
 
   return (
@@ -50,8 +52,11 @@ export default function LoginPage({ searchParams }: Props) {
           </div>
 
           <p className="mt-6 text-center text-sm text-slate-600">
-            Belum punya website?{' '}
-            <Link href="/buat" className="font-semibold text-amber-700 hover:text-amber-800">
+            Belum punya website?{" "}
+            <Link
+              href="/buat"
+              className="font-semibold text-amber-700 hover:text-amber-800"
+            >
               Bikin dulu →
             </Link>
           </p>
