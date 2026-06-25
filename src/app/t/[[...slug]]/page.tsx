@@ -1,11 +1,13 @@
-import { headers } from 'next/headers';
-import { notFound } from 'next/navigation';
-import type { Metadata } from 'next';
-import { getBisnisBySubdomain } from '@/lib/db';
-import { isOwner } from '@/lib/auth';
-import { TemplateRenderer } from '@/components/TenantSite/TemplateRenderer';
-import { buildSiteUrl } from '@/components/TenantSite/types';
-import { FloatingAdminBar } from '@/components/FloatingAdminBar';
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
+
+export const dynamic = "force-dynamic";
+import type { Metadata } from "next";
+import { getBisnisBySubdomain } from "@/lib/db";
+import { isOwner } from "@/lib/auth";
+import { TemplateRenderer } from "@/components/TenantSite/TemplateRenderer";
+import { buildSiteUrl } from "@/components/TenantSite/types";
+import { FloatingAdminBar } from "@/components/FloatingAdminBar";
 
 type Props = {
   params: { slug?: string[] };
@@ -28,8 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: bisnis.kontenAI.heroSubtext,
       url: buildSiteUrl(bisnis),
       siteName: bisnis.namaBisnis,
-      type: 'website',
-      locale: 'id_ID',
+      type: "website",
+      locale: "id_ID",
     },
     robots: { index: true, follow: true },
   };
@@ -47,8 +49,8 @@ export default async function TenantSitePage({ params }: Props) {
   if (!slug || slug.length === 0) notFound();
 
   const subdomain = slug[0];
-  const headerSub = h.get('x-cus-subdomain');
-  const host = h.get('x-cus-host');
+  const headerSub = h.get("x-cus-subdomain");
+  const host = h.get("x-cus-host");
 
   // Gate #2: subdomain dari middleware harus match path domain
   if (!headerSub || headerSub !== subdomain) notFound();
@@ -76,7 +78,10 @@ export default async function TenantSitePage({ params }: Props) {
     <>
       <TemplateRenderer data={bisnis} siteUrl={buildSiteUrl(bisnis)} />
       {isOwnerRequest && (
-        <FloatingAdminBar subdomain={subdomain} siteUrl={buildSiteUrl(bisnis)} />
+        <FloatingAdminBar
+          subdomain={subdomain}
+          siteUrl={buildSiteUrl(bisnis)}
+        />
       )}
     </>
   );
