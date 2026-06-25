@@ -1,4 +1,4 @@
-import { Resend } from 'resend';
+import { Resend } from "resend";
 
 /**
  * Cus.site — Email wrapper.
@@ -24,13 +24,13 @@ function getClient(): Resend | null {
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error(
-        'RESEND_API_KEY belum di-set. Login & welcome email tidak akan terkirim. ' +
-          'Daftar di https://resend.com lalu tambahkan ke environment variables.',
+    if (process.env.NODE_ENV === "production") {
+      console.warn(
+        "[email] RESEND_API_KEY belum di-set. Email tidak akan terkirim. " +
+          "Tambahkan ke environment variables di Vercel.",
       );
     }
-    return null; // dev mode: log to console
+    return null; // dev/fallback mode: log to console
   }
 
   _resend = new Resend(apiKey);
@@ -38,7 +38,7 @@ function getClient(): Resend | null {
 }
 
 const FROM_ADDRESS =
-  process.env.RESEND_FROM_EMAIL || 'Cus.site <noreply@cus.site>';
+  process.env.RESEND_FROM_EMAIL || "Cus.site <noreply@cus.site>";
 
 // === Public API ===
 
@@ -62,17 +62,19 @@ export async function sendLoginLink({
 
   if (!client) {
     // Dev fallback
-    console.log('\n📧 [DEV MODE] Magic link login');
-    console.log('   To:     ', to);
-    console.log('   URL:    ', loginUrl);
-    if (businessName) console.log('   Bisnis: ', businessName);
-    console.log('   (Set RESEND_API_KEY di .env untuk kirim email sungguhan)\n');
+    console.log("\n📧 [DEV MODE] Magic link login");
+    console.log("   To:     ", to);
+    console.log("   URL:    ", loginUrl);
+    if (businessName) console.log("   Bisnis: ", businessName);
+    console.log(
+      "   (Set RESEND_API_KEY di .env untuk kirim email sungguhan)\n",
+    );
     return { ok: true, dev: true };
   }
 
   const subject = businessName
     ? `Login Cus.site — ${businessName}`
-    : 'Login link Cus.site kamu';
+    : "Login link Cus.site kamu";
 
   const { error } = await client.emails.send({
     from: FROM_ADDRESS,
@@ -113,13 +115,13 @@ export async function sendWelcomeEmail({
   const client = getClient();
 
   if (!client) {
-    console.log('\n📧 [DEV MODE] Welcome email');
-    console.log('   To:                ', to);
-    console.log('   Bisnis:            ', businessName);
-    console.log('   Subdomain:         ', subdomain);
-    console.log('   Claim URL:         ', claimUrl);
-    console.log('   Permanent access:  ', permanentAccessUrl);
-    console.log('');
+    console.log("\n📧 [DEV MODE] Welcome email");
+    console.log("   To:                ", to);
+    console.log("   Bisnis:            ", businessName);
+    console.log("   Subdomain:         ", subdomain);
+    console.log("   Claim URL:         ", claimUrl);
+    console.log("   Permanent access:  ", permanentAccessUrl);
+    console.log("");
     return { ok: true, dev: true };
   }
 
@@ -168,7 +170,7 @@ function buildLoginLinkEmail({
           <tr>
             <td>
               <h1 style="margin:0 0 8px 0;font-size:20px;font-weight:600;color:#0f172a;">
-                ${businessName ? `Halo owner ${businessName}!` : 'Halo!'}
+                ${businessName ? `Halo owner ${businessName}!` : "Halo!"}
               </h1>
               <p style="margin:0 0 24px 0;font-size:15px;line-height:1.6;color:#475569;">
                 Klik tombol di bawah untuk login ke dashboard Cus.site. Link ini berlaku 15 menit dan hanya bisa dipakai sekali.
