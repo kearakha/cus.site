@@ -1,15 +1,16 @@
-'use server';
+"use server";
 
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { generateLoginToken, buildAccessLink } from '@/lib/auth';
-import { sendLoginLink } from '@/lib/email';
+import { z } from "zod";
+import { prisma } from "@/lib/db";
+import { generateLoginToken, buildAccessLink } from "@/lib/auth";
+import { sendLoginLink } from "@/lib/email";
+import { loginRatelimit } from "@/lib/ratelimit";
 
 const loginSchema = z.object({
   email: z
     .string()
-    .min(1, 'Email wajib diisi')
-    .email('Format email tidak valid')
+    .min(1, "Email wajib diisi")
+    .email("Format email tidak valid")
     .max(120)
     .transform((v) => v.toLowerCase().trim()),
 });
@@ -37,17 +38,25 @@ export type LoginResult =
 export async function loginWithEmailAction(
   formData: FormData,
 ): Promise<LoginResult> {
-  const raw = formData.get('email');
+  const raw = formData.get("email");
   const parsed = loginSchema.safeParse({ email: raw });
 
   if (!parsed.success) {
     return {
       success: false,
-      error: parsed.error.issues[0]?.message ?? 'Input tidak valid',
+      error: parsed.error.issues[0]?.message ?? "Input tidak valid",
     };
   }
 
   const email = parsed.data.email;
+
+  const { success: rlOk } = await loginRatelimit.limit(email);
+  if (!rlOk) {
+    return {
+      success: false,
+      error: "Terlalu banyak permintaan. Coba lagi dalam 15 menit.",
+    };
+  }
 
   // Cek apakah email terdaftar — tapi return success regardless supaya
   // attacker gak bisa enumerate email yang punya akun.
@@ -80,10 +89,10 @@ export async function loginWithEmailAction(
       ...(result.dev ? { devMagicLink: magicLink } : {}),
     };
   } catch (err) {
-    console.error('[loginWithEmailAction] send error:', err);
+    console.error("[loginWithEmailAction] send error:", err);
     return {
       success: false,
-      error: 'Gagal kirim email. Coba lagi nanti.',
+      error: "Gagal kirim email. Coba lagi nanti.",
     };
   }
 }
@@ -96,8 +105,10 @@ export async function loginWithEmailAction(
 export { buildAccessLink };
 
 function getBaseUrl(): string {
-  const root = (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'cus.site').toLowerCase();
+  const root = (
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN || "cus.site"
+  ).toLowerCase();
   const isLocal =
-    process.env.NODE_ENV !== 'production' || root.endsWith('.localhost');
-  return isLocal ? 'http://localhost:3000' : `https://${root}`;
+    process.env.NODE_ENV !== "production" || root.endsWith(".localhost");
+  return isLocal ? "http://localhost:3000" : `https://${root}`;
 }

@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 
 /**
  * Prisma Client Singleton
@@ -19,12 +20,12 @@ export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     log:
-      process.env.NODE_ENV === 'development'
-        ? ['query', 'error', 'warn']
-        : ['error'],
+      process.env.NODE_ENV === "development"
+        ? ["query", "error", "warn"]
+        : ["error"],
   });
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }
 
@@ -32,14 +33,17 @@ if (process.env.NODE_ENV !== 'production') {
  * Helper: cari Bisnis + KontenWebsite + Layanan sekaligus.
  * Dipakai di tenant page supaya 1 query aja (avoid N+1).
  */
-export async function getBisnisBySubdomain(subdomain: string) {
-  return prisma.bisnis.findUnique({
-    where: { subdomain },
-    include: {
-      kontenAI: true,
-      layanan: {
-        orderBy: { order: 'asc' },
-      },
-    },
-  });
+export function getBisnisBySubdomain(subdomain: string) {
+  return unstable_cache(
+    () =>
+      prisma.bisnis.findUnique({
+        where: { subdomain },
+        include: {
+          kontenAI: true,
+          layanan: { orderBy: { order: "asc" } },
+        },
+      }),
+    [`bisnis-${subdomain}`],
+    { revalidate: 60, tags: [`bisnis-${subdomain}`] },
+  )();
 }

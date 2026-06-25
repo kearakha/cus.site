@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { saveUpload, UploadError } from '@/lib/upload';
-import { OWNER_COOKIE_NAME } from '@/lib/auth';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { saveUpload, UploadError } from "@/lib/upload";
+import { OWNER_COOKIE_NAME } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import { uploadRatelimit } from "@/lib/ratelimit";
 
 /**
  * POST /api/upload
@@ -24,14 +25,23 @@ import { prisma } from '@/lib/db';
  * pakai folder bisnisId. Pembersihan "draft" bisa ditambah cron nanti.
  */
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
+  const ip = request.ip ?? request.headers.get("x-forwarded-for") ?? "unknown";
+  const { success: rlOk } = await uploadRatelimit.limit(ip);
+  if (!rlOk) {
+    return NextResponse.json(
+      { error: "Terlalu banyak upload. Coba lagi dalam 1 menit." },
+      { status: 429 },
+    );
+  }
+
   try {
     const formData = await request.formData();
-    const file = formData.get('file');
-    const explicitBisnisId = formData.get('bisnisId');
+    const file = formData.get("file");
+    const explicitBisnisId = formData.get("bisnisId");
 
     if (!(file instanceof File)) {
       return NextResponse.json(
@@ -44,7 +54,7 @@ export async function POST(request: NextRequest) {
     let targetId: string;
     const cookieToken = cookies().get(OWNER_COOKIE_NAME)?.value;
 
-    if (typeof explicitBisnisId === 'string' && explicitBisnisId.length > 0) {
+    if (typeof explicitBisnisId === "string" && explicitBisnisId.length > 0) {
       // Explicit bisnisId → verify ownership kalau ada session
       if (cookieToken) {
         const bisnis = await prisma.bisnis.findUnique({
@@ -53,22 +63,22 @@ export async function POST(request: NextRequest) {
         });
         if (!bisnis || bisnis.ownerToken !== cookieToken) {
           return NextResponse.json(
-            { error: 'Tidak punya akses ke bisnis ini' },
+            { error: "Tidak punya akses ke bisnis ini" },
             { status: 403 },
           );
         }
         targetId = bisnis.id;
       } else {
         // Tanpa session + explicit id = wizard mode → pakai folder draft
-        targetId = 'draft';
+        targetId = "draft";
       }
     } else if (cookieToken) {
       // Tanpa explicit id tapi ada session → gunakan draft (akan direlink)
       // Owner yang upload tanpa specify id = rare case, treat as draft
-      targetId = 'draft';
+      targetId = "draft";
     } else {
       // Anonymous wizard → draft
-      targetId = 'draft';
+      targetId = "draft";
     }
 
     const result = await saveUpload(file, targetId);
@@ -76,13 +86,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result);
   } catch (err) {
     if (err instanceof UploadError) {
-      const status = err.code === 'too_large' ? 413 : 400;
+      const status = err.code === "too_large" ? 413 : 400;
       return NextResponse.json({ error: err.message }, { status });
     }
-    console.error('[api/upload] error:', err);
-    return NextResponse.json(
-      { error: 'Gagal upload file' },
-      { status: 500 },
-    );
+    console.error("[api/upload] error:", err);
+    return NextResponse.json({ error: "Gagal upload file" }, { status: 500 });
   }
 }

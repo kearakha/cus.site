@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyLoginToken, setSessionEmail } from '@/lib/auth';
+import { NextRequest, NextResponse } from "next/server";
+import { verifyLoginToken, setSessionEmail } from "@/lib/auth";
+import { verifyRatelimit } from "@/lib/ratelimit";
 
 /**
  * GET /api/auth/verify?token=<raw>
@@ -17,29 +18,43 @@ import { verifyLoginToken, setSessionEmail } from '@/lib/auth';
  * Kalau token invalid → redirect ke /login?error=invalid
  */
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const token = request.nextUrl.searchParams.get('token');
-  const redirectTo = request.nextUrl.searchParams.get('redirect') || '/dashboard';
+  const ip = request.ip ?? request.headers.get("x-forwarded-for") ?? "unknown";
+  const { success: rlOk } = await verifyRatelimit.limit(ip);
+  if (!rlOk) {
+    return NextResponse.redirect(
+      new URL("/login?error=too_many_requests", request.url),
+    );
+  }
+
+  const token = request.nextUrl.searchParams.get("token");
+  const redirectTo =
+    request.nextUrl.searchParams.get("redirect") || "/dashboard";
 
   if (!token) {
-    return NextResponse.redirect(new URL('/login?error=missing_token', request.url));
+    return NextResponse.redirect(
+      new URL("/login?error=missing_token", request.url),
+    );
   }
 
   const result = await verifyLoginToken(token);
 
   if (!result) {
-    return NextResponse.redirect(new URL('/login?error=invalid_or_expired', request.url));
+    return NextResponse.redirect(
+      new URL("/login?error=invalid_or_expired", request.url),
+    );
   }
 
   setSessionEmail(result.email);
 
   // Sanitize redirect target — pastikan path internal saja
-  const safePath = redirectTo.startsWith('/') && !redirectTo.startsWith('//')
-    ? redirectTo
-    : '/dashboard';
+  const safePath =
+    redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+      ? redirectTo
+      : "/dashboard";
 
   return NextResponse.redirect(new URL(safePath, request.url), { status: 303 });
 }
