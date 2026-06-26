@@ -34,3 +34,4 @@ public/uploads/
 # TypeScript build cache
 tsconfig.tsbuildinfo
 
+.env*
