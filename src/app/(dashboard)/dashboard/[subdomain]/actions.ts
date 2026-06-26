@@ -1,13 +1,15 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
+import { headers } from "next/headers";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { isOwner } from "@/lib/auth";
+import { isOwner, getSessionEmail } from "@/lib/auth";
 import { Prisma } from "@prisma/client";
 import { geocodeAlamat } from "@/lib/geocode";
 import { generateCusWebsite } from "@/lib/openai";
 import type { LayananItem, WizardInput } from "@/lib/schemas/wizard";
+import { aiRatelimit } from "@/lib/ratelimit";
 
 // === Update konten schema ===
 
@@ -298,9 +300,20 @@ export async function regenerateAIContentAction(
     layanan,
   };
 
-  // 3. Call AI — panggil full generation (cost sama kayak wizard,
-  //    tapi gak ngeganggu flow edit. Bisa di-optimize jadi prompt
-  //    section-specific nanti kalo perlu hemat token).
+  // 3. Rate limit AI per email/IP (5/jam)
+  const sessionEmail = getSessionEmail();
+  const ip =
+    headers().get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  const rlId = sessionEmail ?? ip;
+  const { success: rlOk } = await aiRatelimit.limit(rlId);
+  if (!rlOk) {
+    return {
+      success: false,
+      error: "Terlalu banyak regenerate. Coba lagi dalam 1 jam.",
+    };
+  }
+
+  // 4. Call AI
   const ai = await generateCusWebsite(wizardInput);
   if (!ai.success) {
     return { success: false, error: `AI gagal: ${ai.error}` };

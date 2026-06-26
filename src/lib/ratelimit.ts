@@ -8,6 +8,7 @@ let _redis: Redis | undefined;
 let _loginRl: Ratelimit | undefined;
 let _verifyRl: Ratelimit | undefined;
 let _uploadRl: Ratelimit | undefined;
+let _aiRl: Ratelimit | undefined;
 
 function getRedis(): Redis {
   return (_redis ??= new Redis({
@@ -43,5 +44,15 @@ export const uploadRatelimit = {
       redis: getRedis(),
       limiter: Ratelimit.slidingWindow(10, "1 m"),
       prefix: "rl:upload",
+    })).limit(id),
+};
+
+/** 5 AI generation per jam per identifier (email atau IP) */
+export const aiRatelimit = {
+  limit: (id: string) =>
+    (_aiRl ??= new Ratelimit({
+      redis: getRedis(),
+      limiter: Ratelimit.slidingWindow(5, "1 h"),
+      prefix: "rl:ai",
     })).limit(id),
 };

@@ -1,6 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { generateCusWebsite } from "@/lib/openai";
 import { wizardInputSchema } from "@/lib/schemas/wizard";
@@ -8,6 +9,7 @@ import { Prisma } from "@prisma/client";
 import { buildAccessLink, setSessionCookies } from "@/lib/auth";
 import { sendWelcomeEmail } from "@/lib/email";
 import { geocodeAlamat } from "@/lib/geocode";
+import { aiRatelimit } from "@/lib/ratelimit";
 
 export type SubmitResult =
   | { success: true; subdomain: string; accessLink: string }
@@ -42,11 +44,23 @@ export async function submitBisnisAction(
       };
     }
 
-    // 3. Geocode alamat → koordinat (best-effort, jangan gagalkan wizard kalau gagal)
-    const geo = await geocodeAlamat(data.lokasi);
+    // 3. Rate limit AI per email (5/jam) — cegah spam generate yang mahal
+    const ip =
+      headers().get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+    const rlId = data.email || ip;
+    const { success: rlOk } = await aiRatelimit.limit(rlId);
+    if (!rlOk) {
+      return {
+        success: false,
+        error: "Terlalu banyak percobaan. Coba lagi dalam 1 jam.",
+      };
+    }
 
-    // 4. Generate konten via OpenAI (paling lama, ~10-30 detik)
-    const ai = await generateCusWebsite(data);
+    // 4. Geocode + AI generate berjalan parallel (keduanya independent)
+    const [geo, ai] = await Promise.all([
+      geocodeAlamat(data.lokasi),
+      generateCusWebsite(data),
+    ]);
 
     if (!ai.success) {
       // Log raw response untuk debugging (server side)
