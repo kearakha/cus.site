@@ -1,8 +1,14 @@
-import 'server-only';
-import { cookies } from 'next/headers';
-import { createHash, randomBytes, randomUUID } from 'node:crypto';
-import { prisma } from './db';
-import { sendWelcomeEmail } from './email';
+import "server-only";
+import { cookies } from "next/headers";
+import {
+  createHash,
+  createHmac,
+  randomBytes,
+  randomUUID,
+  timingSafeEqual,
+} from "node:crypto";
+import { prisma } from "./db";
+import { sendWelcomeEmail } from "./email";
 
 /**
  * Auth model — 2 cookies parallel:
@@ -30,39 +36,79 @@ import { sendWelcomeEmail } from './email';
  * 5. ROTATE ownerToken → email link permanen baru ke owner
  * 6. Mark ownerTokenUsedAt = now() → link lama invalid permanent
  */
-const COOKIE_NAME = 'cus_owner';
-const SESSION_COOKIE_NAME = 'cus_session';
+const COOKIE_NAME = "cus_owner";
+const SESSION_COOKIE_NAME = "cus_session";
 
 const LOGIN_TOKEN_TTL_MS = 15 * 60 * 1000; // 15 menit
 
 // === Cookie helpers (shared config) ===
 
 function getRootDomain(): string {
-  return (process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'cus.site').toLowerCase();
+  return (process.env.NEXT_PUBLIC_ROOT_DOMAIN || "cus.site").toLowerCase();
 }
 
 function isLocalEnv(): boolean {
   const root = getRootDomain();
-  return process.env.NODE_ENV !== 'production' || root.endsWith('.localhost');
+  return process.env.NODE_ENV !== "production" || root.endsWith(".localhost");
 }
 
 function getCookieDomain(): string {
-  return isLocalEnv() ? 'localhost' : `.${getRootDomain()}`;
+  return isLocalEnv() ? "localhost" : `.${getRootDomain()}`;
 }
 
 function getBaseUrl(): string {
-  return isLocalEnv() ? 'http://localhost:3000' : `https://${getRootDomain()}`;
+  return isLocalEnv() ? "http://localhost:3000" : `https://${getRootDomain()}`;
 }
 
 function cookieOptions(maxAgeSeconds: number) {
   return {
     httpOnly: true,
     secure: !isLocalEnv(),
-    sameSite: 'lax' as const,
-    path: '/',
+    sameSite: "lax" as const,
+    path: "/",
     maxAge: maxAgeSeconds,
     domain: getCookieDomain(),
   };
+}
+
+// === Cookie signing (HMAC-SHA256) ===
+// Cegah user edit cookie value untuk impersonate email lain.
+// Set SESSION_SECRET di env. Dev fallback ke string statis (warn di log).
+
+function getSessionSecret(): string {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret && process.env.NODE_ENV === "production") {
+    console.error(
+      "[auth] SESSION_SECRET tidak di-set di production! Cookie session tidak aman.",
+    );
+  }
+  return secret ?? "dev-insecure-secret";
+}
+
+function signCookieValue(value: string): string {
+  const mac = createHmac("sha256", getSessionSecret())
+    .update(value)
+    .digest("base64url");
+  return `${value}.${mac}`;
+}
+
+function verifyCookieValue(signed: string): string | null {
+  const lastDot = signed.lastIndexOf(".");
+  if (lastDot === -1) return null;
+  const value = signed.slice(0, lastDot);
+  const mac = signed.slice(lastDot + 1);
+  const expected = createHmac("sha256", getSessionSecret())
+    .update(value)
+    .digest("base64url");
+  try {
+    const macBuf = Buffer.from(mac, "base64url");
+    const expectedBuf = Buffer.from(expected, "base64url");
+    if (macBuf.length !== expectedBuf.length) return null;
+    if (!timingSafeEqual(macBuf, expectedBuf)) return null;
+  } catch {
+    return null;
+  }
+  return value;
 }
 
 /**
@@ -81,7 +127,7 @@ export function setSessionCookies(email: string, ownerToken: string): void {
   const oneYear = 60 * 60 * 24 * 365;
   cookies().set({
     name: SESSION_COOKIE_NAME,
-    value: email,
+    value: signCookieValue(email.toLowerCase().trim()),
     ...cookieOptions(oneYear),
   });
   cookies().set({
@@ -100,7 +146,7 @@ export function setSessionEmail(email: string): void {
   const oneYear = 60 * 60 * 24 * 365;
   cookies().set({
     name: SESSION_COOKIE_NAME,
-    value: email,
+    value: signCookieValue(email.toLowerCase().trim()),
     ...cookieOptions(oneYear),
   });
 }
@@ -113,7 +159,7 @@ export function clearSessionCookies(): void {
 // === Login Token (magic link) ===
 
 function sha256(input: string): string {
-  return createHash('sha256').update(input).digest('hex');
+  return createHash("sha256").update(input).digest("hex");
 }
 
 /**
@@ -125,7 +171,7 @@ export async function generateLoginToken(email: string): Promise<{
   rawToken: string;
   expiresAt: Date;
 }> {
-  const rawToken = randomBytes(32).toString('base64url');
+  const rawToken = randomBytes(32).toString("base64url");
   const tokenHash = sha256(rawToken);
   const expiresAt = new Date(Date.now() + LOGIN_TOKEN_TTL_MS);
 
@@ -177,10 +223,7 @@ export async function verifyLoginToken(
 export async function cleanupLoginTokens(): Promise<number> {
   const result = await prisma.loginToken.deleteMany({
     where: {
-      OR: [
-        { usedAt: { not: null } },
-        { expiresAt: { lt: new Date() } },
-      ],
+      OR: [{ usedAt: { not: null } }, { expiresAt: { lt: new Date() } }],
     },
   });
   return result.count;
@@ -202,7 +245,9 @@ export type ClaimResult = {
   newOwnerToken: string;
 };
 
-export async function claimOwnerToken(rawToken: string): Promise<ClaimResult | null> {
+export async function claimOwnerToken(
+  rawToken: string,
+): Promise<ClaimResult | null> {
   if (!rawToken) return null;
 
   // Atomic claim: hanya update kalau ownerTokenUsedAt masih null
@@ -261,13 +306,18 @@ export async function rotateOwnerToken(bisnisId: string): Promise<string> {
  * Dipakai setelah claim selesai — link baru sudah ter-rotate.
  */
 export async function emailPermanentAccessLink(
-  bisnisId: string,
+  subdomain: string,
 ): Promise<{ ok: boolean; error?: string }> {
   const bisnis = await prisma.bisnis.findUnique({
-    where: { id: bisnisId },
-    select: { ownerToken: true, email: true, subdomain: true, namaBisnis: true },
+    where: { subdomain },
+    select: {
+      ownerToken: true,
+      email: true,
+      subdomain: true,
+      namaBisnis: true,
+    },
   });
-  if (!bisnis) return { ok: false, error: 'Bisnis tidak ditemukan' };
+  if (!bisnis) return { ok: false, error: "Bisnis tidak ditemukan" };
 
   const accessLink = buildAccessLink(bisnis.ownerToken);
 
@@ -283,7 +333,7 @@ export async function emailPermanentAccessLink(
   } catch (err) {
     return {
       ok: false,
-      error: err instanceof Error ? err.message : 'Gagal kirim email',
+      error: err instanceof Error ? err.message : "Gagal kirim email",
     };
   }
 }
@@ -293,7 +343,8 @@ export async function emailPermanentAccessLink(
 export function getSessionEmail(): string | null {
   try {
     const c = cookies().get(SESSION_COOKIE_NAME);
-    return c?.value ?? null;
+    if (!c?.value) return null;
+    return verifyCookieValue(c.value);
   } catch {
     return null;
   }
@@ -314,9 +365,15 @@ export function getOwnerTokenFromCookie(): string | null {
  * Cek apakah visitor adalah owner dari bisnis tertentu.
  * Multi-strategy: cek session email match ATAU ownerToken match.
  */
-export function isOwner(bisnis: { email: string; ownerToken: string }): boolean {
+export function isOwner(bisnis: {
+  email: string;
+  ownerToken: string;
+}): boolean {
   const sessionEmail = getSessionEmail();
-  if (sessionEmail && sessionEmail.toLowerCase() === bisnis.email.toLowerCase()) {
+  if (
+    sessionEmail &&
+    sessionEmail.toLowerCase() === bisnis.email.toLowerCase()
+  ) {
     return true;
   }
 
@@ -347,7 +404,7 @@ export async function getOwnedBusinesses() {
         kontenAI: { select: { heroHeadline: true, accentColor: true } },
         _count: { select: { layanan: true } },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
@@ -359,7 +416,7 @@ export async function getOwnedBusinesses() {
         kontenAI: { select: { heroHeadline: true, accentColor: true } },
         _count: { select: { layanan: true } },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
