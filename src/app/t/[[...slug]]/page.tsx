@@ -22,6 +22,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const bisnis = await getBisnisBySubdomain(subdomain);
   if (!bisnis || !bisnis.kontenAI || !bisnis.published) return {};
 
+  const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "cus.site";
+  const ogImageUrl = `https://${ROOT_DOMAIN}/api/og?subdomain=${subdomain}`;
+
   return {
     title: bisnis.kontenAI.seoTitle,
     description: bisnis.kontenAI.seoDescription,
@@ -32,6 +35,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: bisnis.namaBisnis,
       type: "website",
       locale: "id_ID",
+      images: [{ url: ogImageUrl, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: bisnis.kontenAI.heroHeadline,
+      description: bisnis.kontenAI.heroSubtext,
+      images: [ogImageUrl],
     },
     robots: { index: true, follow: true },
   };
