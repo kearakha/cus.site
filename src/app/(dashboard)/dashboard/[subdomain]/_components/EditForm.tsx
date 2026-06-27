@@ -1,21 +1,27 @@
-'use client';
+"use client";
 
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
-import { Check, Sparkles, Loader2 } from 'lucide-react';
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Check, Sparkles, Loader2, Globe, EyeOff } from "lucide-react";
 import {
   updateKontenAction,
   regenerateAIContentAction,
+  togglePublishedAction,
   type UpdateKontenInput,
   type RegenerateSection,
-} from '../actions';
-import { ImageUploader } from '@/components/ImageUploader';
+} from "../actions";
+import { ImageUploader } from "@/components/ImageUploader";
 
-type ServiceItem = { title: string; description: string; imageUrl?: string | null };
+type ServiceItem = {
+  title: string;
+  description: string;
+  imageUrl?: string | null;
+};
 
 type Props = {
   subdomain: string;
   bisnisId: string;
+  published: boolean;
   initialData: {
     namaBisnis: string;
     logoUrl?: string | null;
@@ -39,64 +45,92 @@ type Props = {
   };
 };
 
-const EMPTY_SERVICE: ServiceItem = { title: '', description: '', imageUrl: '' };
+const EMPTY_SERVICE: ServiceItem = { title: "", description: "", imageUrl: "" };
 
 // Preset warna: 3 untuk casual, 3 untuk professional, 3 untuk elegant
 const COLOR_PRESETS = [
-  { hex: 'f59e0b', label: 'Amber', group: 'Casual' },
-  { hex: 'ea580c', label: 'Orange', group: 'Casual' },
-  { hex: 'dc2626', label: 'Red', group: 'Casual' },
-  { hex: '2563eb', label: 'Blue', group: 'Professional' },
-  { hex: '1e40af', label: 'Deep Blue', group: 'Professional' },
-  { hex: '0f766e', label: 'Teal', group: 'Professional' },
-  { hex: 'a16207', label: 'Gold', group: 'Elegant' },
-  { hex: '92400e', label: 'Bronze', group: 'Elegant' },
-  { hex: '78350f', label: 'Dark Earth', group: 'Elegant' },
+  { hex: "f59e0b", label: "Amber", group: "Casual" },
+  { hex: "ea580c", label: "Orange", group: "Casual" },
+  { hex: "dc2626", label: "Red", group: "Casual" },
+  { hex: "2563eb", label: "Blue", group: "Professional" },
+  { hex: "1e40af", label: "Deep Blue", group: "Professional" },
+  { hex: "0f766e", label: "Teal", group: "Professional" },
+  { hex: "a16207", label: "Gold", group: "Elegant" },
+  { hex: "92400e", label: "Bronze", group: "Elegant" },
+  { hex: "78350f", label: "Dark Earth", group: "Elegant" },
 ];
 
 const HARI_OPTIONS = [
-  'Setiap Hari',
-  'Senin - Sabtu',
-  'Senin - Jumat',
-  'Senin - Minggu',
-  'Weekend Saja',
+  "Setiap Hari",
+  "Senin - Sabtu",
+  "Senin - Jumat",
+  "Senin - Minggu",
+  "Weekend Saja",
 ] as const;
 
-export function EditForm({ subdomain, bisnisId, initialData }: Props) {
+export function EditForm({
+  subdomain,
+  bisnisId,
+  published,
+  initialData,
+}: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [state, setState] = useState<{
-    status: 'idle' | 'success' | 'error';
+    status: "idle" | "success" | "error";
     message?: string;
-  }>({ status: 'idle' });
+  }>({ status: "idle" });
+
+  // === Published state ===
+  const [isPublished, setIsPublished] = useState(published);
+  const [publishPending, setPublishPending] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
+
+  const handleTogglePublished = async () => {
+    setPublishPending(true);
+    setPublishError(null);
+    const result = await togglePublishedAction(subdomain);
+    if (result.success) {
+      setIsPublished(result.published);
+    } else {
+      setPublishError(result.error);
+    }
+    setPublishPending(false);
+  };
 
   // Form state
   const [namaBisnis, setNamaBisnis] = useState(initialData.namaBisnis);
-  const [logoUrl, setLogoUrl] = useState(initialData.logoUrl || '');
-  const [coverUrl, setCoverUrl] = useState(initialData.coverUrl || '');
+  const [logoUrl, setLogoUrl] = useState(initialData.logoUrl || "");
+  const [coverUrl, setCoverUrl] = useState(initialData.coverUrl || "");
   const [lokasi, setLokasi] = useState(initialData.lokasi);
   const [whatsapp, setWhatsapp] = useState(initialData.whatsapp);
-  const [instagram, setInstagram] = useState(initialData.instagram || '');
-  const [tiktok, setTiktok] = useState(initialData.tiktok || '');
-  const [facebook, setFacebook] = useState(initialData.facebook || '');
-  const [jamBuka, setJamBuka] = useState(initialData.jamBuka || '');
-  const [jamTutup, setJamTutup] = useState(initialData.jamTutup || '');
+  const [instagram, setInstagram] = useState(initialData.instagram || "");
+  const [tiktok, setTiktok] = useState(initialData.tiktok || "");
+  const [facebook, setFacebook] = useState(initialData.facebook || "");
+  const [jamBuka, setJamBuka] = useState(initialData.jamBuka || "");
+  const [jamTutup, setJamTutup] = useState(initialData.jamTutup || "");
   const [hariOperasional, setHariOperasional] = useState(
-    (initialData.hariOperasional as typeof HARI_OPTIONS[number]) || '',
+    (initialData.hariOperasional as (typeof HARI_OPTIONS)[number]) || "",
   );
   const [heroHeadline, setHeroHeadline] = useState(initialData.heroHeadline);
   const [heroSubtext, setHeroSubtext] = useState(initialData.heroSubtext);
-  const [aboutParagraph, setAboutParagraph] = useState(initialData.aboutParagraph);
+  const [aboutParagraph, setAboutParagraph] = useState(
+    initialData.aboutParagraph,
+  );
   const [ctaText, setCtaText] = useState(initialData.ctaText);
   const [seoTitle, setSeoTitle] = useState(initialData.seoTitle);
-  const [seoDescription, setSeoDescription] = useState(initialData.seoDescription);
+  const [seoDescription, setSeoDescription] = useState(
+    initialData.seoDescription,
+  );
   const [accentColor, setAccentColor] = useState(initialData.accentColor);
   const [services, setServices] = useState<ServiceItem[]>(
     initialData.services.length > 0 ? initialData.services : [EMPTY_SERVICE],
   );
 
   // === AI Regenerate state ===
-  const [regenerating, setRegenerating] = useState<RegenerateSection | null>(null);
+  const [regenerating, setRegenerating] = useState<RegenerateSection | null>(
+    null,
+  );
   const [regenError, setRegenError] = useState<string | null>(null);
   const [regenToast, setRegenToast] = useState<string | null>(null);
 
@@ -104,8 +138,8 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
     if (regenerating) return;
     if (
       !window.confirm(
-        section === 'all'
-          ? 'Generate ulang SEMUA konten (hero, about, layanan) dengan AI? Field SEO & warna tidak berubah. Konten yang sekarang di form akan diganti.'
+        section === "all"
+          ? "Generate ulang SEMUA konten (hero, about, layanan) dengan AI? Field SEO & warna tidak berubah. Konten yang sekarang di form akan diganti."
           : `Generate ulang section ${section} dengan AI? Konten yang sekarang di form akan diganti.`,
       )
     ) {
@@ -126,26 +160,27 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
       // Apply ke form state (kecuali imageUrl — itu tetap)
       if (result.data.heroHeadline) setHeroHeadline(result.data.heroHeadline);
       if (result.data.heroSubtext) setHeroSubtext(result.data.heroSubtext);
-      if (result.data.aboutParagraph) setAboutParagraph(result.data.aboutParagraph);
+      if (result.data.aboutParagraph)
+        setAboutParagraph(result.data.aboutParagraph);
       if (result.data.services) {
         // Preserve imageUrl existing per index
         setServices((prev) =>
           result.data.services!.map((aiSvc, i) => ({
             title: aiSvc.title,
             description: aiSvc.description,
-            imageUrl: prev[i]?.imageUrl || '',
+            imageUrl: prev[i]?.imageUrl || "",
           })),
         );
       }
 
       setRegenToast(
-        section === 'all'
-          ? 'Semua konten di-regenerate! Review lalu klik Simpan.'
+        section === "all"
+          ? "Semua konten di-regenerate! Review lalu klik Simpan."
           : `Section ${section} di-regenerate! Review lalu klik Simpan.`,
       );
       setTimeout(() => setRegenToast(null), 4000);
     } catch (err) {
-      setRegenError(err instanceof Error ? err.message : 'Gagal generate');
+      setRegenError(err instanceof Error ? err.message : "Gagal generate");
     } finally {
       setRegenerating(null);
     }
@@ -182,7 +217,7 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setState({ status: 'idle' });
+    setState({ status: "idle" });
 
     startTransition(async () => {
       const payload: UpdateKontenInput = {
@@ -208,24 +243,71 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
         services: services.map((s) => ({
           title: s.title,
           description: s.description,
-          imageUrl: s.imageUrl || '',
+          imageUrl: s.imageUrl || "",
         })),
       };
 
       const result = await updateKontenAction(payload);
 
       if (!result.success) {
-        setState({ status: 'error', message: result.error });
+        setState({ status: "error", message: result.error });
         return;
       }
 
-      setState({ status: 'success', message: 'Perubahan tersimpan!' });
+      setState({ status: "success", message: "Perubahan tersimpan!" });
       router.refresh();
     });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* === Status Published === */}
+      <div
+        className={`rounded-2xl border p-4 flex items-center justify-between gap-4 ${
+          isPublished
+            ? "bg-emerald-50 border-emerald-200"
+            : "bg-amber-50 border-amber-200"
+        }`}
+      >
+        <div className="flex items-center gap-3">
+          {isPublished ? (
+            <Globe className="h-5 w-5 text-emerald-600 flex-shrink-0" />
+          ) : (
+            <EyeOff className="h-5 w-5 text-amber-600 flex-shrink-0" />
+          )}
+          <div>
+            <p
+              className={`text-sm font-semibold ${isPublished ? "text-emerald-900" : "text-amber-900"}`}
+            >
+              {isPublished
+                ? "Website aktif & bisa diakses publik"
+                : "Website disembunyikan dari publik"}
+            </p>
+            {publishError && (
+              <p className="text-xs text-red-600 mt-0.5">{publishError}</p>
+            )}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={handleTogglePublished}
+          disabled={publishPending}
+          className={`flex-shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:opacity-50 ${
+            isPublished
+              ? "bg-amber-500 hover:bg-amber-400 text-white"
+              : "bg-emerald-600 hover:bg-emerald-500 text-white"
+          }`}
+        >
+          {publishPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : isPublished ? (
+            "Sembunyikan"
+          ) : (
+            "Aktifkan"
+          )}
+        </button>
+      </div>
+
       {/* === AI Regenerate Banner === */}
       <div className="rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 text-white p-5 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -243,11 +325,11 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
           </div>
           <button
             type="button"
-            onClick={() => handleRegenerate('all')}
+            onClick={() => handleRegenerate("all")}
             disabled={regenerating !== null}
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-400 px-4 py-2.5 text-sm font-semibold text-slate-900 transition disabled:opacity-50 flex-shrink-0"
           >
-            {regenerating === 'all' ? (
+            {regenerating === "all" ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Generating...
@@ -269,7 +351,10 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
       </div>
 
       {/* Branding */}
-      <Section title="Branding" desc="Logo & cover yang muncul di website kamu.">
+      <Section
+        title="Branding"
+        desc="Logo & cover yang muncul di website kamu."
+      >
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <ImageUploader
             label="Logo"
@@ -293,13 +378,17 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
           </div>
         </div>
         <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-          ⚠ Untuk MVP, upload dari dashboard masuk folder sementara. Setelah simpan,
-          file di-relink otomatis ke folder bisnis kamu. Kalau gagal, ulangi upload lalu simpan ulang.
+          ⚠ Untuk MVP, upload dari dashboard masuk folder sementara. Setelah
+          simpan, file di-relink otomatis ke folder bisnis kamu. Kalau gagal,
+          ulangi upload lalu simpan ulang.
         </p>
       </Section>
 
       {/* Bisnis & Kontak */}
-      <Section title="Bisnis & Kontak" desc="Info dasar yang muncul di website.">
+      <Section
+        title="Bisnis & Kontak"
+        desc="Info dasar yang muncul di website."
+      >
         <Field
           label="Nama Bisnis"
           hint={hints.namaBisnis}
@@ -323,23 +412,34 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
       </Section>
 
       {/* Operasional */}
-      <Section title="Jam Operasional" desc="Tampil di section kontak. Opsional.">
+      <Section
+        title="Jam Operasional"
+        desc="Tampil di section kontak. Opsional."
+      >
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Hari</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Hari
+            </label>
             <select
               value={hariOperasional}
-              onChange={(e) => setHariOperasional(e.target.value as typeof hariOperasional)}
+              onChange={(e) =>
+                setHariOperasional(e.target.value as typeof hariOperasional)
+              }
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
             >
               <option value="">Pilih...</option>
               {HARI_OPTIONS.map((h) => (
-                <option key={h} value={h}>{h}</option>
+                <option key={h} value={h}>
+                  {h}
+                </option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Jam Buka</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Jam Buka
+            </label>
             <input
               type="time"
               value={jamBuka}
@@ -348,7 +448,9 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Jam Tutup</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Jam Tutup
+            </label>
             <input
               type="time"
               value={jamTutup}
@@ -360,12 +462,19 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
       </Section>
 
       {/* Social Media */}
-      <Section title="Social Media" desc="Username saja (tanpa @). Otomatis dijadikan link.">
+      <Section
+        title="Social Media"
+        desc="Username saja (tanpa @). Otomatis dijadikan link."
+      >
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Instagram</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Instagram
+            </label>
             <div className="flex items-stretch">
-              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">@</span>
+              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">
+                @
+              </span>
               <input
                 type="text"
                 value={instagram}
@@ -376,9 +485,13 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">TikTok</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              TikTok
+            </label>
             <div className="flex items-stretch">
-              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">@</span>
+              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">
+                @
+              </span>
               <input
                 type="text"
                 value={tiktok}
@@ -389,7 +502,9 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Facebook</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Facebook
+            </label>
             <input
               type="text"
               value={facebook}
@@ -425,8 +540,8 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
                   onClick={() => setAccentColor(p.hex)}
                   className={`group flex items-center gap-2 rounded-lg border-2 px-2 py-1.5 text-left transition ${
                     accentColor === p.hex
-                      ? 'border-slate-900 bg-slate-50'
-                      : 'border-slate-200 hover:border-slate-300'
+                      ? "border-slate-900 bg-slate-50"
+                      : "border-slate-200 hover:border-slate-300"
                   }`}
                   title={`${p.group}: ${p.label}`}
                 >
@@ -450,14 +565,20 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
                 type="text"
                 value={accentColor}
                 onChange={(e) =>
-                  setAccentColor(e.target.value.toLowerCase().replace(/[^0-9a-f]/g, '').slice(0, 6))
+                  setAccentColor(
+                    e.target.value
+                      .toLowerCase()
+                      .replace(/[^0-9a-f]/g, "")
+                      .slice(0, 6),
+                  )
                 }
                 placeholder="f59e0b"
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-mono focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
               />
               {accentColor.length > 0 && accentColor.length !== 6 && (
                 <p className="mt-1 text-xs text-amber-600">
-                  Hex color harus tepat 6 karakter (saat ini: {accentColor.length})
+                  Hex color harus tepat 6 karakter (saat ini:{" "}
+                  {accentColor.length})
                 </p>
               )}
             </div>
@@ -472,8 +593,8 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
         action={
           <RegenerateSectionButton
             section="hero"
-            loading={regenerating === 'hero'}
-            onClick={() => handleRegenerate('hero')}
+            loading={regenerating === "hero"}
+            onClick={() => handleRegenerate("hero")}
           />
         }
       >
@@ -504,8 +625,8 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
         action={
           <RegenerateSectionButton
             section="about"
-            loading={regenerating === 'about'}
-            onClick={() => handleRegenerate('about')}
+            loading={regenerating === "about"}
+            onClick={() => handleRegenerate("about")}
           />
         }
       >
@@ -526,8 +647,8 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
         action={
           <RegenerateSectionButton
             section="services"
-            loading={regenerating === 'services'}
-            onClick={() => handleRegenerate('services')}
+            loading={regenerating === "services"}
+            onClick={() => handleRegenerate("services")}
           />
         }
       >
@@ -556,7 +677,7 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
                 <div className="sm:col-span-1">
                   <ImageUploader
                     label="Foto"
-                    value={svc.imageUrl || ''}
+                    value={svc.imageUrl || ""}
                     onChange={(url) => updateService(i, { imageUrl: url })}
                     aspect="square"
                     hint="Opsional."
@@ -568,7 +689,9 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
                     type="text"
                     placeholder="Judul layanan"
                     value={svc.title}
-                    onChange={(e) => updateService(i, { title: e.target.value })}
+                    onChange={(e) =>
+                      updateService(i, { title: e.target.value })
+                    }
                     className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
                   />
                   <textarea
@@ -618,16 +741,18 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
       </Section>
 
       {/* Feedback */}
-      {state.status === 'error' && (
+      {state.status === "error" && (
         <div className="rounded-lg bg-red-50 border border-red-200 p-4">
           <p className="text-sm font-medium text-red-900">Gagal menyimpan</p>
           <p className="text-sm text-red-700 mt-1">{state.message}</p>
         </div>
       )}
-      {state.status === 'success' && (
+      {state.status === "success" && (
         <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4 inline-flex items-center gap-2">
           <Check className="h-4 w-4 text-emerald-600" strokeWidth={2.5} />
-          <p className="text-sm font-medium text-emerald-900">{state.message}</p>
+          <p className="text-sm font-medium text-emerald-900">
+            {state.message}
+          </p>
         </div>
       )}
 
@@ -646,7 +771,7 @@ export function EditForm({ subdomain, bisnisId, initialData }: Props) {
           disabled={isPending || accentColor.length !== 6}
           className="inline-flex items-center justify-center rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 transition disabled:opacity-50"
         >
-          {isPending ? 'Menyimpan...' : 'Simpan Perubahan'}
+          {isPending ? "Menyimpan..." : "Simpan Perubahan"}
         </button>
       </div>
     </form>
@@ -694,10 +819,10 @@ function RegenerateSectionButton({
   onClick: () => void;
 }) {
   const labels: Record<RegenerateSection, string> = {
-    hero: 'Buat Ulang Hero',
-    about: 'Buat Ulang About',
-    services: 'Buat Ulang Layanan',
-    all: 'Generate Ulang Semua',
+    hero: "Buat Ulang Hero",
+    about: "Buat Ulang About",
+    services: "Buat Ulang Layanan",
+    all: "Generate Ulang Semua",
   };
   return (
     <button
@@ -721,28 +846,39 @@ type FieldProps = {
   hint: { used: number; max: number };
   value: string;
   onChange: (v: string) => void;
-  as?: 'input' | 'textarea';
+  as?: "input" | "textarea";
   rows?: number;
   placeholder?: string;
   hint2?: string;
 };
 
-function Field({ label, hint, value, onChange, as = 'input', rows = 3, placeholder, hint2 }: FieldProps) {
+function Field({
+  label,
+  hint,
+  value,
+  onChange,
+  as = "input",
+  rows = 3,
+  placeholder,
+  hint2,
+}: FieldProps) {
   const overLimit = hint.used > hint.max;
   const inputClass =
-    'w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10';
+    "w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10";
 
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
-        <label className="block text-sm font-medium text-slate-700">{label}</label>
+        <label className="block text-sm font-medium text-slate-700">
+          {label}
+        </label>
         <span
-          className={`text-xs ${overLimit ? 'text-red-600 font-semibold' : 'text-slate-400'}`}
+          className={`text-xs ${overLimit ? "text-red-600 font-semibold" : "text-slate-400"}`}
         >
           {hint.used}/{hint.max}
         </span>
       </div>
-      {as === 'input' ? (
+      {as === "input" ? (
         <input
           type="text"
           value={value}

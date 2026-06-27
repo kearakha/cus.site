@@ -112,6 +112,7 @@ export default async function EditBisnisPage({ params }: Props) {
       <EditForm
         subdomain={bisnis.subdomain}
         bisnisId={bisnis.id}
+        published={bisnis.published}
         initialData={{
           namaBisnis: bisnis.namaBisnis,
           logoUrl: bisnis.logoUrl,

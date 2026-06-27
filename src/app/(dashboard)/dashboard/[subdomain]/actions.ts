@@ -342,6 +342,43 @@ export async function regenerateAIContentAction(
   };
 }
 
+// === Toggle published ===
+
+export type TogglePublishedResult =
+  | { success: true; published: boolean }
+  | { success: false; error: string };
+
+export async function togglePublishedAction(
+  subdomain: string,
+): Promise<TogglePublishedResult> {
+  const subSchema = z.string().min(3).max(32);
+  const subResult = subSchema.safeParse(subdomain);
+  if (!subResult.success) {
+    return { success: false, error: "Subdomain tidak valid" };
+  }
+
+  const bisnis = await prisma.bisnis.findUnique({
+    where: { subdomain: subResult.data },
+    select: { id: true, email: true, ownerToken: true, published: true },
+  });
+
+  if (!bisnis) return { success: false, error: "Bisnis tidak ditemukan." };
+  if (!isOwner(bisnis))
+    return { success: false, error: "Kamu bukan owner bisnis ini." };
+
+  const next = !bisnis.published;
+  await prisma.bisnis.update({
+    where: { id: bisnis.id },
+    data: { published: next },
+  });
+
+  revalidateTag(`bisnis-${subResult.data}`);
+  revalidatePath(`/t/${subResult.data}`);
+  revalidatePath(`/dashboard/${subResult.data}`);
+
+  return { success: true, published: next };
+}
+
 // === Hapus bisnis ===
 
 export type DeleteResult =
