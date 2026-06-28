@@ -68,6 +68,11 @@ model Bisnis {
   latitude   Float?
   longitude  Float?
 
+  /// Custom domain klien (opsional). Contoh: "kopisrawung.com".
+  /// Kalau di-set, middleware akan rewrite request dari domain ini ke tenant page.
+  /// User harus CNAME domain mereka ke cname.vercel-dns.com dan tambah di Vercel Dashboard.
+  customDomain String? @unique
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -97,6 +102,10 @@ model KontenWebsite {
   /// Misal: "f59e0b" untuk casual warm, "2563eb" untuk professional.
   accentColor    String?
 
+  /// Testimoni pelanggan hasil generate AI. Format: [{nama: string, teks: string}]
+  /// Disimpan sebagai JSON. AI selalu generate 3 item.
+  testimoni      Json?
+
   updatedAt      DateTime @updatedAt
 }
 
@@ -117,6 +126,9 @@ model Layanan {
   /// Path relatif ke /uploads/{bisnisId}/{filename}. Opsional.
   /// Template render <img> hanya jika ada.
   imageUrl    String?
+
+  /// Harga layanan (free-text). Contoh: "Rp 25.000", "mulai 50rb". Opsional.
+  harga       String?
 
   /// Urutan tampil (0 = pertama).
   order       Int     @default(0)
