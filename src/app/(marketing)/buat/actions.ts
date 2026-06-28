@@ -117,6 +117,7 @@ export async function submitBisnisAction(
           seoTitle: konten.seoTitle,
           seoDescription: konten.seoDescription,
           accentColor: konten.accentColor,
+          testimoni: konten.testimoni,
         },
       });
 

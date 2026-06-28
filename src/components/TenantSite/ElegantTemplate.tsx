@@ -149,6 +149,37 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
         </section>
       )}
 
+      {/* Testimoni */}
+      {Array.isArray(kontenAI.testimoni) && kontenAI.testimoni.length > 0 && (
+        <section className="px-6 py-20 md:py-28 bg-stone-100">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-xs font-medium tracking-[0.3em] uppercase text-stone-500 mb-4 text-center">
+              Testimoni
+            </p>
+            <h2 className="font-serif text-3xl md:text-4xl font-light text-center mb-14">
+              Suara Pelanggan Kami
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-stone-300">
+              {(kontenAI.testimoni as { nama: string; teks: string }[]).map(
+                (t, i) => (
+                  <div key={i} className="bg-stone-100 p-8 md:p-10">
+                    <p className="text-stone-700 leading-relaxed font-light text-sm">
+                      &ldquo;{t.teks}&rdquo;
+                    </p>
+                    <p
+                      className="mt-4 text-xs tracking-widest uppercase font-medium"
+                      style={{ color: `var(--accent)` }}
+                    >
+                      — {t.nama}
+                    </p>
+                  </div>
+                ),
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Contact — minimal */}
       <section className="px-6 py-20 md:py-32 bg-stone-900 text-stone-100">
         <div className="max-w-2xl mx-auto text-center">

@@ -164,6 +164,40 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
         </section>
       )}
 
+      {/* Testimoni */}
+      {Array.isArray(kontenAI.testimoni) && kontenAI.testimoni.length > 0 && (
+        <section className="px-5 py-14 md:py-20 bg-slate-50 border-y border-slate-100">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-xs font-bold tracking-widest uppercase text-slate-500 mb-3">
+              Testimoni
+            </h2>
+            <h3 className="text-2xl md:text-3xl font-bold mb-8">
+              Yang Pelanggan Kami Rasakan
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {(kontenAI.testimoni as { nama: string; teks: string }[]).map(
+                (t, i) => (
+                  <div
+                    key={i}
+                    className="bg-white rounded-lg border border-slate-200 p-5"
+                  >
+                    <p className="text-sm text-slate-700 leading-relaxed">
+                      &ldquo;{t.teks}&rdquo;
+                    </p>
+                    <p
+                      className="mt-3 text-xs font-semibold"
+                      style={{ color: `var(--accent)` }}
+                    >
+                      — {t.nama}
+                    </p>
+                  </div>
+                ),
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Contact */}
       <section className="px-5 py-14 md:py-20">
         <div className="max-w-3xl mx-auto text-center">

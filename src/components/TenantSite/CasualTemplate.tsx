@@ -152,6 +152,37 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
         </section>
       )}
 
+      {/* Testimoni */}
+      {Array.isArray(kontenAI.testimoni) && kontenAI.testimoni.length > 0 && (
+        <section className="px-5 py-12 md:py-16 bg-slate-50">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">
+              Kata Mereka 💬
+            </h2>
+            <div className="space-y-3">
+              {(kontenAI.testimoni as { nama: string; teks: string }[]).map(
+                (t, i) => (
+                  <div
+                    key={i}
+                    className="rounded-2xl border border-slate-200 bg-white p-4"
+                  >
+                    <p className="text-sm text-slate-700 leading-relaxed">
+                      &ldquo;{t.teks}&rdquo;
+                    </p>
+                    <p
+                      className="mt-2 text-xs font-semibold"
+                      style={{ color: `var(--accent)` }}
+                    >
+                      — {t.nama}
+                    </p>
+                  </div>
+                ),
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Contact / CTA */}
       <section className="px-5 py-12 md:py-16 bg-slate-900 text-white">
         <div className="max-w-2xl mx-auto text-center">
