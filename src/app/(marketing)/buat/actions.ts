@@ -127,10 +127,12 @@ export async function submitBisnisAction(
           // imageUrl: ambil dari input user sesuai index, kalau ada.
           // (input mungkin < output kalau AI tambah layanan; ambil sebanyak input.length)
           const userImage = data.layanan[i]?.imageUrl || null;
+          const userHarga = data.layanan[i]?.harga || null;
           return {
             bisnisId: bisnis.id,
             title: s.title,
             description: s.description,
+            harga: userHarga,
             imageUrl: userImage,
             order: i,
           };

@@ -1,9 +1,14 @@
-import type { TemplateProps } from './types';
-import { buildWhatsappUrl } from './types';
-import { Sparkles } from 'lucide-react';
-import { OperatingHours } from './OperatingHours';
-import { MapEmbed } from './MapEmbed';
-import { getSocialLinks, InstagramIcon, FacebookIcon, TiktokIcon } from './social';
+import type { TemplateProps } from "./types";
+import { buildWhatsappUrl } from "./types";
+import { Sparkles } from "lucide-react";
+import { OperatingHours } from "./OperatingHours";
+import { MapEmbed } from "./MapEmbed";
+import {
+  getSocialLinks,
+  InstagramIcon,
+  FacebookIcon,
+  TiktokIcon,
+} from "./social";
 
 /**
  * ElegantTemplate — untuk Spa premium, Butik, Fine dining, Galeri seni.
@@ -13,8 +18,9 @@ import { getSocialLinks, InstagramIcon, FacebookIcon, TiktokIcon } from './socia
  * Layout: generous whitespace, slow scroll, gallery feel.
  */
 export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
-  const { namaBisnis, lokasi, whatsapp, kontenAI, layanan, logoUrl, coverUrl } = data;
-  const accent = data.kontenAI?.accentColor || '92400e';
+  const { namaBisnis, lokasi, whatsapp, kontenAI, layanan, logoUrl, coverUrl } =
+    data;
+  const accent = data.kontenAI?.accentColor || "92400e";
 
   if (!kontenAI) {
     return <NoContentPlaceholder nama={namaBisnis} logoUrl={logoUrl} />;
@@ -26,7 +32,7 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
   return (
     <div
       className="min-h-screen bg-stone-50 text-stone-900 font-elegant"
-      style={{ ['--accent' as never]: `#${accent}` }}
+      style={{ ["--accent" as never]: `#${accent}` }}
     >
       {/* Hero — minimal, asymmetric, generous spacing */}
       <section className="px-6 py-20 md:py-32">
@@ -119,6 +125,14 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
                     <p className="text-stone-600 leading-relaxed font-light">
                       {s.description}
                     </p>
+                    {s.harga && (
+                      <p
+                        className="mt-3 text-sm font-medium tracking-wide"
+                        style={{ color: `var(--accent)` }}
+                      >
+                        {s.harga}
+                      </p>
+                    )}
                     <a
                       href={buildWhatsappUrl(whatsapp, namaBisnis, s.title)}
                       target="_blank"
@@ -165,7 +179,12 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
           {socialLinks.length > 0 && (
             <div className="mt-8 flex items-center justify-center gap-4">
               {socialLinks.map(({ kind, url }) => {
-                const Icon = kind === 'instagram' ? InstagramIcon : kind === 'facebook' ? FacebookIcon : TiktokIcon;
+                const Icon =
+                  kind === "instagram"
+                    ? InstagramIcon
+                    : kind === "facebook"
+                      ? FacebookIcon
+                      : TiktokIcon;
                 return (
                   <a
                     key={kind}
@@ -208,10 +227,10 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
 
       <footer className="px-6 py-8 text-center text-xs text-stone-400 tracking-wide">
         <p>
-          {namaBisnis} — Dibuat otomatis oleh{' '}
+          {namaBisnis} — Dibuat otomatis oleh{" "}
           <a href="https://cus.site" className="hover:text-stone-600 underline">
             Cus.site
-          </a>{' '}
+          </a>{" "}
           ⚡
         </p>
       </footer>
@@ -219,16 +238,28 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
   );
 }
 
-function NoContentPlaceholder({ nama, logoUrl }: { nama: string; logoUrl?: string | null }) {
+function NoContentPlaceholder({
+  nama,
+  logoUrl,
+}: {
+  nama: string;
+  logoUrl?: string | null;
+}) {
   return (
     <div className="min-h-screen flex items-center justify-center px-5">
       <div className="text-center max-w-md">
         {logoUrl && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={logoUrl} alt={nama} className="mx-auto h-14 w-14 mb-4 rounded-full object-cover" />
+          <img
+            src={logoUrl}
+            alt={nama}
+            className="mx-auto h-14 w-14 mb-4 rounded-full object-cover"
+          />
         )}
         <h1 className="font-serif text-3xl font-light">{nama}</h1>
-        <p className="mt-2 text-slate-600 font-light italic">Sedang dalam persiapan...</p>
+        <p className="mt-2 text-slate-600 font-light italic">
+          Sedang dalam persiapan...
+        </p>
       </div>
     </div>
   );

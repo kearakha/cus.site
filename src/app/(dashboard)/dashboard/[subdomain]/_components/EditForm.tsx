@@ -15,6 +15,7 @@ import { ImageUploader } from "@/components/ImageUploader";
 type ServiceItem = {
   title: string;
   description: string;
+  harga?: string | null;
   imageUrl?: string | null;
 };
 
@@ -45,7 +46,12 @@ type Props = {
   };
 };
 
-const EMPTY_SERVICE: ServiceItem = { title: "", description: "", imageUrl: "" };
+const EMPTY_SERVICE: ServiceItem = {
+  title: "",
+  description: "",
+  harga: "",
+  imageUrl: "",
+};
 
 // Preset warna: 3 untuk casual, 3 untuk professional, 3 untuk elegant
 const COLOR_PRESETS = [
@@ -243,6 +249,7 @@ export function EditForm({
         services: services.map((s) => ({
           title: s.title,
           description: s.description,
+          harga: s.harga || "",
           imageUrl: s.imageUrl || "",
         })),
       };
@@ -702,6 +709,15 @@ export function EditForm({
                     }
                     rows={2}
                     className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 resize-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Harga (opsional), contoh: Rp 25.000"
+                    value={svc.harga || ""}
+                    onChange={(e) =>
+                      updateService(i, { harga: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
                   />
                 </div>
               </div>

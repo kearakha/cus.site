@@ -124,6 +124,7 @@ export const layananItemSchema = z.object({
   title: z.string().min(2, "Judul layanan minimal 2 karakter").max(60),
   description: z.string().min(5, "Deskripsi minimal 5 karakter").max(200),
   imageUrl: uploadPathSchema,
+  harga: z.string().max(50).optional().or(z.literal("")),
 });
 
 export const step4Schema = z.object({

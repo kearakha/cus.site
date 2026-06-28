@@ -16,6 +16,7 @@ import { aiRatelimit } from "@/lib/ratelimit";
 const serviceInputSchema = z.object({
   title: z.string().min(2).max(60),
   description: z.string().min(5).max(400),
+  harga: z.string().max(50).optional().or(z.literal("")),
   imageUrl: z
     .string()
     .regex(
@@ -108,8 +109,7 @@ const updateKontenSchema = z.object({
 export type UpdateKontenInput = z.infer<typeof updateKontenSchema>;
 
 export type UpdateResult =
-  | { success: true }
-  | { success: false; error: string };
+  { success: true } | { success: false; error: string };
 
 /**
  * Server action: update semua aspek bisnis untuk 1 website.
@@ -200,6 +200,7 @@ export async function updateKontenAction(
           bisnisId: bisnis.id,
           title: s.title,
           description: s.description,
+          harga: s.harga || null,
           imageUrl: s.imageUrl || null,
           order: i,
         })),
@@ -345,8 +346,7 @@ export async function regenerateAIContentAction(
 // === Toggle published ===
 
 export type TogglePublishedResult =
-  | { success: true; published: boolean }
-  | { success: false; error: string };
+  { success: true; published: boolean } | { success: false; error: string };
 
 export async function togglePublishedAction(
   subdomain: string,
@@ -382,8 +382,7 @@ export async function togglePublishedAction(
 // === Hapus bisnis ===
 
 export type DeleteResult =
-  | { success: true }
-  | { success: false; error: string };
+  { success: true } | { success: false; error: string };
 
 /**
  * Hapus bisnis + relasi cascade (KontenWebsite, Layanan).

@@ -135,6 +135,7 @@ export default async function EditBisnisPage({ params }: Props) {
           services: bisnis.layanan.map((l) => ({
             title: l.title,
             description: l.description,
+            harga: l.harga,
             imageUrl: l.imageUrl,
           })),
         }}

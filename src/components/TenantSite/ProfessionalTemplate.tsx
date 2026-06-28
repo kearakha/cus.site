@@ -1,9 +1,14 @@
-import type { TemplateProps } from './types';
-import { buildWhatsappUrl } from './types';
-import { Phone } from 'lucide-react';
-import { OperatingHours } from './OperatingHours';
-import { MapEmbed } from './MapEmbed';
-import { getSocialLinks, InstagramIcon, FacebookIcon, TiktokIcon } from './social';
+import type { TemplateProps } from "./types";
+import { buildWhatsappUrl } from "./types";
+import { Phone } from "lucide-react";
+import { OperatingHours } from "./OperatingHours";
+import { MapEmbed } from "./MapEmbed";
+import {
+  getSocialLinks,
+  InstagramIcon,
+  FacebookIcon,
+  TiktokIcon,
+} from "./social";
 
 /**
  * ProfessionalTemplate — untuk Bimbel, Klinik, Jasa Hukum, Konsultan.
@@ -12,8 +17,9 @@ import { getSocialLinks, InstagramIcon, FacebookIcon, TiktokIcon } from './socia
  * Copy: pakai "Anda".
  */
 export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
-  const { namaBisnis, lokasi, whatsapp, kontenAI, layanan, logoUrl, coverUrl } = data;
-  const accent = data.kontenAI?.accentColor || '1e40af';
+  const { namaBisnis, lokasi, whatsapp, kontenAI, layanan, logoUrl, coverUrl } =
+    data;
+  const accent = data.kontenAI?.accentColor || "1e40af";
 
   if (!kontenAI) {
     return <NoContentPlaceholder nama={namaBisnis} logoUrl={logoUrl} />;
@@ -25,7 +31,7 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
   return (
     <div
       className="min-h-screen bg-white text-slate-900 font-professional"
-      style={{ ['--accent' as never]: `#${accent}` }}
+      style={{ ["--accent" as never]: `#${accent}` }}
     >
       {/* Hero — flat, clean, trust badges */}
       <section className="px-5 py-16 md:py-24 border-b border-slate-100">
@@ -61,7 +67,7 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
               {kontenAI.ctaText}
             </a>
             <a
-              href={`https://wa.me/${whatsapp.replace(/^0/, '62')}`}
+              href={`https://wa.me/${whatsapp.replace(/^0/, "62")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
@@ -105,7 +111,9 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
             <h2 className="text-xs font-bold tracking-widest uppercase text-slate-500 mb-3">
               Layanan Kami
             </h2>
-            <h3 className="text-2xl md:text-3xl font-bold mb-8">Solusi untuk Kebutuhan Anda</h3>
+            <h3 className="text-2xl md:text-3xl font-bold mb-8">
+              Solusi untuk Kebutuhan Anda
+            </h3>
             <div className="divide-y divide-slate-200 bg-white rounded-lg border border-slate-200">
               {layanan.map((s, i) => (
                 <div key={s.id} className="p-6 flex gap-4">
@@ -131,6 +139,14 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
                     <p className="mt-1 text-sm text-slate-600 leading-relaxed">
                       {s.description}
                     </p>
+                    {s.harga && (
+                      <p
+                        className="mt-1.5 text-sm font-semibold"
+                        style={{ color: `var(--accent)` }}
+                      >
+                        {s.harga}
+                      </p>
+                    )}
                     <a
                       href={buildWhatsappUrl(whatsapp, namaBisnis, s.title)}
                       target="_blank"
@@ -151,7 +167,9 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
       {/* Contact */}
       <section className="px-5 py-14 md:py-20">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-3">Siap melayani Anda</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-3">
+            Siap melayani Anda
+          </h2>
           <p className="text-slate-600 mb-6 max-w-xl mx-auto">
             Hubungi kami untuk konsultasi atau informasi lebih lanjut.
           </p>
@@ -176,7 +194,12 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
           {socialLinks.length > 0 && (
             <div className="mt-6 flex items-center justify-center gap-2">
               {socialLinks.map(({ kind, url }) => {
-                const Icon = kind === 'instagram' ? InstagramIcon : kind === 'facebook' ? FacebookIcon : TiktokIcon;
+                const Icon =
+                  kind === "instagram"
+                    ? InstagramIcon
+                    : kind === "facebook"
+                      ? FacebookIcon
+                      : TiktokIcon;
                 return (
                   <a
                     key={kind}
@@ -204,7 +227,9 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
             <h2 className="text-xs font-bold tracking-widest uppercase text-slate-500 mb-3">
               Lokasi
             </h2>
-            <h3 className="text-2xl md:text-3xl font-bold mb-6">Temukan Kami</h3>
+            <h3 className="text-2xl md:text-3xl font-bold mb-6">
+              Temukan Kami
+            </h3>
             <MapEmbed
               latitude={data.latitude}
               longitude={data.longitude}
@@ -217,10 +242,10 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
 
       <footer className="px-5 py-6 text-center text-xs text-slate-400 border-t border-slate-100">
         <p>
-          &copy; {new Date().getFullYear()} {namaBisnis}. Dibuat otomatis oleh{' '}
+          &copy; {new Date().getFullYear()} {namaBisnis}. Dibuat otomatis oleh{" "}
           <a href="https://cus.site" className="hover:text-slate-600 underline">
             Cus.site
-          </a>{' '}
+          </a>{" "}
           ⚡
         </p>
       </footer>
@@ -228,16 +253,28 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
   );
 }
 
-function NoContentPlaceholder({ nama, logoUrl }: { nama: string; logoUrl?: string | null }) {
+function NoContentPlaceholder({
+  nama,
+  logoUrl,
+}: {
+  nama: string;
+  logoUrl?: string | null;
+}) {
   return (
     <div className="min-h-screen flex items-center justify-center px-5">
       <div className="text-center max-w-md">
         {logoUrl && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={logoUrl} alt={nama} className="mx-auto h-14 w-14 mb-4 rounded-lg object-cover" />
+          <img
+            src={logoUrl}
+            alt={nama}
+            className="mx-auto h-14 w-14 mb-4 rounded-lg object-cover"
+          />
         )}
         <h1 className="text-2xl font-bold">{nama}</h1>
-        <p className="mt-2 text-slate-600">Website ini sedang dalam persiapan.</p>
+        <p className="mt-2 text-slate-600">
+          Website ini sedang dalam persiapan.
+        </p>
       </div>
     </div>
   );

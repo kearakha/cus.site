@@ -1,9 +1,14 @@
-import type { TemplateProps } from './types';
-import { buildWhatsappUrl } from './types';
-import { Coffee, Sparkles, Zap } from 'lucide-react';
-import { OperatingHours } from './OperatingHours';
-import { MapEmbed } from './MapEmbed';
-import { getSocialLinks, InstagramIcon, FacebookIcon, TiktokIcon } from './social';
+import type { TemplateProps } from "./types";
+import { buildWhatsappUrl } from "./types";
+import { Coffee, Sparkles, Zap } from "lucide-react";
+import { OperatingHours } from "./OperatingHours";
+import { MapEmbed } from "./MapEmbed";
+import {
+  getSocialLinks,
+  InstagramIcon,
+  FacebookIcon,
+  TiktokIcon,
+} from "./social";
 
 /**
  * CasualTemplate — untuk Kafe, Laundry, Barbershop casual, Jajanan.
@@ -12,8 +17,9 @@ import { getSocialLinks, InstagramIcon, FacebookIcon, TiktokIcon } from './socia
  * Copy: pakai "kamu".
  */
 export function CasualTemplate({ data, siteUrl }: TemplateProps) {
-  const { namaBisnis, lokasi, whatsapp, kontenAI, layanan, logoUrl, coverUrl } = data;
-  const accent = data.kontenAI?.accentColor || 'f59e0b';
+  const { namaBisnis, lokasi, whatsapp, kontenAI, layanan, logoUrl, coverUrl } =
+    data;
+  const accent = data.kontenAI?.accentColor || "f59e0b";
 
   if (!kontenAI) {
     return <NoContentPlaceholder nama={namaBisnis} logoUrl={logoUrl} />;
@@ -25,7 +31,7 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
   return (
     <div
       className="min-h-screen bg-white text-slate-900 font-casual"
-      style={{ ['--accent' as never]: `#${accent}` }}
+      style={{ ["--accent" as never]: `#${accent}` }}
     >
       {/* Hero */}
       <section className="relative overflow-hidden">
@@ -77,7 +83,9 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
       <section className="px-5 py-12 md:py-16 bg-slate-50">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">Tentang Kita</h2>
-          <p className="text-slate-700 leading-relaxed">{kontenAI.aboutParagraph}</p>
+          <p className="text-slate-700 leading-relaxed">
+            {kontenAI.aboutParagraph}
+          </p>
         </div>
       </section>
 
@@ -85,7 +93,9 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
       {layanan.length > 0 && (
         <section className="px-5 py-12 md:py-16">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6">Yang Bisa Kamu Nikmati</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">
+              Yang Bisa Kamu Nikmati
+            </h2>
             <div className="space-y-3">
               {layanan.map((s, i) => {
                 const wa = buildWhatsappUrl(whatsapp, namaBisnis, s.title);
@@ -115,11 +125,25 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
                         >
                           {i + 1}
                         </span>
-                        <h3 className="font-semibold text-slate-900 truncate">{s.title}</h3>
+                        <h3 className="font-semibold text-slate-900 truncate">
+                          {s.title}
+                        </h3>
                       </div>
-                      <p className="mt-1.5 text-sm text-slate-600 line-clamp-3">{s.description}</p>
+                      <p className="mt-1.5 text-sm text-slate-600 line-clamp-3">
+                        {s.description}
+                      </p>
+                      {s.harga && (
+                        <p
+                          className="mt-2 text-sm font-semibold"
+                          style={{ color: `var(--accent)` }}
+                        >
+                          {s.harga}
+                        </p>
+                      )}
                     </div>
-                    <span className="text-slate-400 group-hover:text-slate-900 transition text-lg self-center">→</span>
+                    <span className="text-slate-400 group-hover:text-slate-900 transition text-lg self-center">
+                      →
+                    </span>
                   </a>
                 );
               })}
@@ -148,7 +172,7 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center rounded-full px-7 py-3.5 text-base font-semibold hover:scale-105 transition-transform"
-            style={{ backgroundColor: `var(--accent)`, color: 'white' }}
+            style={{ backgroundColor: `var(--accent)`, color: "white" }}
           >
             Chat WhatsApp Kita →
           </a>
@@ -156,7 +180,12 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
           {socialLinks.length > 0 && (
             <div className="mt-6 flex items-center justify-center gap-3">
               {socialLinks.map(({ kind, url }) => {
-                const Icon = kind === 'instagram' ? InstagramIcon : kind === 'facebook' ? FacebookIcon : TiktokIcon;
+                const Icon =
+                  kind === "instagram"
+                    ? InstagramIcon
+                    : kind === "facebook"
+                      ? FacebookIcon
+                      : TiktokIcon;
                 return (
                   <a
                     key={kind}
@@ -192,7 +221,7 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
 
       <footer className="px-5 py-6 text-center text-xs text-slate-400">
         <p className="inline-flex items-center justify-center gap-1">
-          Dibuat otomatis oleh{' '}
+          Dibuat otomatis oleh{" "}
           <a href="https://cus.site" className="hover:text-slate-600 underline">
             Cus.site
           </a>
@@ -233,7 +262,7 @@ function HeroContent({
       )}
       <span
         className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold mb-4"
-        style={{ backgroundColor: `#${accent}`, color: 'white' }}
+        style={{ backgroundColor: `#${accent}`, color: "white" }}
       >
         <Coffee className="h-3.5 w-3.5" strokeWidth={2.5} />
         {lokasi}
@@ -260,13 +289,23 @@ function HeroContent({
   );
 }
 
-function NoContentPlaceholder({ nama, logoUrl }: { nama: string; logoUrl?: string | null }) {
+function NoContentPlaceholder({
+  nama,
+  logoUrl,
+}: {
+  nama: string;
+  logoUrl?: string | null;
+}) {
   return (
     <div className="min-h-screen flex items-center justify-center px-5">
       <div className="text-center max-w-md">
         {logoUrl && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={logoUrl} alt={nama} className="mx-auto h-16 w-16 mb-4 rounded-xl object-cover" />
+          <img
+            src={logoUrl}
+            alt={nama}
+            className="mx-auto h-16 w-16 mb-4 rounded-xl object-cover"
+          />
         )}
         <h1 className="text-2xl font-bold">{nama}</h1>
         <p className="mt-2 text-slate-600">Website ini sedang disiapkan...</p>
