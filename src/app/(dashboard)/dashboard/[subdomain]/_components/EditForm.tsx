@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Sparkles, Loader2, Globe, EyeOff } from "lucide-react";
+import { Sparkles, Loader2, Globe, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 import {
   updateKontenAction,
   regenerateAIContentAction,
@@ -82,24 +83,21 @@ export function EditForm({
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [state, setState] = useState<{
-    status: "idle" | "success" | "error";
-    message?: string;
-  }>({ status: "idle" });
 
   // === Published state ===
   const [isPublished, setIsPublished] = useState(published);
   const [publishPending, setPublishPending] = useState(false);
-  const [publishError, setPublishError] = useState<string | null>(null);
 
   const handleTogglePublished = async () => {
     setPublishPending(true);
-    setPublishError(null);
     const result = await togglePublishedAction(subdomain);
     if (result.success) {
       setIsPublished(result.published);
+      toast.success(
+        result.published ? "Website diaktifkan!" : "Website disembunyikan.",
+      );
     } else {
-      setPublishError(result.error);
+      toast.error(result.error);
     }
     setPublishPending(false);
   };
@@ -137,9 +135,6 @@ export function EditForm({
   const [regenerating, setRegenerating] = useState<RegenerateSection | null>(
     null,
   );
-  const [regenError, setRegenError] = useState<string | null>(null);
-  const [regenToast, setRegenToast] = useState<string | null>(null);
-
   const handleRegenerate = async (section: RegenerateSection) => {
     if (regenerating) return;
     if (
@@ -153,13 +148,11 @@ export function EditForm({
     }
 
     setRegenerating(section);
-    setRegenError(null);
-    setRegenToast(null);
 
     try {
       const result = await regenerateAIContentAction({ subdomain, section });
       if (!result.success) {
-        setRegenError(result.error);
+        toast.error(result.error);
         return;
       }
 
@@ -179,14 +172,13 @@ export function EditForm({
         );
       }
 
-      setRegenToast(
+      toast.success(
         section === "all"
           ? "Semua konten di-regenerate! Review lalu klik Simpan."
           : `Section ${section} di-regenerate! Review lalu klik Simpan.`,
       );
-      setTimeout(() => setRegenToast(null), 4000);
     } catch (err) {
-      setRegenError(err instanceof Error ? err.message : "Gagal generate");
+      toast.error(err instanceof Error ? err.message : "Gagal generate");
     } finally {
       setRegenerating(null);
     }
@@ -223,7 +215,6 @@ export function EditForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setState({ status: "idle" });
 
     startTransition(async () => {
       const payload: UpdateKontenInput = {
@@ -257,11 +248,11 @@ export function EditForm({
       const result = await updateKontenAction(payload);
 
       if (!result.success) {
-        setState({ status: "error", message: result.error });
+        toast.error(result.error);
         return;
       }
 
-      setState({ status: "success", message: "Perubahan tersimpan!" });
+      toast.success("Perubahan tersimpan!");
       router.refresh();
     });
   };
@@ -290,9 +281,6 @@ export function EditForm({
                 ? "Website aktif & bisa diakses publik"
                 : "Website disembunyikan dari publik"}
             </p>
-            {publishError && (
-              <p className="text-xs text-red-600 mt-0.5">{publishError}</p>
-            )}
           </div>
         </div>
         <button
@@ -349,12 +337,6 @@ export function EditForm({
             )}
           </button>
         </div>
-        {regenError && (
-          <p className="mt-3 text-sm text-red-300">⚠ {regenError}</p>
-        )}
-        {regenToast && (
-          <p className="mt-3 text-sm text-emerald-300">✓ {regenToast}</p>
-        )}
       </div>
 
       {/* Branding */}
@@ -755,22 +737,6 @@ export function EditForm({
           onChange={setSeoDescription}
         />
       </Section>
-
-      {/* Feedback */}
-      {state.status === "error" && (
-        <div className="rounded-lg bg-red-50 border border-red-200 p-4">
-          <p className="text-sm font-medium text-red-900">Gagal menyimpan</p>
-          <p className="text-sm text-red-700 mt-1">{state.message}</p>
-        </div>
-      )}
-      {state.status === "success" && (
-        <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4 inline-flex items-center gap-2">
-          <Check className="h-4 w-4 text-emerald-600" strokeWidth={2.5} />
-          <p className="text-sm font-medium text-emerald-900">
-            {state.message}
-          </p>
-        </div>
-      )}
 
       {/* Submit */}
       <div className="sticky bottom-0 -mx-4 sm:-mx-6 -mb-8 px-4 sm:px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
