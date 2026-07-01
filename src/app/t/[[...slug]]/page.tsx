@@ -25,13 +25,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "cus.site";
   const ogImageUrl = `https://${ROOT_DOMAIN}/api/og?subdomain=${subdomain}`;
 
+  const siteUrl = buildSiteUrl(bisnis);
+  const keywords = [
+    bisnis.namaBisnis,
+    bisnis.lokasi,
+    ...bisnis.layanan.map((l) => l.title),
+  ]
+    .filter(Boolean)
+    .join(", ");
+
   return {
     title: bisnis.kontenAI.seoTitle,
     description: bisnis.kontenAI.seoDescription,
+    keywords,
+    alternates: { canonical: siteUrl },
     openGraph: {
       title: bisnis.kontenAI.heroHeadline,
       description: bisnis.kontenAI.heroSubtext,
-      url: buildSiteUrl(bisnis),
+      url: siteUrl,
       siteName: bisnis.namaBisnis,
       type: "website",
       locale: "id_ID",
