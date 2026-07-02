@@ -1,4 +1,9 @@
-import { InstagramIcon, FacebookIcon, TiktokIcon } from '@/components/BrandIcons';
+import {
+  InstagramIcon,
+  FacebookIcon,
+  TiktokIcon,
+  YoutubeIcon,
+} from "@/components/BrandIcons";
 
 /**
  * Helper untuk bangun URL social media dari username.
@@ -7,23 +12,45 @@ import { InstagramIcon, FacebookIcon, TiktokIcon } from '@/components/BrandIcons
  */
 export function instagramUrl(handle: string | null | undefined): string | null {
   if (!handle) return null;
-  const username = handle.replace(/^@/, '').replace(/.*instagram\.com\//, '').replace(/\/$/, '').split('/')[0];
+  const username = handle
+    .replace(/^@/, "")
+    .replace(/.*instagram\.com\//, "")
+    .replace(/\/$/, "")
+    .split("/")[0];
   return username ? `https://instagram.com/${username}` : null;
 }
 
 export function tiktokUrl(handle: string | null | undefined): string | null {
   if (!handle) return null;
-  const username = handle.replace(/^@/, '').replace(/.*tiktok\.com\/@?/, '').replace(/\/$/, '').split('/')[0];
+  const username = handle
+    .replace(/^@/, "")
+    .replace(/.*tiktok\.com\/@?/, "")
+    .replace(/\/$/, "")
+    .split("/")[0];
   return username ? `https://tiktok.com/@${username}` : null;
 }
 
 export function facebookUrl(handle: string | null | undefined): string | null {
   if (!handle) return null;
-  const username = handle.replace(/^@/, '').replace(/.*facebook\.com\//, '').replace(/\/$/, '').split('/')[0];
+  const username = handle
+    .replace(/^@/, "")
+    .replace(/.*facebook\.com\//, "")
+    .replace(/\/$/, "")
+    .split("/")[0];
   return username ? `https://facebook.com/${username}` : null;
 }
 
-export type SocialKind = 'instagram' | 'tiktok' | 'facebook';
+export function youtubeUrl(handle: string | null | undefined): string | null {
+  if (!handle) return null;
+  const clean = handle
+    .replace(/.*youtube\.com\/(channel\/|c\/|@)?/, "")
+    .replace(/^@/, "")
+    .replace(/\/$/, "")
+    .split("/")[0];
+  return clean ? `https://youtube.com/@${clean}` : null;
+}
+
+export type SocialKind = "instagram" | "tiktok" | "facebook" | "youtube";
 
 export type SocialLink = {
   kind: SocialKind;
@@ -39,15 +66,18 @@ export function getSocialLinks(bisnis: {
   instagram?: string | null;
   tiktok?: string | null;
   facebook?: string | null;
+  youtube?: string | null;
 }): SocialLink[] {
   const out: SocialLink[] = [];
   const ig = instagramUrl(bisnis.instagram);
-  if (ig) out.push({ kind: 'instagram', url: ig });
+  if (ig) out.push({ kind: "instagram", url: ig });
   const tt = tiktokUrl(bisnis.tiktok);
-  if (tt) out.push({ kind: 'tiktok', url: tt });
+  if (tt) out.push({ kind: "tiktok", url: tt });
   const fb = facebookUrl(bisnis.facebook);
-  if (fb) out.push({ kind: 'facebook', url: fb });
+  if (fb) out.push({ kind: "facebook", url: fb });
+  const yt = youtubeUrl(bisnis.youtube);
+  if (yt) out.push({ kind: "youtube", url: yt });
   return out;
 }
 
-export { InstagramIcon, FacebookIcon, TiktokIcon };
+export { InstagramIcon, FacebookIcon, TiktokIcon, YoutubeIcon };
