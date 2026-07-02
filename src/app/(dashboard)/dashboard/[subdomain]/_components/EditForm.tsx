@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles, Loader2, Globe, EyeOff } from "lucide-react";
+import { Sparkles, Loader2, Globe, EyeOff, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 import {
   updateKontenAction,
@@ -83,6 +83,17 @@ export function EditForm({
 }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [copied, setCopied] = useState(false);
+
+  const siteUrl = process.env.NEXT_PUBLIC_ROOT_DOMAIN
+    ? `https://${subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
+    : `http://${subdomain}.localhost:3000`;
+
+  const handleCopyUrl = async () => {
+    await navigator.clipboard.writeText(siteUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   // === Published state ===
   const [isPublished, setIsPublished] = useState(published);
@@ -740,8 +751,21 @@ export function EditForm({
 
       {/* Submit */}
       <div className="sticky bottom-0 -mx-4 sm:-mx-6 -mb-8 px-4 sm:px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
+        <button
+          type="button"
+          onClick={handleCopyUrl}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition"
+          title="Salin URL website"
+        >
+          {copied ? (
+            <Check className="h-4 w-4 text-emerald-600" />
+          ) : (
+            <Copy className="h-4 w-4" />
+          )}
+          {copied ? "Tersalin!" : "Salin URL"}
+        </button>
         <a
-          href={`http://${subdomain}.localhost:3000`}
+          href={siteUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm font-medium text-slate-600 hover:text-slate-900"
