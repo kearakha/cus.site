@@ -15,7 +15,11 @@ export async function GET(request: NextRequest) {
   }
 
   const siteUrl = buildSiteUrl(bisnis);
-  const lastMod = bisnis.updatedAt.toISOString().split("T")[0];
+  const lastModDate =
+    bisnis.kontenAI?.updatedAt && bisnis.kontenAI.updatedAt > bisnis.updatedAt
+      ? bisnis.kontenAI.updatedAt
+      : bisnis.updatedAt;
+  const lastMod = lastModDate.toISOString().split("T")[0];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
