@@ -55,6 +55,7 @@ model Bisnis {
   instagram   String?
   tiktok      String?
   facebook    String?
+  youtubeUrl  String?
 
   /// === Operasional (opsional) ===
   /// Jam buka/tutup format "HH:mm" (24-jam), contoh: "08:00" / "21:00".
