@@ -40,6 +40,14 @@ function getClient(): Resend | null {
 const FROM_ADDRESS =
   process.env.RESEND_FROM_EMAIL || "Cus.site <noreply@cus.site>";
 
+const SUBJECT_LOGIN = (businessName?: string) =>
+  businessName
+    ? `Login Cus.site — ${businessName}`
+    : "Login link Cus.site kamu";
+
+const SUBJECT_WELCOME = (businessName: string) =>
+  `🎉 Website ${businessName} sudah jadi!`;
+
 // === Public API ===
 
 export type SendLoginLinkParams = {
@@ -72,9 +80,7 @@ export async function sendLoginLink({
     return { ok: true, dev: true };
   }
 
-  const subject = businessName
-    ? `Login Cus.site — ${businessName}`
-    : "Login link Cus.site kamu";
+  const subject = SUBJECT_LOGIN(businessName);
 
   const { error } = await client.emails.send({
     from: FROM_ADDRESS,
@@ -125,7 +131,7 @@ export async function sendWelcomeEmail({
     return { ok: true, dev: true };
   }
 
-  const subject = `🎉 Website ${businessName} sudah jadi!`;
+  const subject = SUBJECT_WELCOME(businessName);
 
   const { error } = await client.emails.send({
     from: FROM_ADDRESS,
