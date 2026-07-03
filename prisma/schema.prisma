@@ -162,4 +162,5 @@ model LoginToken {
   createdAt DateTime  @default(now())
 
   @@index([email, expiresAt])
+  @@index([expiresAt]) // untuk cleanup query token expired
 }
