@@ -581,5 +581,9 @@ function validateOutput(parsed: KontenAI, input: WizardInput): AttemptResult {
     };
   }
 
+  // Strip markdown formatting chars dari SEO fields — model kadang wrap dengan **bold** atau _italic_
+  parsed.seoTitle = parsed.seoTitle.replace(/[*_`#]/g, "").trim();
+  parsed.seoDescription = parsed.seoDescription.replace(/[*_`#]/g, "").trim();
+
   return { ok: true, data: parsed };
 }
