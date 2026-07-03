@@ -96,6 +96,16 @@ export default async function EditBisnisPage({ params }: Props) {
                 {vibeInfo?.title || bisnis.vibe}
               </span>
             </p>
+            <p className="mt-0.5 text-xs text-slate-400">
+              Terakhir diubah:{" "}
+              {bisnis.kontenAI.updatedAt.toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
           </div>
           <a
             href={buildSiteUrl(bisnis)}
