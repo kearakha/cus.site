@@ -85,11 +85,14 @@ function getSessionSecret(): string {
   return secret ?? "dev-insecure-secret";
 }
 
-function signCookieValue(value: string): string {
-  const mac = createHmac("sha256", getSessionSecret())
+function hmac(value: string): string {
+  return createHmac("sha256", getSessionSecret())
     .update(value)
     .digest("base64url");
-  return `${value}.${mac}`;
+}
+
+function signCookieValue(value: string): string {
+  return `${value}.${hmac(value)}`;
 }
 
 function verifyCookieValue(signed: string): string | null {
@@ -97,9 +100,7 @@ function verifyCookieValue(signed: string): string | null {
   if (lastDot === -1) return null;
   const value = signed.slice(0, lastDot);
   const mac = signed.slice(lastDot + 1);
-  const expected = createHmac("sha256", getSessionSecret())
-    .update(value)
-    .digest("base64url");
+  const expected = hmac(value);
   try {
     const macBuf = Buffer.from(mac, "base64url");
     const expectedBuf = Buffer.from(expected, "base64url");
