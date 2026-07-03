@@ -278,7 +278,7 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Chat WhatsApp"
-          className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition hover:scale-110"
+          className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition hover:scale-110 print:hidden"
           style={{ backgroundColor: `#${accent}` }}
         >
           <svg
