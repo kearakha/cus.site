@@ -147,14 +147,16 @@ export function middleware(request: NextRequest) {
   if (subdomain && VALID_SLUG_PATTERN.test(subdomain)) {
     const url = request.nextUrl.clone();
 
+    // Normalize trailing slash supaya /about/ dan /about resolve ke path yang sama
+    const cleanPath =
+      url.pathname !== "/" ? url.pathname.replace(/\/+$/, "") : "/";
+
     // sitemap.xml per tenant → API route (tidak bisa masuk [[...slug]])
-    if (url.pathname === "/sitemap.xml") {
+    if (cleanPath === "/sitemap.xml") {
       url.pathname = "/api/sitemap";
     } else {
       url.pathname =
-        url.pathname === "/"
-          ? `/t/${subdomain}`
-          : `/t/${subdomain}${url.pathname}`;
+        cleanPath === "/" ? `/t/${subdomain}` : `/t/${subdomain}${cleanPath}`;
     }
 
     const response = NextResponse.rewrite(url);
