@@ -50,6 +50,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_BYTES) {
+      return NextResponse.json(
+        { error: "Ukuran file maksimal 5 MB" },
+        { status: 413 },
+      );
+    }
+
     // Tentukan folder target
     let targetId: string;
     const cookieToken = cookies().get(OWNER_COOKIE_NAME)?.value;
