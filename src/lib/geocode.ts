@@ -7,7 +7,7 @@
  * Untuk MVP cukup. Kalau traffic naik, pindah ke Mapbox / Google Geocoding.
  */
 
-const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
+const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 const TIMEOUT_MS = 5000;
 
 export type GeocodeResult = {
@@ -21,17 +21,19 @@ export type GeocodeResult = {
  * Geocode alamat string → koordinat.
  * Return null kalau tidak ketemu / error. Jangan throw — caller handle null gracefully.
  */
-export async function geocodeAlamat(alamat: string): Promise<GeocodeResult | null> {
+export async function geocodeAlamat(
+  alamat: string,
+): Promise<GeocodeResult | null> {
   if (!alamat || alamat.trim().length < 3) return null;
 
   // Tambahkan "Indonesia" supaya hasil lebih relevan (UMKM target pasar lokal)
   const q = `${alamat.trim()}, Indonesia`;
 
   const url = new URL(NOMINATIM_URL);
-  url.searchParams.set('q', q);
-  url.searchParams.set('format', 'json');
-  url.searchParams.set('limit', '1');
-  url.searchParams.set('countrycodes', 'id'); // batasi ke Indonesia
+  url.searchParams.set("q", q);
+  url.searchParams.set("format", "json");
+  url.searchParams.set("limit", "1");
+  url.searchParams.set("countrycodes", "id"); // batasi ke Indonesia
 
   try {
     const controller = new AbortController();
@@ -41,8 +43,8 @@ export async function geocodeAlamat(alamat: string): Promise<GeocodeResult | nul
       signal: controller.signal,
       headers: {
         // Wajib identifiable per usage policy Nominatim
-        'User-Agent': 'cus.site-generator/0.1 (https://cus.site)',
-        'Accept-Language': 'id',
+        "User-Agent": "cus.site-generator/0.1 (https://cus.site)",
+        "Accept-Language": "id",
       },
     });
     clearTimeout(timeout);
@@ -68,7 +70,18 @@ export async function geocodeAlamat(alamat: string): Promise<GeocodeResult | nul
       longitude: lon,
       displayName: first.display_name,
     };
-  } catch {
+  } catch (err) {
+    if (
+      err instanceof Error &&
+      (err.name === "AbortError" || err.message.includes("aborted"))
+    ) {
+      console.warn(
+        "[geocode] timeout setelah",
+        TIMEOUT_MS,
+        "ms untuk:",
+        alamat,
+      );
+    }
     return null;
   }
 }
@@ -91,7 +104,7 @@ export function buildOsmEmbedUrl(
 
   const params = new URLSearchParams({
     bbox: `${minLon},${minLat},${maxLon},${maxLat}`,
-    layer: 'mapnik',
+    layer: "mapnik",
     marker: `${lat},${lon}`,
   });
 
