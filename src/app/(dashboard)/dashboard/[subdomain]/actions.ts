@@ -159,7 +159,7 @@ export async function updateKontenAction(
       // Update Bisnis (field yang editable)
       const bisnisUpdate: Prisma.BisnisUpdateInput = {
         lokasi: data.lokasi,
-        whatsapp: data.whatsapp,
+        whatsapp: data.whatsapp.replace(/[\s\-().+]/g, "").replace(/^0/, "62"),
         logoUrl: data.logoUrl || null,
         coverUrl: data.coverUrl || null,
         instagram: data.instagram || null,
