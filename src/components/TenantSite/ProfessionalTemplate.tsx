@@ -278,7 +278,7 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
         </section>
       )}
 
-      <footer className="px-5 py-6 text-center text-xs text-slate-400 border-t border-slate-100">
+      <footer className="px-5 py-6 pb-24 text-center text-xs text-slate-400 border-t border-slate-100">
         <p>
           &copy; {new Date().getFullYear()} {namaBisnis}. Dibuat otomatis oleh{" "}
           <a href="https://cus.site" className="hover:text-slate-600 underline">

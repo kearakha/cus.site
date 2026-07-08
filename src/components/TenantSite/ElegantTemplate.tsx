@@ -260,7 +260,7 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
         </section>
       )}
 
-      <footer className="px-6 py-8 text-center text-xs text-stone-400 tracking-wide">
+      <footer className="px-6 py-8 pb-24 text-center text-xs text-stone-400 tracking-wide">
         <p>
           &copy; {new Date().getFullYear()} {namaBisnis} &mdash; Dibuat otomatis
           oleh{" "}

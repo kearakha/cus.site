@@ -254,7 +254,7 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
         </section>
       )}
 
-      <footer className="px-5 py-6 text-center text-xs text-slate-400">
+      <footer className="px-5 py-6 pb-24 text-center text-xs text-slate-400">
         <p className="inline-flex items-center justify-center gap-1">
           &copy; {new Date().getFullYear()} {namaBisnis} &mdash; Dibuat otomatis
           oleh{" "}
