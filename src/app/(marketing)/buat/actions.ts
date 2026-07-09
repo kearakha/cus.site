@@ -63,13 +63,8 @@ export async function submitBisnisAction(
     ]);
 
     if (!ai.success) {
-      // Log raw response untuk debugging (server side)
-      if (ai.rawResponse) {
-        console.error(
-          "[submitBisnisAction] AI raw response:",
-          ai.rawResponse.slice(0, 500),
-        );
-      }
+      if (ai.rawResponse)
+        console.error("[ai] raw:", ai.rawResponse.slice(0, 500));
       return {
         success: false,
         error: `Gagal generate copywriting: ${ai.error}`,
