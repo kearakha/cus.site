@@ -16,5 +16,10 @@ export async function GET(request: NextRequest) {
   }
 
   const deleted = await cleanupLoginTokens();
-  return NextResponse.json({ deleted, timestamp: new Date().toISOString() });
+  console.log(`[cron/cleanup-tokens] deleted ${deleted} expired tokens`);
+  return NextResponse.json({
+    ok: true,
+    deleted,
+    timestamp: new Date().toISOString(),
+  });
 }
