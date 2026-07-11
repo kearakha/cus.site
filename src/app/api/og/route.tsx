@@ -76,8 +76,20 @@ export async function GET(request: NextRequest) {
           justifyContent: "space-between",
         }}
       >
-        <div style={{ fontSize: "22px", color: "#64748b" }}>
-          {subdomain}.cus.site
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          {bisnis.logoUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={bisnis.logoUrl}
+              width={48}
+              height={48}
+              style={{ borderRadius: "50%", objectFit: "cover" }}
+              alt=""
+            />
+          )}
+          <div style={{ fontSize: "22px", color: "#64748b" }}>
+            {subdomain}.cus.site
+          </div>
         </div>
         <div
           style={{
