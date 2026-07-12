@@ -72,6 +72,7 @@ const updateKontenSchema = z.object({
     .optional()
     .or(z.literal("")),
   facebook: z.string().max(120).optional().or(z.literal("")),
+  youtubeUrl: z.string().url().max(200).optional().or(z.literal("")),
   // Operasional
   jamBuka: z
     .string()
@@ -165,6 +166,7 @@ export async function updateKontenAction(
         instagram: data.instagram || null,
         tiktok: data.tiktok || null,
         facebook: data.facebook || null,
+        youtubeUrl: data.youtubeUrl || null,
         jamBuka: data.jamBuka || null,
         jamTutup: data.jamTutup || null,
         hariOperasional: data.hariOperasional || null,

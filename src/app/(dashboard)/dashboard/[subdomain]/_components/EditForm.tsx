@@ -33,6 +33,7 @@ type Props = {
     instagram?: string | null;
     tiktok?: string | null;
     facebook?: string | null;
+    youtubeUrl?: string | null;
     jamBuka?: string | null;
     jamTutup?: string | null;
     hariOperasional?: string | null;
@@ -122,6 +123,7 @@ export function EditForm({
   const [instagram, setInstagram] = useState(initialData.instagram || "");
   const [tiktok, setTiktok] = useState(initialData.tiktok || "");
   const [facebook, setFacebook] = useState(initialData.facebook || "");
+  const [youtubeUrl, setYoutubeUrl] = useState(initialData.youtubeUrl || "");
   const [jamBuka, setJamBuka] = useState(initialData.jamBuka || "");
   const [jamTutup, setJamTutup] = useState(initialData.jamTutup || "");
   const [hariOperasional, setHariOperasional] = useState(
@@ -238,6 +240,7 @@ export function EditForm({
         instagram,
         tiktok,
         facebook,
+        youtubeUrl: youtubeUrl || undefined,
         jamBuka,
         jamTutup,
         hariOperasional,
@@ -510,6 +513,18 @@ export function EditForm({
               value={facebook}
               onChange={(e) => setFacebook(e.target.value)}
               placeholder="username atau page slug"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              YouTube
+            </label>
+            <input
+              type="text"
+              value={youtubeUrl}
+              onChange={(e) => setYoutubeUrl(e.target.value)}
+              placeholder="https://youtube.com/@channel"
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
             />
           </div>

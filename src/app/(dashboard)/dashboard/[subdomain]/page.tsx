@@ -132,6 +132,7 @@ export default async function EditBisnisPage({ params }: Props) {
           instagram: bisnis.instagram,
           tiktok: bisnis.tiktok,
           facebook: bisnis.facebook,
+          youtubeUrl: bisnis.youtubeUrl,
           jamBuka: bisnis.jamBuka,
           jamTutup: bisnis.jamTutup,
           hariOperasional: bisnis.hariOperasional,
