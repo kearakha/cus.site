@@ -66,7 +66,7 @@ export function getSocialLinks(bisnis: {
   instagram?: string | null;
   tiktok?: string | null;
   facebook?: string | null;
-  youtube?: string | null;
+  youtubeUrl?: string | null;
 }): SocialLink[] {
   const out: SocialLink[] = [];
   const ig = instagramUrl(bisnis.instagram);
@@ -75,7 +75,7 @@ export function getSocialLinks(bisnis: {
   if (tt) out.push({ kind: "tiktok", url: tt });
   const fb = facebookUrl(bisnis.facebook);
   if (fb) out.push({ kind: "facebook", url: fb });
-  const yt = youtubeUrl(bisnis.youtube);
+  const yt = youtubeUrl(bisnis.youtubeUrl);
   if (yt) out.push({ kind: "youtube", url: yt });
   return out;
 }
