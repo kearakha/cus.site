@@ -36,6 +36,18 @@ export const VIBE_DESCRIPTIONS: Record<VibeOption, { title: string; desc: string
     emoji: '✨',
     fontClass: 'font-elegant',
   },
+  bold: {
+    title: 'Bold & Energik',
+    desc: 'Cocok untuk gym, barbershop modern, streetfood, creative agency.',
+    emoji: '🔥',
+    fontClass: 'font-casual',
+  },
+  minimal: {
+    title: 'Minimal & Bersih',
+    desc: 'Cocok untuk studio desain, freelancer, personal brand. Banyak white space.',
+    emoji: '🌿',
+    fontClass: 'font-professional',
+  },
 };
 
 /**

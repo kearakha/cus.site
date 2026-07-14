@@ -22,7 +22,7 @@ export const JENIS_BISNIS = [
   "Lainnya",
 ] as const;
 
-export const VIBE = ["casual", "professional", "elegant"] as const;
+export const VIBE = ["casual", "professional", "elegant", "bold", "minimal"] as const;
 
 export const HARI_OPERASIONAL = [
   "Setiap Hari",

@@ -47,7 +47,7 @@ export type Step2 = {
 };
 
 export type Step3 = {
-  vibe: 'casual' | 'professional' | 'elegant';
+  vibe: 'casual' | 'professional' | 'elegant' | 'bold' | 'minimal';
 };
 
 export type Step4 = {
