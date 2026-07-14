@@ -9,7 +9,7 @@ export type TenantData = Bisnis & {
   layanan: Layanan[];
 };
 
-export type Vibe = 'casual' | 'professional' | 'elegant';
+export type Vibe = 'casual' | 'professional' | 'elegant' | 'bold' | 'minimal';
 
 export type TemplateProps = {
   data: TenantData;
