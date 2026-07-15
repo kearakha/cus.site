@@ -80,6 +80,54 @@ const SAMPLES = [
       { title: 'Yoga & Meditation', description: 'Sesi pagi di pavilion terbuka, dipandu instruktur bersertifikasi internasional.' },
     ],
   },
+  {
+    subdomain: 'ironcore-gym',
+    namaBisnis: 'IronCore Gym',
+    jenisBisnis: 'Lainnya',
+    lokasi: 'Jl. Gatot Subroto No. 12, Bandung',
+    whatsapp: '6281234567893',
+    email: 'demo@cus.site',
+    vibe: 'bold' as const,
+    accentColor: 'e11d48',
+    heroHeadline: 'Jadikan Tubuhmu Mesin Perang',
+    heroSubtext:
+      'Latihan tanpa batas, trainer bersertifikasi, dan komunitas yang bikin kamu nggak mau skip leg day.',
+    aboutParagraph:
+      'IronCore Gym berdiri untuk mereka yang serius soal kebugaran. Peralatan lengkap, kelas grup yang intens, dan suasana yang bikin adrenalin naik. Buka dari subuh sampai malam, karena dedikasi nggak kenal jam.',
+    ctaText: 'Daftar Sekarang',
+    seoTitle: 'IronCore Gym — Fitness Center Terbaik di Bandung',
+    seoDescription:
+      'Gym modern di Bandung. Peralatan lengkap, personal trainer, kelas grup. Buka 05:00-23:00 setiap hari.',
+    services: [
+      { title: 'Membership Bulanan', description: 'Akses penuh semua fasilitas dan kelas grup selama 30 hari.' },
+      { title: 'Personal Training', description: 'Sesi 1-on-1 dengan trainer bersertifikasi. Program custom sesuai goal.' },
+      { title: 'Kelas HIIT', description: 'Kelas high-intensity interval training 45 menit. Bakar kalori maksimal.' },
+    ],
+  },
+  {
+    subdomain: 'studio-rupa',
+    namaBisnis: 'Studio Rupa',
+    jenisBisnis: 'Jasa Profesional',
+    lokasi: 'Jl. Kemang Raya No. 28, Jakarta Selatan',
+    whatsapp: '6281234567894',
+    email: 'demo@cus.site',
+    vibe: 'minimal' as const,
+    accentColor: '059669',
+    heroHeadline: 'Desain yang Bicara untuk Brand Anda',
+    heroSubtext:
+      'Kami membantu bisnis membangun identitas visual yang konsisten dan berkesan, dari logo hingga kampanye digital.',
+    aboutParagraph:
+      'Studio Rupa adalah studio desain independen yang fokus pada branding dan visual identity. Kami percaya desain yang baik dimulai dari pemahaman mendalam terhadap cerita di balik setiap brand.',
+    ctaText: 'Mulai Proyek',
+    seoTitle: 'Studio Rupa — Branding & Design Studio Jakarta',
+    seoDescription:
+      'Studio desain independen di Jakarta. Branding, logo, packaging, dan kampanye digital. Portofolio lengkap.',
+    services: [
+      { title: 'Brand Identity', description: 'Riset mendalam, logo system, guidelines, dan aset visual lengkap.' },
+      { title: 'Packaging Design', description: 'Desain kemasan yang standout di rak. Dari konsep sampai cetak.' },
+      { title: 'Social Media Kit', description: 'Template konten, tone of voice guide, dan kalender visual.' },
+    ],
+  },
 ];
 
 async function main() {
@@ -142,6 +190,8 @@ async function main() {
   console.log('  http://kopisrawung.localhost:3000     (casual)');
   console.log('  http://klinik-pratama.localhost:3000  (professional)');
   console.log('  http://spa-bali.localhost:3000        (elegant)');
+  console.log('  http://ironcore-gym.localhost:3000    (bold)');
+  console.log('  http://studio-rupa.localhost:3000     (minimal)');
 }
 
 main()
