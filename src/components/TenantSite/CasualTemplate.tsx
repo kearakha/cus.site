@@ -3,6 +3,7 @@ import { buildWhatsappUrl } from "./types";
 import { Coffee, Sparkles, Zap } from "lucide-react";
 import { OperatingHours } from "./OperatingHours";
 import { MapEmbed } from "./MapEmbed";
+import { JsonLd } from "./JsonLd";
 import {
   getSocialLinks,
   InstagramIcon,
@@ -34,8 +35,15 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
       className="min-h-screen bg-white text-slate-900 font-casual"
       style={{ ["--accent" as never]: `#${accent}` }}
     >
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-slate-900 focus:rounded-lg focus:shadow-lg border border-slate-200"
+      >
+        Langsung ke konten
+      </a>
+
       {/* Hero */}
-      <section className="relative overflow-hidden">
+      <section id="main-content" className="relative overflow-hidden">
         {coverUrl ? (
           // === Cover sebagai background hero ===
           <div className="relative h-72 sm:h-96 md:h-[28rem]">
@@ -286,6 +294,7 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
           </svg>
         </a>
       )}
+      <JsonLd data={data} />
     </div>
   );
 }

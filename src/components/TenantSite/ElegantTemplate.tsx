@@ -3,6 +3,7 @@ import { buildWhatsappUrl } from "./types";
 import { Sparkles } from "lucide-react";
 import { OperatingHours } from "./OperatingHours";
 import { MapEmbed } from "./MapEmbed";
+import { JsonLd } from "./JsonLd";
 import {
   getSocialLinks,
   InstagramIcon,
@@ -35,8 +36,15 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
       className="min-h-screen bg-stone-50 text-stone-900 font-elegant"
       style={{ ["--accent" as never]: `#${accent}` }}
     >
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-slate-900 focus:rounded-lg focus:shadow-lg border border-slate-200"
+      >
+        Langsung ke konten
+      </a>
+
       {/* Hero — minimal, asymmetric, generous spacing */}
-      <section className="px-6 py-20 md:py-32">
+      <section id="main-content" className="px-6 py-20 md:py-32">
         <div className="max-w-4xl mx-auto text-center">
           {logoUrl && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -292,6 +300,7 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
           </svg>
         </a>
       )}
+      <JsonLd data={data} />
     </div>
   );
 }

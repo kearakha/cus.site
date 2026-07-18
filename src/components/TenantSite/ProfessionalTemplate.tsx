@@ -3,6 +3,7 @@ import { buildWhatsappUrl } from "./types";
 import { Phone } from "lucide-react";
 import { OperatingHours } from "./OperatingHours";
 import { MapEmbed } from "./MapEmbed";
+import { JsonLd } from "./JsonLd";
 import {
   getSocialLinks,
   InstagramIcon,
@@ -34,8 +35,15 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
       className="min-h-screen bg-white text-slate-900 font-professional"
       style={{ ["--accent" as never]: `#${accent}` }}
     >
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-slate-900 focus:rounded-lg focus:shadow-lg border border-slate-200"
+      >
+        Langsung ke konten
+      </a>
+
       {/* Hero — flat, clean, trust badges */}
-      <section className="px-5 py-16 md:py-24 border-b border-slate-100">
+      <section id="main-content" className="px-5 py-16 md:py-24 border-b border-slate-100">
         <div className="max-w-3xl mx-auto">
           {logoUrl && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -309,6 +317,7 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
           </svg>
         </a>
       )}
+      <JsonLd data={data} />
     </div>
   );
 }
