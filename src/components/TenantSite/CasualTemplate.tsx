@@ -299,7 +299,7 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
   );
 }
 
-// === Sub-component: HeroContent ===
+// === Sub-component: HeroContent (a11y) ===
 // Di-share antara mode dengan cover (overlay bottom) dan tanpa cover (centered).
 // Dipakai untuk mengurangi duplikasi.
 function HeroContent({
