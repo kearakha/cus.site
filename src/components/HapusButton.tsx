@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { hapusBisnisAction } from '@/app/(dashboard)/dashboard/[subdomain]/actions';
+import { ConfirmDialog } from './ConfirmDialog';
 
 type Props = {
   subdomain: string;
@@ -12,22 +13,10 @@ type Props = {
 export function HapusButton({ subdomain, namaBisnis }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [confirming, setConfirming] = useState(false);
+  const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!confirming) {
-    return (
-      <button
-        type="button"
-        onClick={() => setConfirming(true)}
-        className="text-xs text-slate-400 hover:text-red-600"
-      >
-        Hapus
-      </button>
-    );
-  }
-
-  const handleHapus = () => {
+  const handleConfirm = () => {
     setError(null);
     startTransition(async () => {
       const result = await hapusBisnisAction(subdomain);
@@ -35,35 +24,41 @@ export function HapusButton({ subdomain, namaBisnis }: Props) {
         setError(result.error);
         return;
       }
+      setOpen(false);
       // Sukses → refresh dashboard list
       router.refresh();
     });
   };
 
   return (
-    <div className="rounded-lg bg-red-50 border border-red-200 p-3 space-y-2">
-      <p className="text-xs text-red-800">
-        Hapus <strong>{namaBisnis}</strong> selamanya?
-      </p>
-      {error && <p className="text-xs text-red-700">{error}</p>}
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={handleHapus}
-          disabled={isPending}
-          className="text-xs font-semibold text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded disabled:opacity-50"
-        >
-          {isPending ? 'Menghapus...' : 'Ya, hapus'}
-        </button>
-        <button
-          type="button"
-          onClick={() => setConfirming(false)}
-          disabled={isPending}
-          className="text-xs text-slate-600 hover:text-slate-900 px-2 py-1"
-        >
-          Batal
-        </button>
-      </div>
-    </div>
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-xs text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition"
+      >
+        Hapus
+      </button>
+
+      <ConfirmDialog
+        open={open}
+        onClose={() => !isPending && setOpen(false)}
+        onConfirm={handleConfirm}
+        title="Hapus Website"
+        confirmLabel="Ya, Hapus Selamanya"
+        cancelLabel="Batal"
+        isPending={isPending}
+        variant="danger"
+      >
+        <p>
+          Kamu yakin mau hapus <strong>{namaBisnis}</strong>? Semua data
+          termasuk konten AI, layanan, dan gambar akan hilang permanen.
+        </p>
+        {error && (
+          <p className="mt-2 text-xs text-red-600 dark:text-red-400">{error}</p>
+        )}
+      </ConfirmDialog>
+    </>
   );
 }
+
