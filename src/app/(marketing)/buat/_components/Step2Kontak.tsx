@@ -59,7 +59,11 @@ export function Step2Kontak({ defaultValues, onBack, onNext }: Props) {
             type="text"
             placeholder="Contoh: Jl. Kaliurang KM 5, Yogyakarta"
             {...register('lokasi')}
-            className="mt-1.5 w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+            className={`mt-1.5 w-full rounded-lg border px-3.5 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
+              errors.lokasi
+                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10'
+                : 'border-slate-300 focus:border-slate-900 focus:ring-slate-900/10'
+            }`}
           />
           {errors.lokasi && (
             <p className="mt-1.5 text-xs text-red-600">{errors.lokasi.message}</p>
@@ -79,7 +83,11 @@ export function Step2Kontak({ defaultValues, onBack, onNext }: Props) {
             inputMode="numeric"
             placeholder="081234567890 atau 6281234567890"
             {...register('whatsapp')}
-            className="mt-1.5 w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+            className={`mt-1.5 w-full rounded-lg border px-3.5 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
+              errors.whatsapp
+                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10'
+                : 'border-slate-300 focus:border-slate-900 focus:ring-slate-900/10'
+            }`}
           />
           {errors.whatsapp && (
             <p className="mt-1.5 text-xs text-red-600">{errors.whatsapp.message}</p>
@@ -97,7 +105,11 @@ export function Step2Kontak({ defaultValues, onBack, onNext }: Props) {
             autoComplete="email"
             placeholder="kamu@email.com"
             {...register('email')}
-            className="mt-1.5 w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+            className={`mt-1.5 w-full rounded-lg border px-3.5 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
+              errors.email
+                ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10'
+                : 'border-slate-300 focus:border-slate-900 focus:ring-slate-900/10'
+            }`}
           />
           {errors.email && (
             <p className="mt-1.5 text-xs text-red-600">{errors.email.message}</p>

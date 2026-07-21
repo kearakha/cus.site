@@ -53,7 +53,11 @@ export function Step1NamaBisnis({ defaultValues, onNext }: Props) {
           type="text"
           placeholder="Contoh: Kopi Srawung, Salon Makmur"
           {...register('namaBisnis')}
-          className="mt-1.5 w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+          className={`mt-1.5 w-full rounded-lg border px-3.5 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
+            errors.namaBisnis
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10'
+              : 'border-slate-300 focus:border-slate-900 focus:ring-slate-900/10'
+          }`}
         />
         {errors.namaBisnis && (
           <p className="mt-1.5 text-xs text-red-600">{errors.namaBisnis.message}</p>
@@ -67,7 +71,11 @@ export function Step1NamaBisnis({ defaultValues, onNext }: Props) {
         <select
           id="jenisBisnis"
           {...register('jenisBisnis')}
-          className="mt-1.5 w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-slate-900 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 bg-white"
+          className={`mt-1.5 w-full rounded-lg border px-3.5 py-2.5 text-slate-900 focus:outline-none focus:ring-2 bg-white ${
+            errors.jenisBisnis
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10'
+              : 'border-slate-300 focus:border-slate-900 focus:ring-slate-900/10'
+          }`}
         >
           <option value="">Pilih jenis bisnis...</option>
           {JENIS_OPTIONS.map((j) => (
