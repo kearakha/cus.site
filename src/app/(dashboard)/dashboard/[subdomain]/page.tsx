@@ -12,6 +12,7 @@ import {
 import { buildSiteUrl } from "@/components/TenantSite/types";
 import { EditForm } from "./_components/EditForm";
 import { VIBE_DESCRIPTIONS } from "@/app/(marketing)/buat/_components/steps";
+import { AnalyticsWidget } from "@/components/AnalyticsWidget";
 
 type Props = {
   params: { subdomain: string };
@@ -118,39 +119,47 @@ export default async function EditBisnisPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Edit form */}
-      <EditForm
-        subdomain={bisnis.subdomain}
-        bisnisId={bisnis.id}
-        published={bisnis.published}
-        initialData={{
-          namaBisnis: bisnis.namaBisnis,
-          logoUrl: bisnis.logoUrl,
-          coverUrl: bisnis.coverUrl,
-          lokasi: bisnis.lokasi,
-          whatsapp: bisnis.whatsapp,
-          instagram: bisnis.instagram,
-          tiktok: bisnis.tiktok,
-          facebook: bisnis.facebook,
-          youtubeUrl: bisnis.youtubeUrl,
-          jamBuka: bisnis.jamBuka,
-          jamTutup: bisnis.jamTutup,
-          hariOperasional: bisnis.hariOperasional,
-          heroHeadline: bisnis.kontenAI.heroHeadline,
-          heroSubtext: bisnis.kontenAI.heroSubtext,
-          aboutParagraph: bisnis.kontenAI.aboutParagraph,
-          ctaText: bisnis.kontenAI.ctaText,
-          seoTitle: bisnis.kontenAI.seoTitle,
-          seoDescription: bisnis.kontenAI.seoDescription,
-          accentColor: bisnis.kontenAI.accentColor || "f59e0b",
-          services: bisnis.layanan.map((l) => ({
-            title: l.title,
-            description: l.description,
-            harga: l.harga,
-            imageUrl: l.imageUrl,
-          })),
-        }}
-      />
+      {/* Grid Layout for Form & Analytics */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="lg:col-span-2">
+          {/* Edit form */}
+          <EditForm
+            subdomain={bisnis.subdomain}
+            bisnisId={bisnis.id}
+            published={bisnis.published}
+            initialData={{
+              namaBisnis: bisnis.namaBisnis,
+              logoUrl: bisnis.logoUrl,
+              coverUrl: bisnis.coverUrl,
+              lokasi: bisnis.lokasi,
+              whatsapp: bisnis.whatsapp,
+              instagram: bisnis.instagram,
+              tiktok: bisnis.tiktok,
+              facebook: bisnis.facebook,
+              youtubeUrl: bisnis.youtubeUrl,
+              jamBuka: bisnis.jamBuka,
+              jamTutup: bisnis.jamTutup,
+              hariOperasional: bisnis.hariOperasional,
+              heroHeadline: bisnis.kontenAI.heroHeadline,
+              heroSubtext: bisnis.kontenAI.heroSubtext,
+              aboutParagraph: bisnis.kontenAI.aboutParagraph,
+              ctaText: bisnis.kontenAI.ctaText,
+              seoTitle: bisnis.kontenAI.seoTitle,
+              seoDescription: bisnis.kontenAI.seoDescription,
+              accentColor: bisnis.kontenAI.accentColor || "f59e0b",
+              services: bisnis.layanan.map((l) => ({
+                title: l.title,
+                description: l.description,
+                harga: l.harga,
+                imageUrl: l.imageUrl,
+              })),
+            }}
+          />
+        </div>
+        <div className="space-y-6">
+          <AnalyticsWidget bisnisId={bisnis.id} />
+        </div>
+      </div>
     </div>
   );
 }
