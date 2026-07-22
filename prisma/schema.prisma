@@ -165,3 +165,25 @@ model LoginToken {
   @@index([email, expiresAt])
   @@index([expiresAt]) // untuk cleanup query token expired
 }
+
+/// Pencatatan page view per tenant untuk analytics sederhana.
+/// Fire-and-forget dari client — tidak blocking render.
+///
+/// Flow:
+/// 1. Tenant template render → inject tracking pixel/script
+/// 2. Client fires POST /api/track with bisnisId
+/// 3. Server insert row baru (no-auth, lightweight)
+///
+/// Data yang dicatat minimal: siapa (bisnisId), kapan, dari mana (path, referrer).
+/// Tidak ada PII — no cookies, no IP stored.
+model PageView {
+  id        String   @id @default(uuid())
+  bisnisId  String
+  path      String   @default("/")
+  referrer  String?
+  createdAt DateTime @default(now())
+
+  @@index([bisnisId, createdAt])
+  @@index([createdAt]) // untuk cleanup/retention query
+}
+

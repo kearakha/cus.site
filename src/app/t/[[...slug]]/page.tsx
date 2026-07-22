@@ -8,6 +8,7 @@ import { isOwner } from "@/lib/auth";
 import { TemplateRenderer } from "@/components/TenantSite/TemplateRenderer";
 import { buildSiteUrl } from "@/components/TenantSite/types";
 import { FloatingAdminBar } from "@/components/FloatingAdminBar";
+import { Tracker } from "@/components/Tracker";
 
 type Props = {
   params: { slug?: string[] };
@@ -97,6 +98,7 @@ export default async function TenantSitePage({ params }: Props) {
 
   return (
     <>
+      <Tracker bisnisId={bisnis.id} />
       <TemplateRenderer data={bisnis} siteUrl={buildSiteUrl(bisnis)} />
       {isOwnerRequest && (
         <FloatingAdminBar
