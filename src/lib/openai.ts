@@ -146,6 +146,18 @@ const VIBE_GUIDE = {
 - Kata-kata: "eksklusif", "premium", "pengalaman", "terbaik", "kustom"
 - Tone: tenang, sophisticated, understated luxury
 - Cocok untuk: Spa premium, Butik, Restoran fine dining, Galeri seni`,
+
+  bold: `VIBE BOLD (vibrant, berani, high-contrast):
+- Bahasa: pakai "kamu/kita", energik dan to-the-point
+- Kata-kata: "gercep", "gaspol", "juara", "beda", "berani"
+- Tone: lantang, penuh energi, bikin excited
+- Cocok untuk: Gym/fitness, Streetwear, Barbershop modern, F&B kekinian`,
+
+  minimal: `VIBE MINIMAL (bersih, tenang, whitespace-focused):
+- Bahasa: pakai "Anda/kamu" secukupnya, kalimat pendek dan padat
+- Kata-kata: hindari superlatif berlebihan, fokus fakta dan kejelasan
+- Tone: tenang, jujur, tidak berlebihan
+- Cocok untuk: Studio desain, Coworking space, Toko konsep, Jasa fotografi`,
 };
 
 const SYSTEM_PROMPT_STRUCTURED = `Kamu adalah **Cus Engine**, asisten AI internal untuk platform Cus.site.

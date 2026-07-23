@@ -29,7 +29,7 @@ type WizardData = {
   jamBuka?: string;
   jamTutup?: string;
   hariOperasional?: string;
-  vibe?: "casual" | "professional" | "elegant";
+  vibe?: "casual" | "professional" | "elegant" | "bold" | "minimal";
   layanan: LayananItem[];
   subdomain?: string;
 };
@@ -58,7 +58,12 @@ type Action =
         hariOperasional?: string;
       };
     }
-  | { type: "SET_STEP3"; data: { vibe: "casual" | "professional" | "elegant" } }
+  | {
+      type: "SET_STEP3";
+      data: {
+        vibe: "casual" | "professional" | "elegant" | "bold" | "minimal";
+      };
+    }
   | { type: "SET_STEP4"; data: { layanan: LayananItem[] } }
   | { type: "SET_STEP5"; data: { subdomain: string } };
 
