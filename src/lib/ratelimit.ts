@@ -17,6 +17,13 @@ const REDIS_CONFIGURED =
 // Kalau Redis belum dikonfigurasi (dev lokal), bypass rate limit
 const BYPASS_RESULT = { success: true, limit: 999, remaining: 998, reset: 0 };
 
+// Di production, bypass diam-diam berbahaya (env UPSTASH lupa di-set = rate limit mati tanpa jejak)
+if (!REDIS_CONFIGURED && process.env.NODE_ENV === "production") {
+  console.warn(
+    "[ratelimit] UPSTASH_REDIS_REST_URL/TOKEN belum di-set — rate limiting NONAKTIF di production.",
+  );
+}
+
 function getRedis(): Redis {
   if (!REDIS_CONFIGURED) throw new Error("Redis not configured");
   return (_redis ??= new Redis({
