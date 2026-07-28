@@ -128,6 +128,9 @@ model Layanan {
   /// Template render <img> hanya jika ada.
   imageUrl    String?
 
+  /// Foto tambahan (maks 5) untuk galeri produk. Cover (imageUrl) tetap terpisah.
+  imageUrls   String[] @default([])
+
   /// Harga layanan (free-text). Contoh: "Rp 25.000", "mulai 50rb". Opsional.
   harga       String?
 

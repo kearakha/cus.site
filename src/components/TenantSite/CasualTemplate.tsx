@@ -150,6 +150,20 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
                           {s.harga}
                         </p>
                       )}
+                      {s.imageUrls.length > 0 && (
+                        <div className="mt-2 flex gap-2 overflow-x-auto">
+                          {s.imageUrls.map((url, gi) => (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              key={gi}
+                              src={url}
+                              alt={`${s.title} ${gi + 1}`}
+                              loading="lazy"
+                              className="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <span className="text-slate-400 group-hover:text-slate-900 transition text-lg self-center">
                       →

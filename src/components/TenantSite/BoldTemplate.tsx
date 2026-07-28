@@ -44,7 +44,10 @@ export function BoldTemplate({ data, siteUrl }: TemplateProps) {
       </a>
 
       {/* Hero — full-screen, vivid gradient + big text */}
-      <section id="main-content" className="relative min-h-[70vh] md:min-h-[80vh] flex items-end overflow-hidden">
+      <section
+        id="main-content"
+        className="relative min-h-[70vh] md:min-h-[80vh] flex items-end overflow-hidden"
+      >
         {coverUrl ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -81,7 +84,10 @@ export function BoldTemplate({ data, siteUrl }: TemplateProps) {
             )}
             <span
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-6"
-              style={{ backgroundColor: `rgba(255,255,255,0.15)`, color: "white" }}
+              style={{
+                backgroundColor: `rgba(255,255,255,0.15)`,
+                color: "white",
+              }}
             >
               <Zap className="h-3.5 w-3.5" strokeWidth={2.5} />
               {lokasi}
@@ -192,6 +198,20 @@ export function BoldTemplate({ data, siteUrl }: TemplateProps) {
                           >
                             {s.harga}
                           </p>
+                        )}
+                        {s.imageUrls.length > 0 && (
+                          <div className="mt-2 flex gap-2 overflow-x-auto">
+                            {s.imageUrls.map((url, gi) => (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                key={gi}
+                                src={url}
+                                alt={`${s.title} ${gi + 1}`}
+                                loading="lazy"
+                                className="h-14 w-14 flex-shrink-0 rounded-xl object-cover"
+                              />
+                            ))}
+                          </div>
                         )}
                       </div>
                     </div>

@@ -152,6 +152,7 @@ export default async function EditBisnisPage({ params }: Props) {
                 description: l.description,
                 harga: l.harga,
                 imageUrl: l.imageUrl,
+                imageUrls: l.imageUrls,
               })),
             }}
           />

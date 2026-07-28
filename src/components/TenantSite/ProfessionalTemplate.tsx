@@ -43,7 +43,10 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
       </a>
 
       {/* Hero — flat, clean, trust badges */}
-      <section id="main-content" className="px-5 py-16 md:py-24 border-b border-slate-100">
+      <section
+        id="main-content"
+        className="px-5 py-16 md:py-24 border-b border-slate-100"
+      >
         <div className="max-w-3xl mx-auto">
           {logoUrl && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -156,6 +159,20 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
                       >
                         {s.harga}
                       </p>
+                    )}
+                    {s.imageUrls.length > 0 && (
+                      <div className="mt-2 flex gap-2 overflow-x-auto">
+                        {s.imageUrls.map((url, gi) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            key={gi}
+                            src={url}
+                            alt={`${s.title} ${gi + 1}`}
+                            loading="lazy"
+                            className="h-14 w-14 flex-shrink-0 rounded-md object-cover"
+                          />
+                        ))}
+                      </div>
                     )}
                     <a
                       href={buildWhatsappUrl(whatsapp, namaBisnis, s.title)}

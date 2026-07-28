@@ -18,6 +18,7 @@ type ServiceItem = {
   description: string;
   harga?: string | null;
   imageUrl?: string | null;
+  imageUrls?: string[];
 };
 
 type Props = {
@@ -53,6 +54,7 @@ const EMPTY_SERVICE: ServiceItem = {
   description: "",
   harga: "",
   imageUrl: "",
+  imageUrls: [],
 };
 
 // Preset warna: 3 untuk casual, 3 untuk professional, 3 untuk elegant
@@ -175,12 +177,13 @@ export function EditForm({
       if (result.data.aboutParagraph)
         setAboutParagraph(result.data.aboutParagraph);
       if (result.data.services) {
-        // Preserve imageUrl existing per index
+        // Preserve imageUrl/imageUrls existing per index
         setServices((prev) =>
           result.data.services!.map((aiSvc, i) => ({
             title: aiSvc.title,
             description: aiSvc.description,
             imageUrl: prev[i]?.imageUrl || "",
+            imageUrls: prev[i]?.imageUrls || [],
           })),
         );
       }
@@ -256,6 +259,7 @@ export function EditForm({
           description: s.description,
           harga: s.harga || "",
           imageUrl: s.imageUrl || "",
+          imageUrls: s.imageUrls || [],
         })),
       };
 
@@ -727,6 +731,47 @@ export function EditForm({
                     }
                     className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
                   />
+                </div>
+              </div>
+
+              <div className="mt-3">
+                <span className="block text-xs font-medium text-slate-500 mb-1.5">
+                  Galeri tambahan (maks 5)
+                </span>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                  {(svc.imageUrls || []).map((url, gi) => (
+                    <ImageUploader
+                      key={gi}
+                      label=""
+                      value={url}
+                      onChange={(newUrl) =>
+                        updateService(i, {
+                          imageUrls: newUrl
+                            ? (svc.imageUrls || []).map((u, idx) =>
+                                idx === gi ? newUrl : u,
+                              )
+                            : (svc.imageUrls || []).filter(
+                                (_, idx) => idx !== gi,
+                              ),
+                        })
+                      }
+                      aspect="square"
+                    />
+                  ))}
+                  {(svc.imageUrls || []).length < 5 && (
+                    <ImageUploader
+                      key="add-slot"
+                      label=""
+                      value=""
+                      onChange={(newUrl) =>
+                        newUrl &&
+                        updateService(i, {
+                          imageUrls: [...(svc.imageUrls || []), newUrl],
+                        })
+                      }
+                      aspect="square"
+                    />
+                  )}
                 </div>
               </div>
             </div>

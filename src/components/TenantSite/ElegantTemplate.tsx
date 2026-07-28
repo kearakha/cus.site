@@ -143,6 +143,20 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
                         {s.harga}
                       </p>
                     )}
+                    {s.imageUrls.length > 0 && (
+                      <div className="mt-3 flex gap-2 overflow-x-auto">
+                        {s.imageUrls.map((url, gi) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            key={gi}
+                            src={url}
+                            alt={`${s.title} ${gi + 1}`}
+                            loading="lazy"
+                            className="h-14 w-14 flex-shrink-0 object-cover"
+                          />
+                        ))}
+                      </div>
+                    )}
                     <a
                       href={buildWhatsappUrl(whatsapp, namaBisnis, s.title)}
                       target="_blank"

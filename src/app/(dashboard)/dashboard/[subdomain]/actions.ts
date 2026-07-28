@@ -13,19 +13,20 @@ import { aiRatelimit } from "@/lib/ratelimit";
 
 // === Update konten schema ===
 
+const uploadedImageUrlSchema = z
+  .string()
+  .regex(
+    /^https:\/\/[a-zA-Z0-9-]+\.public\.blob\.vercel-storage\.com\/[-\w./]+$/,
+    "URL upload tidak valid",
+  )
+  .max(500);
+
 const serviceInputSchema = z.object({
   title: z.string().min(2).max(60),
   description: z.string().min(5).max(400),
   harga: z.string().max(50).optional().or(z.literal("")),
-  imageUrl: z
-    .string()
-    .regex(
-      /^https:\/\/[a-zA-Z0-9-]+\.public\.blob\.vercel-storage\.com\/[-\w./]+$/,
-      "URL upload tidak valid",
-    )
-    .max(500)
-    .optional()
-    .or(z.literal("")),
+  imageUrl: uploadedImageUrlSchema.optional().or(z.literal("")),
+  imageUrls: z.array(uploadedImageUrlSchema).max(5).default([]),
 });
 
 const updateKontenSchema = z.object({
@@ -204,6 +205,7 @@ export async function updateKontenAction(
           description: s.description,
           harga: s.harga || null,
           imageUrl: s.imageUrl || null,
+          imageUrls: s.imageUrls,
           order: i,
         })),
       });
