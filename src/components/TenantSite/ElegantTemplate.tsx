@@ -1,5 +1,6 @@
+import Image from "next/image";
 import type { TemplateProps } from "./types";
-import { buildWhatsappUrl } from "./types";
+import { buildWhatsappUrl, isSvgUrl } from "./types";
 import { Sparkles } from "lucide-react";
 import { OperatingHours } from "./OperatingHours";
 import { MapEmbed } from "./MapEmbed";
@@ -47,10 +48,13 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
       <section id="main-content" className="px-6 py-20 md:py-32">
         <div className="max-w-4xl mx-auto text-center">
           {logoUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={logoUrl}
               alt={`Logo ${namaBisnis}`}
+              width={64}
+              height={64}
+              priority
+              unoptimized={isSvgUrl(logoUrl)}
               className="mx-auto h-16 w-16 mb-8 rounded-full object-cover ring-2 ring-stone-200"
             />
           )}
@@ -79,12 +83,15 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
       {/* Cover — full-bleed, gallery style */}
       {coverUrl && (
         <section className="px-6 pb-20">
-          <div className="max-w-5xl mx-auto">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <div className="relative max-w-5xl mx-auto h-[28rem] md:h-[36rem]">
+            <Image
               src={coverUrl}
               alt={`Suasana ${namaBisnis}`}
-              className="w-full h-[28rem] md:h-[36rem] object-cover"
+              fill
+              sizes="(min-width: 1024px) 1024px, 100vw"
+              priority
+              unoptimized={isSvgUrl(coverUrl)}
+              className="object-cover"
             />
           </div>
         </section>
@@ -119,13 +126,16 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
                   className="bg-stone-50 hover:bg-white transition-colors duration-500"
                 >
                   {s.imageUrl && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={s.imageUrl}
-                      alt={s.title}
-                      loading="lazy"
-                      className="w-full aspect-[4/3] object-cover"
-                    />
+                    <div className="relative w-full aspect-[4/3]">
+                      <Image
+                        src={s.imageUrl}
+                        alt={s.title}
+                        fill
+                        sizes="(min-width: 768px) 50vw, 100vw"
+                        unoptimized={isSvgUrl(s.imageUrl)}
+                        className="object-cover"
+                      />
+                    </div>
                   )}
                   <div className="p-10 md:p-12">
                     <h3 className="font-serif text-2xl md:text-3xl mb-4 font-light">
@@ -146,12 +156,13 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
                     {s.imageUrls.length > 0 && (
                       <div className="mt-3 flex gap-2 overflow-x-auto">
                         {s.imageUrls.map((url, gi) => (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
+                          <Image
                             key={gi}
                             src={url}
                             alt={`${s.title} ${gi + 1}`}
-                            loading="lazy"
+                            width={56}
+                            height={56}
+                            unoptimized={isSvgUrl(url)}
                             className="h-14 w-14 flex-shrink-0 object-cover"
                           />
                         ))}
@@ -330,10 +341,12 @@ function NoContentPlaceholder({
     <div className="min-h-screen flex items-center justify-center px-5">
       <div className="text-center max-w-md">
         {logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={logoUrl}
             alt={nama}
+            width={56}
+            height={56}
+            unoptimized={isSvgUrl(logoUrl)}
             className="mx-auto h-14 w-14 mb-4 rounded-full object-cover"
           />
         )}

@@ -1,5 +1,6 @@
+import Image from "next/image";
 import type { TemplateProps } from "./types";
-import { buildWhatsappUrl } from "./types";
+import { buildWhatsappUrl, isSvgUrl } from "./types";
 import { OperatingHours } from "./OperatingHours";
 import { MapEmbed } from "./MapEmbed";
 import { JsonLd } from "./JsonLd";
@@ -48,10 +49,13 @@ export function MinimalTemplate({ data, siteUrl }: TemplateProps) {
         className="px-6 md:px-12 py-20 md:py-32 max-w-3xl"
       >
         {logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={logoUrl}
             alt={`Logo ${namaBisnis}`}
+            width={40}
+            height={40}
+            priority
+            unoptimized={isSvgUrl(logoUrl)}
             className="h-10 w-10 mb-10 rounded-lg object-cover"
           />
         )}
@@ -78,12 +82,15 @@ export function MinimalTemplate({ data, siteUrl }: TemplateProps) {
       {/* Cover — contained, subtle */}
       {coverUrl && (
         <section className="px-6 md:px-12 pb-16">
-          <div className="max-w-4xl">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <div className="relative max-w-4xl h-64 md:h-[28rem]">
+            <Image
               src={coverUrl}
               alt={`Suasana ${namaBisnis}`}
-              className="w-full h-64 md:h-[28rem] object-cover rounded-lg"
+              fill
+              sizes="(min-width: 1024px) 896px, 100vw"
+              priority
+              unoptimized={isSvgUrl(coverUrl)}
+              className="object-cover rounded-lg"
             />
           </div>
         </section>
@@ -112,13 +119,14 @@ export function MinimalTemplate({ data, siteUrl }: TemplateProps) {
               {layanan.map((s) => (
                 <div key={s.id} className="py-8 flex gap-6">
                   {s.imageUrl && (
-                    <div className="flex-shrink-0 h-16 w-16 rounded-lg overflow-hidden bg-slate-50">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                    <div className="relative flex-shrink-0 h-16 w-16 rounded-lg overflow-hidden bg-slate-50">
+                      <Image
                         src={s.imageUrl}
                         alt={s.title}
-                        loading="lazy"
-                        className="h-full w-full object-cover"
+                        fill
+                        sizes="64px"
+                        unoptimized={isSvgUrl(s.imageUrl)}
+                        className="object-cover"
                       />
                     </div>
                   )}
@@ -148,12 +156,13 @@ export function MinimalTemplate({ data, siteUrl }: TemplateProps) {
                     {s.imageUrls.length > 0 && (
                       <div className="mt-3 flex gap-2 overflow-x-auto">
                         {s.imageUrls.map((url, gi) => (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
+                          <Image
                             key={gi}
                             src={url}
                             alt={`${s.title} ${gi + 1}`}
-                            loading="lazy"
+                            width={56}
+                            height={56}
+                            unoptimized={isSvgUrl(url)}
                             className="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
                           />
                         ))}
@@ -314,10 +323,12 @@ function NoContentPlaceholder({
     <div className="min-h-screen flex items-center justify-center px-5">
       <div className="text-center max-w-md">
         {logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={logoUrl}
             alt={nama}
+            width={40}
+            height={40}
+            unoptimized={isSvgUrl(logoUrl)}
             className="mx-auto h-10 w-10 mb-4 rounded-lg object-cover"
           />
         )}
