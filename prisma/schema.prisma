@@ -79,6 +79,7 @@ model Bisnis {
 
   kontenAI    KontenWebsite?
   layanan     Layanan[]
+  pageViews   PageView[]
 
   @@index([vibe])
   @@index([published])
@@ -179,9 +180,15 @@ model LoginToken {
 ///
 /// Data yang dicatat minimal: siapa (bisnisId), kapan, dari mana (path, referrer).
 /// Tidak ada PII — no cookies, no IP stored.
+///
+/// FK ke Bisnis sengaja ada supaya DB yang nolak bisnisId ngawur — endpoint /api/track
+/// itu public tanpa auth, jadi tanpa FK siapa pun bisa nyuntik row dengan id palsu.
+/// Validasi di DB = nol query tambahan di hot path. Cascade bikin row ikut kehapus
+/// waktu bisnisnya dihapus (dulu jadi orphan).
 model PageView {
   id        String   @id @default(uuid())
   bisnisId  String
+  bisnis    Bisnis   @relation(fields: [bisnisId], references: [id], onDelete: Cascade)
   path      String   @default("/")
   referrer  String?
   createdAt DateTime @default(now())
