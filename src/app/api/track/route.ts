@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/db";
+import { trackRatelimit } from "@/lib/ratelimit";
 
 /**
  * POST /api/track
@@ -10,30 +12,51 @@ import { prisma } from '@/lib/db';
  * Body: { bisnisId: string, path?: string, referrer?: string }
  *
  * No auth required — public endpoint, minimal data, no PII.
- * Responds quickly to not block client rendering.
+ * IP dipakai HANYA sebagai kunci rate limit, tidak pernah disimpan.
+ *
+ * Tiga lapis, karena endpoint ini terbuka untuk siapa pun:
+ * 1. Rate limit per IP  → batasi volume
+ * 2. Cek bentuk UUID    → tolak sampah tanpa nyentuh DB
+ * 3. FK di DB (P2003)   → tolak bisnisId yang bentuknya benar tapi tidak ada
  */
 export async function POST(req: NextRequest) {
+  const ip = req.ip ?? req.headers.get("x-forwarded-for") ?? "unknown";
+
+  // Fail-open: Redis tidak reachable (outage, env salah) jangan ikut mematikan
+  // tracking. Sengaja beda dari login/verify/upload/AI yang fail-closed — di
+  // sana gagal-terbuka berarti rate limit hilang di jalur sensitif. Di sini yang
+  // hilang cuma perlindungan volume tabel analytics.
+  const rlOk = await trackRatelimit
+    .limit(ip)
+    .then((r) => r.success)
+    .catch(() => true);
+  if (!rlOk) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   try {
     const body = await req.json();
     const { bisnisId, path, referrer } = body;
 
-    if (!bisnisId || typeof bisnisId !== 'string') {
-      return NextResponse.json({ error: 'bisnisId required' }, { status: 400 });
+    if (!z.string().uuid().safeParse(bisnisId).success) {
+      return NextResponse.json({ error: "bisnisId required" }, { status: 400 });
     }
 
-    // Fire-and-forget — don't await, respond immediately
-    // We still await here for serverless compatibility, but keep it fast
     await prisma.pageView.create({
       data: {
         bisnisId,
-        path: typeof path === 'string' ? path.slice(0, 500) : '/',
-        referrer: typeof referrer === 'string' ? referrer.slice(0, 500) : null,
+        path: typeof path === "string" ? path.slice(0, 500) : "/",
+        referrer: typeof referrer === "string" ? referrer.slice(0, 500) : null,
       },
     });
 
     return NextResponse.json({ ok: true });
-  } catch {
-    // Swallow errors — tracking should never break the user experience
+  } catch (err) {
+    // FK violation = bisnisId tidak ada. Salah client, bukan salah server.
+    if ((err as { code?: string })?.code === "P2003") {
+      return NextResponse.json({ error: "unknown bisnisId" }, { status: 400 });
+    }
+    // Sisanya ditelan — tracking tidak boleh merusak pengalaman pengunjung.
     return NextResponse.json({ ok: false }, { status: 500 });
   }
 }
