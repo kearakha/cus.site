@@ -1,5 +1,6 @@
+import Image from "next/image";
 import type { TemplateProps } from "./types";
-import { buildWhatsappUrl } from "./types";
+import { buildWhatsappUrl, isSvgUrl } from "./types";
 import { Coffee, Sparkles, Zap } from "lucide-react";
 import { OperatingHours } from "./OperatingHours";
 import { MapEmbed } from "./MapEmbed";
@@ -47,11 +48,14 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
         {coverUrl ? (
           // === Cover sebagai background hero ===
           <div className="relative h-72 sm:h-96 md:h-[28rem]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={coverUrl}
               alt={`Cover ${namaBisnis}`}
-              className="absolute inset-0 h-full w-full object-cover"
+              fill
+              sizes="100vw"
+              priority
+              unoptimized={isSvgUrl(coverUrl)}
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-white via-white/60 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 px-5 pb-8">
@@ -117,13 +121,14 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
                     className="group flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-4 hover:border-slate-900 hover:shadow-md transition"
                   >
                     {s.imageUrl && (
-                      <div className="flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-xl bg-slate-100">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
+                      <div className="relative flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20 overflow-hidden rounded-xl bg-slate-100">
+                        <Image
                           src={s.imageUrl}
                           alt={s.title}
-                          loading="lazy"
-                          className="h-full w-full object-cover"
+                          fill
+                          sizes="80px"
+                          unoptimized={isSvgUrl(s.imageUrl)}
+                          className="object-cover"
                         />
                       </div>
                     )}
@@ -153,12 +158,13 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
                       {s.imageUrls.length > 0 && (
                         <div className="mt-2 flex gap-2 overflow-x-auto">
                           {s.imageUrls.map((url, gi) => (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
+                            <Image
                               key={gi}
                               src={url}
                               alt={`${s.title} ${gi + 1}`}
-                              loading="lazy"
+                              width={56}
+                              height={56}
+                              unoptimized={isSvgUrl(url)}
                               className="h-14 w-14 flex-shrink-0 rounded-lg object-cover"
                             />
                           ))}
@@ -334,10 +340,13 @@ function HeroContent({
   return (
     <>
       {logoUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={logoUrl}
           alt={`Logo ${namaBisnis}`}
+          width={80}
+          height={80}
+          priority
+          unoptimized={isSvgUrl(logoUrl)}
           className="mx-auto h-16 w-16 sm:h-20 sm:w-20 mb-4 rounded-2xl object-cover bg-white shadow-lg ring-4 ring-white"
         />
       )}
@@ -381,10 +390,12 @@ function NoContentPlaceholder({
     <div className="min-h-screen flex items-center justify-center px-5">
       <div className="text-center max-w-md">
         {logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={logoUrl}
             alt={nama}
+            width={64}
+            height={64}
+            unoptimized={isSvgUrl(logoUrl)}
             className="mx-auto h-16 w-16 mb-4 rounded-xl object-cover"
           />
         )}

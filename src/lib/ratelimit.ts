@@ -9,6 +9,7 @@ let _loginRl: Ratelimit | undefined;
 let _verifyRl: Ratelimit | undefined;
 let _uploadRl: Ratelimit | undefined;
 let _aiRl: Ratelimit | undefined;
+let _trackRl: Ratelimit | undefined;
 
 const REDIS_CONFIGURED =
   !!process.env.UPSTASH_REDIS_REST_URL &&
@@ -65,6 +66,25 @@ export const uploadRatelimit = {
           redis: getRedis(),
           limiter: Ratelimit.slidingWindow(10, "1 m"),
           prefix: "rl:upload",
+        })).limit(id),
+};
+
+/**
+ * 60 page view per menit per IP. /api/track itu public tanpa auth — tanpa ini
+ * siapa pun bisa loop POST dan numpuk row analytics tanpa batas.
+ *
+ * ponytail: per-IP, dan IP operator seluler itu NAT (banyak pengunjung, satu IP).
+ * 60/menit jauh di atas trafik wajar UMKM, tapi kalau ada tenant yang ramai,
+ * ini angka pertama yang perlu dinaikin — atau ganti key-nya jadi IP+bisnisId.
+ */
+export const trackRatelimit = {
+  limit: (id: string) =>
+    !REDIS_CONFIGURED
+      ? Promise.resolve(BYPASS_RESULT)
+      : (_trackRl ??= new Ratelimit({
+          redis: getRedis(),
+          limiter: Ratelimit.slidingWindow(60, "1 m"),
+          prefix: "rl:track",
         })).limit(id),
 };
 

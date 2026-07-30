@@ -1,5 +1,6 @@
+import Image from "next/image";
 import type { TemplateProps } from "./types";
-import { buildWhatsappUrl } from "./types";
+import { buildWhatsappUrl, isSvgUrl } from "./types";
 import { Phone } from "lucide-react";
 import { OperatingHours } from "./OperatingHours";
 import { MapEmbed } from "./MapEmbed";
@@ -49,10 +50,13 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
       >
         <div className="max-w-3xl mx-auto">
           {logoUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={logoUrl}
               alt={`Logo ${namaBisnis}`}
+              width={56}
+              height={56}
+              priority
+              unoptimized={isSvgUrl(logoUrl)}
               className="h-14 w-14 mb-6 rounded-lg object-cover ring-2 ring-slate-100"
             />
           )}
@@ -94,12 +98,17 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
       {coverUrl && (
         <section className="border-b border-slate-100">
           <div className="max-w-4xl mx-auto px-5 py-10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={coverUrl}
-              alt={`Suasana ${namaBisnis}`}
-              className="w-full h-64 md:h-96 object-cover rounded-lg"
-            />
+            <div className="relative h-64 md:h-96">
+              <Image
+                src={coverUrl}
+                alt={`Suasana ${namaBisnis}`}
+                fill
+                sizes="(min-width: 1024px) 896px, 100vw"
+                priority
+                unoptimized={isSvgUrl(coverUrl)}
+                className="object-cover rounded-lg"
+              />
+            </div>
           </div>
         </section>
       )}
@@ -130,13 +139,14 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
               {layanan.map((s, i) => (
                 <div key={s.id} className="p-6 flex gap-4">
                   {s.imageUrl ? (
-                    <div className="flex-shrink-0 h-20 w-20 rounded-md overflow-hidden bg-slate-100">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                    <div className="relative flex-shrink-0 h-20 w-20 rounded-md overflow-hidden bg-slate-100">
+                      <Image
                         src={s.imageUrl}
                         alt={s.title}
-                        loading="lazy"
-                        className="h-full w-full object-cover"
+                        fill
+                        sizes="80px"
+                        unoptimized={isSvgUrl(s.imageUrl)}
+                        className="object-cover"
                       />
                     </div>
                   ) : (
@@ -163,12 +173,13 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
                     {s.imageUrls.length > 0 && (
                       <div className="mt-2 flex gap-2 overflow-x-auto">
                         {s.imageUrls.map((url, gi) => (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
+                          <Image
                             key={gi}
                             src={url}
                             alt={`${s.title} ${gi + 1}`}
-                            loading="lazy"
+                            width={56}
+                            height={56}
+                            unoptimized={isSvgUrl(url)}
                             className="h-14 w-14 flex-shrink-0 rounded-md object-cover"
                           />
                         ))}
@@ -350,10 +361,12 @@ function NoContentPlaceholder({
     <div className="min-h-screen flex items-center justify-center px-5">
       <div className="text-center max-w-md">
         {logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={logoUrl}
             alt={nama}
+            width={56}
+            height={56}
+            unoptimized={isSvgUrl(logoUrl)}
             className="mx-auto h-14 w-14 mb-4 rounded-lg object-cover"
           />
         )}

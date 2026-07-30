@@ -151,6 +151,22 @@ export function middleware(request: NextRequest) {
     const cleanPath =
       url.pathname !== "/" ? url.pathname.replace(/\/+$/, "") : "/";
 
+    // === API route dari host tenant: JANGAN di-rewrite ===
+    // `/t/[[...slug]]` itu optional catch-all, jadi /api/track dari host tenant
+    // ikut kena rewrite jadi /t/{sub}/api/track dan match page component itu.
+    // Akibatnya POST /api/track balas 200 + HTML tenant page (bukan 405 — page
+    // route tetap render), route handler-nya tidak pernah jalan, dan tiap
+    // request bayar satu full page render. Ini yang bikin PageView selalu kosong.
+    //
+    // Subdomain tetap diteruskan sebagai REQUEST header supaya API route bisa
+    // tau tenant asal request-nya.
+    if (cleanPath.startsWith("/api/")) {
+      const apiHeaders = new Headers(request.headers);
+      apiHeaders.set("x-cus-subdomain", subdomain);
+      apiHeaders.set("x-cus-host", host);
+      return NextResponse.next({ request: { headers: apiHeaders } });
+    }
+
     // sitemap.xml per tenant → API route (tidak bisa masuk [[...slug]])
     if (cleanPath === "/sitemap.xml") {
       url.pathname = "/api/sitemap";

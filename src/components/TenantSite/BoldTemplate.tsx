@@ -1,5 +1,6 @@
+import Image from "next/image";
 import type { TemplateProps } from "./types";
-import { buildWhatsappUrl } from "./types";
+import { buildWhatsappUrl, isSvgUrl } from "./types";
 import { Zap } from "lucide-react";
 import { OperatingHours } from "./OperatingHours";
 import { MapEmbed } from "./MapEmbed";
@@ -50,11 +51,14 @@ export function BoldTemplate({ data, siteUrl }: TemplateProps) {
       >
         {coverUrl ? (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={coverUrl}
               alt={`Cover ${namaBisnis}`}
-              className="absolute inset-0 h-full w-full object-cover"
+              fill
+              sizes="100vw"
+              priority
+              unoptimized={isSvgUrl(coverUrl)}
+              className="object-cover"
             />
             <div
               className="absolute inset-0"
@@ -75,10 +79,13 @@ export function BoldTemplate({ data, siteUrl }: TemplateProps) {
         <div className="relative z-10 w-full px-5 pb-12 md:pb-20 pt-20">
           <div className="max-w-4xl mx-auto">
             {logoUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={logoUrl}
                 alt={`Logo ${namaBisnis}`}
+                width={64}
+                height={64}
+                priority
+                unoptimized={isSvgUrl(logoUrl)}
                 className="h-14 w-14 md:h-16 md:w-16 mb-6 rounded-xl object-cover ring-2 ring-white/30"
               />
             )}
@@ -167,13 +174,14 @@ export function BoldTemplate({ data, siteUrl }: TemplateProps) {
                     />
                     <div className="relative z-10 flex gap-4">
                       {s.imageUrl ? (
-                        <div className="flex-shrink-0 h-16 w-16 rounded-xl overflow-hidden">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
+                        <div className="relative flex-shrink-0 h-16 w-16 rounded-xl overflow-hidden">
+                          <Image
                             src={s.imageUrl}
                             alt={s.title}
-                            loading="lazy"
-                            className="h-full w-full object-cover"
+                            fill
+                            sizes="64px"
+                            unoptimized={isSvgUrl(s.imageUrl)}
+                            className="object-cover"
                           />
                         </div>
                       ) : (
@@ -202,12 +210,13 @@ export function BoldTemplate({ data, siteUrl }: TemplateProps) {
                         {s.imageUrls.length > 0 && (
                           <div className="mt-2 flex gap-2 overflow-x-auto">
                             {s.imageUrls.map((url, gi) => (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
+                              <Image
                                 key={gi}
                                 src={url}
                                 alt={`${s.title} ${gi + 1}`}
-                                loading="lazy"
+                                width={56}
+                                height={56}
+                                unoptimized={isSvgUrl(url)}
                                 className="h-14 w-14 flex-shrink-0 rounded-xl object-cover"
                               />
                             ))}
@@ -399,10 +408,12 @@ function NoContentPlaceholder({
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-5">
       <div className="text-center max-w-md">
         {logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={logoUrl}
             alt={nama}
+            width={64}
+            height={64}
+            unoptimized={isSvgUrl(logoUrl)}
             className="mx-auto h-16 w-16 mb-4 rounded-xl object-cover"
           />
         )}
