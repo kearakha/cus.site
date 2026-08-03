@@ -104,12 +104,11 @@ function extractSubdomain(host: string): string | null {
   // 5. Vercel preview / production deployment
   //    Contoh: cus-site.vercel.app, kopisrawung-git-main-rakha.vercel.app
   if (hostname.endsWith(".vercel.app")) {
-    const parts = hostname.split(".");
-    // Ambil segment pertama. Vercel format: <project>-git-<branch>-<user>.vercel.app
-    const first = parts[0];
-    // Kalau cuma project utama (no subdomain), biarkan
-    if (first === hostname) return null;
-    // Strip suffix khas Vercel ("-git-main-xxx")
+    // Vercel preview format: <project>-git-<branch>-<user>.vercel.app
+    // Domain default project sendiri (mis. cus-gold.vercel.app,
+    // cus-rakha-projects.vercel.app) BUKAN tenant — harus tanpa "-git-".
+    const first = hostname.split(".")[0];
+    if (!first.includes("-git-")) return null;
     const sub = first.split("-git-")[0];
     if (!sub || RESERVED_SUBDOMAINS.has(sub)) return null;
     return sub;
