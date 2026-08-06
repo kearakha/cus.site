@@ -1,34 +1,34 @@
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
-import { Rocket, Sparkles } from 'lucide-react';
-import { getOwnedBusinesses, buildAccessLink } from '@/lib/auth';
-import { buildSiteUrl } from '@/components/TenantSite/types';
-import { HapusButton } from '@/components/HapusButton';
-import { AccessLinkCard } from '@/components/AccessLinkCard';
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { Rocket, Sparkles, Eye } from "lucide-react";
+import { getOwnedBusinesses, buildAccessLink } from "@/lib/auth";
+import { buildSiteUrl } from "@/components/TenantSite/types";
+import { HapusButton } from "@/components/HapusButton";
+import { AccessLinkCard } from "@/components/AccessLinkCard";
 
 export const metadata = {
-  title: 'Dashboard — Cus.site',
+  title: "Dashboard — Cus.site",
 };
 
 const VIBE_LABEL: Record<string, string> = {
-  casual: 'Santai',
-  professional: 'Profesional',
-  elegant: 'Elegan',
-  bold: 'Bold',
-  minimal: 'Minimal',
+  casual: "Santai",
+  professional: "Profesional",
+  elegant: "Elegan",
+  bold: "Bold",
+  minimal: "Minimal",
 };
 
 const VIBE_COLOR: Record<string, string> = {
-  casual: 'bg-amber-100 text-amber-800',
-  professional: 'bg-blue-100 text-blue-800',
-  elegant: 'bg-stone-200 text-stone-800',
-  bold: 'bg-rose-100 text-rose-800',
-  minimal: 'bg-emerald-100 text-emerald-800',
+  casual: "bg-amber-100 text-amber-800",
+  professional: "bg-blue-100 text-blue-800",
+  elegant: "bg-stone-200 text-stone-800",
+  bold: "bg-rose-100 text-rose-800",
+  minimal: "bg-emerald-100 text-emerald-800",
 };
 
 export default async function DashboardPage() {
   const businesses = await getOwnedBusinesses();
-  if (!businesses) redirect('/');
+  if (!businesses) redirect("/");
 
   return (
     <div>
@@ -39,8 +39,8 @@ export default async function DashboardPage() {
           </h1>
           <p className="mt-1 text-sm text-slate-600">
             {businesses.length === 0
-              ? 'Kamu belum punya website.'
-              : `${businesses.length} website${businesses.length > 1 ? '' : ''} aktif.`}
+              ? "Kamu belum punya website."
+              : `${businesses.length} website${businesses.length > 1 ? "" : ""} aktif.`}
           </p>
         </div>
         <Link
@@ -65,8 +65,8 @@ export default async function DashboardPage() {
                 <div
                   className="sm:w-48 h-20 sm:h-auto flex sm:flex-col items-center sm:items-start justify-between sm:justify-center p-5"
                   style={{
-                    backgroundColor: `#${b.kontenAI?.accentColor || '64748b'}15`,
-                    borderBottom: `2px solid #${b.kontenAI?.accentColor || '64748b'}`,
+                    backgroundColor: `#${b.kontenAI?.accentColor || "64748b"}15`,
+                    borderBottom: `2px solid #${b.kontenAI?.accentColor || "64748b"}`,
                   }}
                 >
                   <p className="text-xs font-mono text-slate-700 font-semibold truncate">
@@ -74,7 +74,7 @@ export default async function DashboardPage() {
                   </p>
                   <span
                     className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                      VIBE_COLOR[b.vibe] || 'bg-slate-100 text-slate-600'
+                      VIBE_COLOR[b.vibe] || "bg-slate-100 text-slate-600"
                     }`}
                   >
                     {VIBE_LABEL[b.vibe] || b.vibe}
@@ -89,13 +89,15 @@ export default async function DashboardPage() {
                         {b.namaBisnis}
                       </h2>
                       <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
-                        {b.kontenAI?.heroHeadline || 'Belum ada konten'}
+                        {b.kontenAI?.heroHeadline || "Belum ada konten"}
                       </p>
                     </div>
                   </div>
 
-                  <p className="text-xs text-slate-500 truncate">
-                    {b.lokasi} · {b._count.layanan} layanan
+                  <p className="text-xs text-slate-500 truncate inline-flex items-center gap-1">
+                    {b.lokasi} · {b._count.layanan} layanan ·
+                    <Eye className="h-3 w-3" strokeWidth={2} />
+                    {b._count.pageViews.toLocaleString("id-ID")} views
                   </p>
 
                   <div className="flex items-center justify-between pt-2 border-t border-slate-100">
@@ -115,7 +117,10 @@ export default async function DashboardPage() {
                         Edit →
                       </Link>
                     </div>
-                    <HapusButton subdomain={b.subdomain} namaBisnis={b.namaBisnis} />
+                    <HapusButton
+                      subdomain={b.subdomain}
+                      namaBisnis={b.namaBisnis}
+                    />
                   </div>
                 </div>
               </div>
@@ -132,7 +137,8 @@ export default async function DashboardPage() {
             Tips: Simpan link akses kamu
           </h3>
           <p className="text-xs text-amber-800 mt-1 mb-3">
-            Kalau clear cookies / ganti device, pakai link ini untuk balik ke dashboard tanpa perlu daftar ulang.
+            Kalau clear cookies / ganti device, pakai link ini untuk balik ke
+            dashboard tanpa perlu daftar ulang.
           </p>
           <AccessLinkCard link={buildAccessLink(businesses[0].ownerToken)} />
         </div>

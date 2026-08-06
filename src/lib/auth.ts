@@ -403,7 +403,7 @@ export async function getOwnedBusinesses() {
       where: { email: sessionEmail.toLowerCase() },
       include: {
         kontenAI: { select: { heroHeadline: true, accentColor: true } },
-        _count: { select: { layanan: true } },
+        _count: { select: { layanan: true, pageViews: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -415,7 +415,7 @@ export async function getOwnedBusinesses() {
       where: { ownerToken },
       include: {
         kontenAI: { select: { heroHeadline: true, accentColor: true } },
-        _count: { select: { layanan: true } },
+        _count: { select: { layanan: true, pageViews: true } },
       },
       orderBy: { createdAt: "desc" },
     });
