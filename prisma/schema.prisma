@@ -191,6 +191,7 @@ model PageView {
   bisnis    Bisnis   @relation(fields: [bisnisId], references: [id], onDelete: Cascade)
   path      String   @default("/")
   referrer  String?
+  type      String   @default("view") // "view" | "wa_click"
   createdAt DateTime @default(now())
 
   @@index([bisnisId, createdAt])

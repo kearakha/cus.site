@@ -9,7 +9,7 @@ import { trackRatelimit } from "@/lib/ratelimit";
  * Lightweight page view tracking endpoint.
  * Called from tenant templates via fire-and-forget fetch.
  *
- * Body: { bisnisId: string, path?: string, referrer?: string }
+ * Body: { bisnisId: string, path?: string, referrer?: string, type?: "view" | "wa_click" }
  *
  * No auth required — public endpoint, minimal data, no PII.
  * IP dipakai HANYA sebagai kunci rate limit, tidak pernah disimpan.
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { bisnisId, path, referrer } = body;
+    const { bisnisId, path, referrer, type } = body;
 
     if (!z.string().uuid().safeParse(bisnisId).success) {
       return NextResponse.json({ error: "bisnisId required" }, { status: 400 });
@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
         bisnisId,
         path: typeof path === "string" ? path.slice(0, 500) : "/",
         referrer: typeof referrer === "string" ? referrer.slice(0, 500) : null,
+        type: type === "wa_click" ? "wa_click" : "view",
       },
     });
 
