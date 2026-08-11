@@ -20,13 +20,14 @@ export async function AnalyticsWidget({ bisnisId }: Props) {
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
   // Parallel queries for efficiency
-  const [totalViews, recentViews, topReferrers] = await Promise.all([
+  const [totalViews, recentViews, topReferrers, waClicks] = await Promise.all([
     prisma.pageView.count({
-      where: { bisnisId },
+      where: { bisnisId, type: "view" },
     }),
     prisma.pageView.findMany({
       where: {
         bisnisId,
+        type: "view",
         createdAt: { gte: sevenDaysAgo },
       },
       select: { createdAt: true },
@@ -34,10 +35,13 @@ export async function AnalyticsWidget({ bisnisId }: Props) {
     }),
     prisma.pageView.groupBy({
       by: ["referrer"],
-      where: { bisnisId, createdAt: { gte: sevenDaysAgo } },
+      where: { bisnisId, type: "view", createdAt: { gte: sevenDaysAgo } },
       _count: { referrer: true },
       orderBy: { _count: { referrer: "desc" } },
       take: 5,
+    }),
+    prisma.pageView.count({
+      where: { bisnisId, type: "wa_click", createdAt: { gte: sevenDaysAgo } },
     }),
   ]);
 
@@ -63,7 +67,7 @@ export async function AnalyticsWidget({ bisnisId }: Props) {
         </h3>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-3 gap-4 mb-4">
         <div>
           <p className="text-2xl font-bold text-slate-900 dark:text-white">
             {totalViews.toLocaleString("id-ID")}
@@ -84,6 +88,14 @@ export async function AnalyticsWidget({ bisnisId }: Props) {
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             7 hari terakhir
+          </p>
+        </div>
+        <div>
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">
+            {waClicks.toLocaleString("id-ID")}
+          </p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Klik WhatsApp
           </p>
         </div>
       </div>
