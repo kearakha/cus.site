@@ -6,6 +6,7 @@ import { OperatingHours } from "./OperatingHours";
 import { MapEmbed } from "./MapEmbed";
 import { JsonLd } from "./JsonLd";
 import { WaLink } from "./WaLink";
+import { rootUrl } from "@/lib/domain";
 import {
   getSocialLinks,
   InstagramIcon,
@@ -287,7 +288,7 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
         <p className="inline-flex items-center justify-center gap-1">
           &copy; {new Date().getFullYear()} {namaBisnis} &mdash; Dibuat otomatis
           oleh{" "}
-          <a href="https://cus.site" className="hover:text-slate-600 underline">
+          <a href={rootUrl()} className="hover:text-slate-600 underline">
             Cus.site
           </a>
           <Zap className="h-3 w-3" strokeWidth={2.5} />

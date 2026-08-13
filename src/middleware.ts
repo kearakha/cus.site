@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { extractSubdomain, VALID_SLUG_PATTERN } from "@/lib/domain";
 
 /**
  * Cus.site — Multi-Tenant Subdomain Middleware
@@ -30,101 +31,16 @@ import { NextRequest, NextResponse } from "next/server";
  *   ✓ Clean, easy to debug
  *
  * Contoh flow:
- *   kopisrawung.cus.site/        → rewrite → /t/kopisrawung        → tenant ✅
- *   kopisrawung.cus.site/about   → rewrite → /t/kopisrawung/about  → tenant ✅
- *   cus.site/                    → no rewrite → /                  → marketing ✅
- *   cus.site/buat                → no rewrite → /buat              → wizard ✅
- *   cus.site/t/kopisrawung       → no rewrite → /t/kopisrawung     → tenant 404
- *                                     (host header = cus.site, bukan subdomain)
+ *   kopisrawung.<root>/        → rewrite → /t/kopisrawung        → tenant ✅
+ *   kopisrawung.<root>/about   → rewrite → /t/kopisrawung/about  → tenant ✅
+ *   <root>/                    → no rewrite → /                  → marketing ✅
+ *   <root>/buat                → no rewrite → /buat              → wizard ✅
+ *   <root>/t/kopisrawung       → no rewrite → /t/kopisrawung     → tenant 404
+ *                                     (host header = <root>, bukan subdomain)
+ *
+ * ROOT_DOMAIN + extractSubdomain hidup di `src/lib/domain.ts` (satu sumber,
+ * nol import Next, ada testnya).
  */
-
-// Root domain bisa di-override via env. Default = production domain.
-const ROOT_DOMAIN = (
-  process.env.NEXT_PUBLIC_ROOT_DOMAIN || "cus.site"
-).toLowerCase();
-
-// Subdomain yang dicadangkan untuk app utama (marketing, dashboard, dll).
-// Tidak boleh jadi subdomain klien.
-const RESERVED_SUBDOMAINS = new Set([
-  "www",
-  "app",
-  "dashboard",
-  "admin",
-  "api",
-  "auth",
-  "login",
-  "signup",
-  "buat", // route wizard onboarding
-  "static",
-  "assets",
-  "cdn",
-  "mail",
-  "blog",
-  "docs",
-  "help",
-  "status",
-  "preview",
-  "staging",
-  "test",
-  "demo",
-  "cus", // anti self-loop
-]);
-
-// Pattern slug yang valid: lowercase, alphanumeric + dash, 3-32 char
-const VALID_SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9-]{1,30}[a-z0-9])?$/;
-
-function extractSubdomain(host: string): string | null {
-  if (!host) return null;
-
-  // 1. Buang port kalau ada (localhost:3000, vercel.app tidak ada port)
-  const hostname = host.split(":")[0].toLowerCase().trim();
-
-  // 2. Local dev → *.localhost (browser resolve otomatis ke 127.0.0.1)
-  //    Contoh: kopisrawung.localhost
-  if (hostname.endsWith(".localhost")) {
-    const sub = hostname.slice(0, -".localhost".length);
-    return sub && !RESERVED_SUBDOMAINS.has(sub) ? sub : null;
-  }
-
-  // 3. Production root domain
-  //    Contoh: cus.site, www.cus.site → return null (ke marketing)
-  if (hostname === ROOT_DOMAIN) return null;
-  if (hostname === `www.${ROOT_DOMAIN}`) return null;
-
-  // 4. Production subdomain
-  //    Contoh: kopisrawung.cus.site
-  if (hostname.endsWith(`.${ROOT_DOMAIN}`)) {
-    const sub = hostname.slice(0, -`.${ROOT_DOMAIN}`.length - 1);
-    // Handle www.kopisrawung.cus.site (edge case)
-    const clean = sub.startsWith("www.") ? sub.slice(4) : sub;
-    if (!clean || RESERVED_SUBDOMAINS.has(clean)) return null;
-    return clean;
-  }
-
-  // 5. Vercel preview / production deployment
-  //    Contoh: cus-site.vercel.app, kopisrawung-git-main-rakha.vercel.app
-  if (hostname.endsWith(".vercel.app")) {
-    // Vercel preview format: <project>-git-<branch>-<user>.vercel.app
-    // Domain default project sendiri (mis. cus-gold.vercel.app,
-    // cus-rakha-projects.vercel.app) BUKAN tenant — harus tanpa "-git-".
-    const first = hostname.split(".")[0];
-    if (!first.includes("-git-")) return null;
-    const sub = first.split("-git-")[0];
-    if (!sub || RESERVED_SUBDOMAINS.has(sub)) return null;
-    return sub;
-  }
-
-  // 6. Custom domain klien (kalau nanti ditambahin) — fallback
-  //    Kita anggap hostname = subdomain kalau ia 2 segment (sub.tld)
-  const segments = hostname.split(".");
-  if (segments.length === 2) {
-    const sub = segments[0];
-    if (!sub || RESERVED_SUBDOMAINS.has(sub)) return null;
-    return sub;
-  }
-
-  return null;
-}
 
 export function middleware(request: NextRequest) {
   const host = request.headers.get("host") || "";
@@ -196,7 +112,7 @@ export const config = {
    * - File dengan ekstensi (gambar, css, js) → biar Vercel CDN serve langsung
    *
    * PENTING: jangan exclude `/api`, karena nanti API kita butuh tau subdomain juga.
-   * sitemap.xml sengaja tidak di-exclude supaya subdomain.cus.site/sitemap.xml bisa
+   * sitemap.xml sengaja tidak di-exclude supaya subdomain.<root>/sitemap.xml bisa
    * di-rewrite ke /t/[subdomain]/sitemap.xml (tenant sitemap).
    */
   matcher: [

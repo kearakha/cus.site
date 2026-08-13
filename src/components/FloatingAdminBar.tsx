@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Check, Edit3, LogOut, MoreHorizontal, ExternalLink, Copy } from 'lucide-react';
+import { tenantHost } from '@/lib/domain';
 
 type Props = {
   subdomain: string;
@@ -45,7 +46,7 @@ export function FloatingAdminBar({ subdomain, siteUrl }: Props) {
             <span className="font-semibold tracking-wide">OWNER MODE</span>
             <span className="hidden sm:inline text-slate-400">—</span>
             <code className="hidden sm:inline text-emerald-300 font-mono truncate">
-              {subdomain}.cus.site
+              {tenantHost(subdomain)}
             </code>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">

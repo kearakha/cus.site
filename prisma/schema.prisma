@@ -69,11 +69,6 @@ model Bisnis {
   latitude   Float?
   longitude  Float?
 
-  /// Custom domain klien (opsional). Contoh: "kopisrawung.com".
-  /// Kalau di-set, middleware akan rewrite request dari domain ini ke tenant page.
-  /// User harus CNAME domain mereka ke cname.vercel-dns.com dan tambah di Vercel Dashboard.
-  customDomain String? @unique
-
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

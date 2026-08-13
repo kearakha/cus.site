@@ -7,6 +7,8 @@
  * Untuk MVP cukup. Kalau traffic naik, pindah ke Mapbox / Google Geocoding.
  */
 
+import { rootUrl } from "./domain";
+
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 const TIMEOUT_MS = 5000;
 
@@ -43,7 +45,7 @@ export async function geocodeAlamat(
       signal: controller.signal,
       headers: {
         // Wajib identifiable per usage policy Nominatim
-        "User-Agent": "cus.site-generator/0.1 (https://cus.site)",
+        "User-Agent": `cus.site-generator/0.1 (${rootUrl()})`,
         "Accept-Language": "id",
       },
     });

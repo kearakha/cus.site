@@ -1,4 +1,5 @@
 import type { Bisnis, KontenWebsite, Layanan } from "@prisma/client";
+import { tenantUrl } from "@/lib/domain";
 
 /**
  * Shape data yang di-pass ke tenant template components.
@@ -22,21 +23,11 @@ export type TemplateProps = {
 
 /**
  * Bangun URL tenant site dari Bisnis object.
- * - Production: https://kopisrawung.cus.site
+ * - Production: https://kopisrawung.<root>
  * - Local dev: http://kopisrawung.localhost:3000
  */
 export function buildSiteUrl(bisnis: Pick<Bisnis, "subdomain">): string {
-  const rootDomain = (
-    process.env.NEXT_PUBLIC_ROOT_DOMAIN || "cus.site"
-  ).toLowerCase();
-  const isLocal =
-    process.env.NODE_ENV !== "production" || rootDomain.endsWith(".localhost");
-
-  if (isLocal) {
-    return `http://${bisnis.subdomain}.localhost:3000`;
-  }
-
-  return `https://${bisnis.subdomain}.${rootDomain}`;
+  return tenantUrl(bisnis.subdomain);
 }
 
 /**

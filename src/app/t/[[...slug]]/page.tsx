@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 import type { Metadata } from "next";
 import { getBisnisBySubdomain } from "@/lib/db";
 import { isOwner } from "@/lib/auth";
+import { ROOT_DOMAIN } from "@/lib/domain";
 import { TemplateRenderer } from "@/components/TenantSite/TemplateRenderer";
 import { buildSiteUrl } from "@/components/TenantSite/types";
 import { FloatingAdminBar } from "@/components/FloatingAdminBar";
@@ -23,7 +24,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const bisnis = await getBisnisBySubdomain(subdomain);
   if (!bisnis || !bisnis.kontenAI || !bisnis.published) return {};
 
-  const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "cus.site";
   const ogImageUrl = `https://${ROOT_DOMAIN}/api/og?subdomain=${subdomain}`;
 
   const siteUrl = buildSiteUrl(bisnis);
@@ -67,8 +67,9 @@ export default async function TenantSitePage({ params }: Props) {
 
   // === Security gates ===
 
-  // Gate #1: minimal 1 segment (domain)
-  if (!slug || slug.length === 0) notFound();
+  // Gate #1: PERSIS 1 segment (domain). Tenant cuma punya homepage — sub-path
+  // seperti /apa-aja harus 404, bukan render homepage dengan status 200.
+  if (!slug || slug.length !== 1) notFound();
 
   const subdomain = slug[0];
   const headerSub = h.get("x-cus-subdomain");

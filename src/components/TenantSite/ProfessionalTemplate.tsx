@@ -6,6 +6,7 @@ import { OperatingHours } from "./OperatingHours";
 import { MapEmbed } from "./MapEmbed";
 import { JsonLd } from "./JsonLd";
 import { WaLink } from "./WaLink";
+import { rootUrl } from "@/lib/domain";
 import {
   getSocialLinks,
   InstagramIcon,
@@ -314,7 +315,7 @@ export function ProfessionalTemplate({ data, siteUrl }: TemplateProps) {
       <footer className="px-5 py-6 pb-24 text-center text-xs text-slate-400 border-t border-slate-100">
         <p>
           &copy; {new Date().getFullYear()} {namaBisnis}. Dibuat otomatis oleh{" "}
-          <a href="https://cus.site" className="hover:text-slate-600 underline">
+          <a href={rootUrl()} className="hover:text-slate-600 underline">
             Cus.site
           </a>{" "}
           ⚡

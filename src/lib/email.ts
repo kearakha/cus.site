@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { ROOT_DOMAIN, tenantHost, tenantUrl } from "./domain";
 
 /**
  * Cus.site — Email wrapper.
@@ -38,7 +39,7 @@ function getClient(): Resend | null {
 }
 
 const FROM_ADDRESS =
-  process.env.RESEND_FROM_EMAIL || "Cus.site <noreply@cus.site>";
+  process.env.RESEND_FROM_EMAIL || `Cus.site <noreply@${ROOT_DOMAIN}>`;
 
 const SUBJECT_LOGIN = (businessName?: string) =>
   businessName
@@ -255,8 +256,8 @@ function buildWelcomeEmail({
                     <p style="margin:0 0 4px 0;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">
                       Website kamu
                     </p>
-                    <a href="https://${subdomain}.cus.site" style="font-size:18px;font-weight:600;color:#0f172a;text-decoration:none;font-family:monospace;">
-                      ${subdomain}.cus.site
+                    <a href="${tenantUrl(subdomain)}" style="font-size:18px;font-weight:600;color:#0f172a;text-decoration:none;font-family:monospace;">
+                      ${tenantHost(subdomain)}
                     </a>
                   </td>
                 </tr>

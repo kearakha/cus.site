@@ -3,6 +3,7 @@
 import { useReducer, useState, useTransition, useEffect } from "react";
 import { PartyPopper, Sparkles } from "lucide-react";
 import { ProgressBar } from "./ProgressBar";
+import { tenantHost } from "@/lib/domain";
 import { Step1NamaBisnis } from "./Step1NamaBisnis";
 import { Step2Kontak } from "./Step2Kontak";
 import { Step3Vibe } from "./Step3Vibe";
@@ -288,7 +289,7 @@ function GeneratingOverlay({ state }: { state: SubmitState }) {
           <p className="mt-2 text-sm text-slate-600">
             Mengarahkan kamu ke{" "}
             <code className="px-1.5 py-0.5 bg-slate-100 rounded text-xs">
-              {state.subdomain}.cus.site
+              {tenantHost(state.subdomain)}
             </code>
             ...
           </p>
