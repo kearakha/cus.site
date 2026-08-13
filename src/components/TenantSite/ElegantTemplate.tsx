@@ -6,6 +6,7 @@ import { OperatingHours } from "./OperatingHours";
 import { MapEmbed } from "./MapEmbed";
 import { JsonLd } from "./JsonLd";
 import { WaLink } from "./WaLink";
+import { rootUrl } from "@/lib/domain";
 import {
   getSocialLinks,
   InstagramIcon,
@@ -295,7 +296,7 @@ export function ElegantTemplate({ data, siteUrl }: TemplateProps) {
         <p>
           &copy; {new Date().getFullYear()} {namaBisnis} &mdash; Dibuat otomatis
           oleh{" "}
-          <a href="https://cus.site" className="hover:text-stone-600 underline">
+          <a href={rootUrl()} className="hover:text-stone-600 underline">
             Cus.site
           </a>{" "}
           ⚡

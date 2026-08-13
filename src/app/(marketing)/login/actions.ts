@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { generateLoginToken, buildAccessLink } from "@/lib/auth";
 import { sendLoginLink } from "@/lib/email";
+import { rootUrl } from "@/lib/domain";
 import { loginRatelimit } from "@/lib/ratelimit";
 
 const loginSchema = z.object({
@@ -105,10 +106,5 @@ export async function loginWithEmailAction(
 export { buildAccessLink };
 
 function getBaseUrl(): string {
-  const root = (
-    process.env.NEXT_PUBLIC_ROOT_DOMAIN || "cus.site"
-  ).toLowerCase();
-  const isLocal =
-    process.env.NODE_ENV !== "production" || root.endsWith(".localhost");
-  return isLocal ? "http://localhost:3000" : `https://${root}`;
+  return rootUrl();
 }

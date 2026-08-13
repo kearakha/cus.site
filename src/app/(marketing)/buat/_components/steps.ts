@@ -1,4 +1,5 @@
 import { JENIS_BISNIS, VIBE, type WizardInput } from '@/lib/schemas/wizard';
+import { IS_LOCAL, ROOT_DOMAIN } from '@/lib/domain';
 
 export type StepKey = 1 | 2 | 3 | 4 | 5;
 
@@ -52,23 +53,18 @@ export const VIBE_DESCRIPTIONS: Record<VibeOption, { title: string; desc: string
 
 /**
  * Bangun URL tenant site dari subdomain.
- * - Production: https://kopisrawung.cus.site
+ * - Production: https://kopisrawung.<root>
  * - Local dev:   http://kopisrawung.localhost:3000
  */
 export function buildTenantUrl(subdomain: string): string {
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'cus.site';
-  const isLocal =
-    process.env.NODE_ENV !== 'production' ||
-    rootDomain.endsWith('.localhost');
-
-  if (isLocal) {
+  if (IS_LOCAL) {
     const port = typeof window !== 'undefined' && window.location.port
       ? `:${window.location.port}`
-      : '';
+      : ':3000';
     return `http://${subdomain}.localhost${port}`;
   }
 
-  return `https://${subdomain}.${rootDomain}`;
+  return `https://${subdomain}.${ROOT_DOMAIN}`;
 }
 
 export type SubmitState =

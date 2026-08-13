@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/db";
+import { tenantHost } from "@/lib/domain";
 import {
   OWNER_COOKIE_NAME,
   SESSION_COOKIE_NAME_EXPORT,
@@ -92,7 +93,7 @@ export default async function EditBisnisPage({ params }: Props) {
               {bisnis.namaBisnis}
             </h1>
             <p className="mt-1 text-sm text-slate-500 font-mono">
-              {bisnis.subdomain}.cus.site ·{" "}
+              {tenantHost(bisnis.subdomain)} ·{" "}
               <span className="text-slate-700">
                 {vibeInfo?.title || bisnis.vibe}
               </span>

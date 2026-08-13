@@ -140,7 +140,7 @@ export async function submitBisnisAction(
     //    - cus_session = email (multi-bisnis friendly, untuk dashboard list)
     //    - cus_owner = ownerToken (legacy, untuk Floating Admin Bar)
     //    Domain di-set ke parent domain supaya subdomain bisa baca
-    //    (misal: cookie di cus.site, bisa diakses dari kopisrawung.cus.site)
+    //    (misal: cookie di <root>, bisa diakses dari kopisrawung.<root>)
     setSessionCookies(data.email, ownerToken);
 
     // 8. Kirim welcome email dengan claim link (one-time) + link permanen.

@@ -9,6 +9,7 @@ import {
 } from "node:crypto";
 import { prisma } from "./db";
 import { sendWelcomeEmail } from "./email";
+import { IS_LOCAL, ROOT_DOMAIN, rootUrl } from "./domain";
 
 /**
  * Auth model — 2 cookies parallel:
@@ -43,27 +44,18 @@ const LOGIN_TOKEN_TTL_MS = 15 * 60 * 1000; // 15 menit
 
 // === Cookie helpers (shared config) ===
 
-function getRootDomain(): string {
-  return (process.env.NEXT_PUBLIC_ROOT_DOMAIN || "cus.site").toLowerCase();
-}
-
-function isLocalEnv(): boolean {
-  const root = getRootDomain();
-  return process.env.NODE_ENV !== "production" || root.endsWith(".localhost");
-}
-
 function getCookieDomain(): string {
-  return isLocalEnv() ? "localhost" : `.${getRootDomain()}`;
+  return IS_LOCAL ? "localhost" : `.${ROOT_DOMAIN}`;
 }
 
 function getBaseUrl(): string {
-  return isLocalEnv() ? "http://localhost:3000" : `https://${getRootDomain()}`;
+  return rootUrl();
 }
 
 function cookieOptions(maxAgeSeconds: number) {
   return {
     httpOnly: true,
-    secure: !isLocalEnv(),
+    secure: !IS_LOCAL,
     sameSite: "lax" as const,
     path: "/",
     maxAge: maxAgeSeconds,

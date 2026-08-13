@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Rocket } from 'lucide-react';
 import { step5Schema } from './step-schemas';
+import { ROOT_DOMAIN } from '@/lib/domain';
 
 type Props = {
   defaultValue: string;
@@ -9,7 +10,6 @@ type Props = {
   onGenerate: (subdomain: string) => void;
 };
 
-const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || 'cus.site';
 
 function slugify(text: string): string {
   return text

@@ -1,6 +1,5 @@
 import { MetadataRoute } from "next";
-
-const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "cus.site";
+import { ROOT_DOMAIN } from "@/lib/domain";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

@@ -5,6 +5,7 @@ import { OperatingHours } from "./OperatingHours";
 import { MapEmbed } from "./MapEmbed";
 import { JsonLd } from "./JsonLd";
 import { WaLink } from "./WaLink";
+import { rootUrl } from "@/lib/domain";
 import {
   getSocialLinks,
   InstagramIcon,
@@ -278,7 +279,7 @@ export function MinimalTemplate({ data, siteUrl }: TemplateProps) {
         <p>
           &copy; {new Date().getFullYear()} {namaBisnis} &mdash; Dibuat otomatis
           oleh{" "}
-          <a href="https://cus.site" className="hover:text-slate-500 underline">
+          <a href={rootUrl()} className="hover:text-slate-500 underline">
             Cus.site
           </a>
         </p>

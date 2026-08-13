@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 import type { Metadata } from "next";
 import { getBisnisBySubdomain } from "@/lib/db";
 import { isOwner } from "@/lib/auth";
+import { ROOT_DOMAIN } from "@/lib/domain";
 import { TemplateRenderer } from "@/components/TenantSite/TemplateRenderer";
 import { buildSiteUrl } from "@/components/TenantSite/types";
 import { FloatingAdminBar } from "@/components/FloatingAdminBar";
@@ -23,7 +24,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const bisnis = await getBisnisBySubdomain(subdomain);
   if (!bisnis || !bisnis.kontenAI || !bisnis.published) return {};
 
-  const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN || "cus.site";
   const ogImageUrl = `https://${ROOT_DOMAIN}/api/og?subdomain=${subdomain}`;
 
   const siteUrl = buildSiteUrl(bisnis);

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
+import { ROOT_DOMAIN } from "@/lib/domain";
 
 export const dynamic = "force-dynamic";
 import {
@@ -84,7 +85,7 @@ export default function HomePage() {
             Isi 5 langkah singkat. AI yang nulis copywriting-nya. Website UMKM
             kamu langsung jadi di{" "}
             <code className="text-amber-700 font-mono text-base">
-              nama.cus.site
+              nama.{ROOT_DOMAIN}
             </code>
             .
           </p>
@@ -140,7 +141,7 @@ export default function HomePage() {
               {
                 step: "03",
                 title: "Langsung Live",
-                desc: "Website kamu otomatis online di nama.cus.site. Bisa langsung di-edit.",
+                desc: `Website kamu otomatis online di nama.${ROOT_DOMAIN}. Bisa langsung di-edit.`,
                 Icon: Rocket,
               },
             ].map((item) => (
