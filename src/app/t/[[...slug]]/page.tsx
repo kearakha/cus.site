@@ -67,8 +67,9 @@ export default async function TenantSitePage({ params }: Props) {
 
   // === Security gates ===
 
-  // Gate #1: minimal 1 segment (domain)
-  if (!slug || slug.length === 0) notFound();
+  // Gate #1: PERSIS 1 segment (domain). Tenant cuma punya homepage — sub-path
+  // seperti /apa-aja harus 404, bukan render homepage dengan status 200.
+  if (!slug || slug.length !== 1) notFound();
 
   const subdomain = slug[0];
   const headerSub = h.get("x-cus-subdomain");
