@@ -35,3 +35,6 @@ public/uploads/
 tsconfig.tsbuildinfo
 
 .env*
+
+# Claude Code local settings
+.claude/
