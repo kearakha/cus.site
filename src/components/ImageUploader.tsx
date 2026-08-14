@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
-import { ImagePlus, X, Loader2, Upload as UploadIcon } from 'lucide-react';
+import { useState, useRef } from "react";
+import { ImagePlus, X, Loader2, Upload as UploadIcon } from "lucide-react";
 
 type Props = {
   /** Label di atas */
@@ -11,17 +11,17 @@ type Props = {
   /** Dipanggil saat upload sukses dengan path baru */
   onChange: (url: string) => void;
   /** Aspect ratio untuk preview, contoh: "1/1" untuk logo, "16/9" untuk cover */
-  aspect?: 'square' | 'wide' | 'tall';
+  aspect?: "square" | "wide" | "tall";
   /** Class tambahan untuk container */
   className?: string;
   /** Helper text di bawah */
   hint?: string;
 };
 
-const ASPECT_CLASS: Record<NonNullable<Props['aspect']>, string> = {
-  square: 'aspect-square',
-  wide: 'aspect-[16/9]',
-  tall: 'aspect-[3/4]',
+const ASPECT_CLASS: Record<NonNullable<Props["aspect"]>, string> = {
+  square: "aspect-square",
+  wide: "aspect-[16/9]",
+  tall: "aspect-[3/4]",
 };
 
 /**
@@ -37,8 +37,8 @@ export function ImageUploader({
   label,
   value,
   onChange,
-  aspect = 'square',
-  className = '',
+  aspect = "square",
+  className = "",
   hint,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -51,19 +51,19 @@ export function ImageUploader({
     setUploading(true);
     try {
       const fd = new FormData();
-      fd.append('file', file);
-      const res = await fetch('/api/upload', { method: 'POST', body: fd });
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
       if (!res.ok) {
         const data = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(data.error || 'Upload gagal');
+        throw new Error(data.error || "Upload gagal");
       }
       const data = (await res.json()) as { url: string };
       onChange(data.url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload gagal');
+      setError(err instanceof Error ? err.message : "Upload gagal");
     } finally {
       setUploading(false);
-      if (inputRef.current) inputRef.current.value = '';
+      if (inputRef.current) inputRef.current.value = "";
     }
   };
 
@@ -81,24 +81,22 @@ export function ImageUploader({
 
   const remove = () => {
     setError(null);
-    onChange('');
+    onChange("");
   };
 
   return (
     <div className={className}>
-      <label className="block text-sm font-medium text-slate-700 mb-1.5">
+      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
         {label}
       </label>
 
       {value ? (
         // === Preview state ===
-        <div className={`relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50 ${ASPECT_CLASS[aspect]}`}>
+        <div
+          className={`relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 ${ASPECT_CLASS[aspect]}`}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={value}
-            alt={label}
-            className="h-full w-full object-cover"
-          />
+          <img src={value} alt={label} className="h-full w-full object-cover" />
           <div className="absolute top-2 right-2 flex gap-1.5">
             <button
               type="button"
@@ -138,25 +136,27 @@ export function ImageUploader({
           disabled={uploading}
           className={`group relative w-full ${ASPECT_CLASS[aspect]} rounded-xl border-2 border-dashed transition flex flex-col items-center justify-center gap-2 text-center disabled:opacity-50 ${
             dragging
-              ? 'border-slate-900 bg-slate-50'
-              : 'border-slate-300 bg-white hover:border-slate-400 hover:bg-slate-50'
+              ? "border-slate-900 dark:border-slate-300 bg-slate-50 dark:bg-slate-800"
+              : "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"
           }`}
         >
           {uploading ? (
             <>
-              <Loader2 className="h-6 w-6 animate-spin text-slate-700" />
-              <span className="text-xs text-slate-600">Mengupload...</span>
+              <Loader2 className="h-6 w-6 animate-spin text-slate-700 dark:text-slate-300" />
+              <span className="text-xs text-slate-600 dark:text-slate-400">
+                Mengupload...
+              </span>
             </>
           ) : (
             <>
-              <div className="rounded-full bg-slate-100 p-2.5 group-hover:bg-white transition">
-                <ImagePlus className="h-5 w-5 text-slate-600" />
+              <div className="rounded-full bg-slate-100 dark:bg-slate-800 p-2.5 group-hover:bg-white dark:group-hover:bg-slate-700 transition">
+                <ImagePlus className="h-5 w-5 text-slate-600 dark:text-slate-400" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-700">
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Klik atau drop gambar
                 </p>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   JPG, PNG, WebP · maks 2MB
                 </p>
               </div>
@@ -174,10 +174,12 @@ export function ImageUploader({
       />
 
       {error && (
-        <p className="mt-1.5 text-xs text-red-600">{error}</p>
+        <p className="mt-1.5 text-xs text-red-600 dark:text-red-400">{error}</p>
       )}
       {hint && !error && (
-        <p className="mt-1.5 text-xs text-slate-500">{hint}</p>
+        <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+          {hint}
+        </p>
       )}
     </div>
   );
