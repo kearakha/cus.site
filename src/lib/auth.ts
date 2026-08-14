@@ -145,8 +145,20 @@ export function setSessionEmail(email: string): void {
 }
 
 export function clearSessionCookies(): void {
-  cookies().delete(SESSION_COOKIE_NAME);
-  cookies().delete(COOKIE_NAME);
+  // cookies().delete(name) gak nyertain domain, jadi bikin cookie host-only
+  // baru yang expired alih-alih nge-overwrite cookie asli yang di-set dengan
+  // domain eksplisit (getCookieDomain()) — cookie lama tetap kekirim browser.
+  // Overwrite pakai domain+path yang sama persis kayak pas di-set.
+  cookies().set({
+    name: SESSION_COOKIE_NAME,
+    value: "",
+    ...cookieOptions(0),
+  });
+  cookies().set({
+    name: COOKIE_NAME,
+    value: "",
+    ...cookieOptions(0),
+  });
 }
 
 // === Login Token (magic link) ===
