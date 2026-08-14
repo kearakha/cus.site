@@ -281,8 +281,8 @@ export function EditForm({
       <div
         className={`rounded-2xl border p-4 flex items-center justify-between gap-4 ${
           isPublished
-            ? "bg-emerald-50 border-emerald-200"
-            : "bg-amber-50 border-amber-200"
+            ? "bg-emerald-50 dark:bg-emerald-950 border-emerald-200 dark:border-emerald-800"
+            : "bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800"
         }`}
       >
         <div className="flex items-center gap-3">
@@ -293,7 +293,7 @@ export function EditForm({
           )}
           <div>
             <p
-              className={`text-sm font-semibold ${isPublished ? "text-emerald-900" : "text-amber-900"}`}
+              className={`text-sm font-semibold ${isPublished ? "text-emerald-900 dark:text-emerald-300" : "text-amber-900 dark:text-amber-300"}`}
             >
               {isPublished
                 ? "Website aktif & bisa diakses publik"
@@ -384,7 +384,7 @@ export function EditForm({
             />
           </div>
         </div>
-        <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+        <p className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
           ⚠ Untuk MVP, upload dari dashboard masuk folder sementara. Setelah
           simpan, file di-relink otomatis ke folder bisnis kamu. Kalau gagal,
           ulangi upload lalu simpan ulang.
@@ -425,7 +425,7 @@ export function EditForm({
       >
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               Hari
             </label>
             <select
@@ -433,7 +433,7 @@ export function EditForm({
               onChange={(e) =>
                 setHariOperasional(e.target.value as typeof hariOperasional)
               }
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-slate-400/10"
             >
               <option value="">Pilih...</option>
               {HARI_OPTIONS.map((h) => (
@@ -444,25 +444,25 @@ export function EditForm({
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               Jam Buka
             </label>
             <input
               type="time"
               value={jamBuka}
               onChange={(e) => setJamBuka(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-slate-400/10"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               Jam Tutup
             </label>
             <input
               type="time"
               value={jamTutup}
               onChange={(e) => setJamTutup(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-slate-400/10"
             />
           </div>
         </div>
@@ -475,11 +475,11 @@ export function EditForm({
       >
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               Instagram
             </label>
             <div className="flex items-stretch">
-              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">
+              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm">
                 @
               </span>
               <input
@@ -487,16 +487,16 @@ export function EditForm({
                 value={instagram}
                 onChange={(e) => setInstagram(e.target.value)}
                 placeholder="username"
-                className="flex-1 rounded-r-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                className="flex-1 rounded-r-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-slate-400/10"
               />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               TikTok
             </label>
             <div className="flex items-stretch">
-              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 text-slate-500 text-sm">
+              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm">
                 @
               </span>
               <input
@@ -504,12 +504,12 @@ export function EditForm({
                 value={tiktok}
                 onChange={(e) => setTiktok(e.target.value)}
                 placeholder="username"
-                className="flex-1 rounded-r-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                className="flex-1 rounded-r-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-slate-400/10"
               />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               Facebook
             </label>
             <input
@@ -517,11 +517,11 @@ export function EditForm({
               value={facebook}
               onChange={(e) => setFacebook(e.target.value)}
               placeholder="username atau page slug"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-slate-400/10"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">
+            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               YouTube
             </label>
             <input
@@ -529,7 +529,7 @@ export function EditForm({
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
               placeholder="https://youtube.com/@channel"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-slate-400/10"
             />
           </div>
         </div>
@@ -559,8 +559,8 @@ export function EditForm({
                   onClick={() => setAccentColor(p.hex)}
                   className={`group flex items-center gap-2 rounded-lg border-2 px-2 py-1.5 text-left transition ${
                     accentColor === p.hex
-                      ? "border-slate-900 bg-slate-50"
-                      : "border-slate-200 hover:border-slate-300"
+                      ? "border-slate-900 dark:border-slate-300 bg-slate-50 dark:bg-slate-800"
+                      : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500"
                   }`}
                   title={`${p.group}: ${p.label}`}
                 >
@@ -568,7 +568,7 @@ export function EditForm({
                     className="h-5 w-5 rounded-full flex-shrink-0"
                     style={{ backgroundColor: `#${p.hex}` }}
                   />
-                  <span className="text-xs font-medium text-slate-700 truncate">
+                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300 truncate">
                     {p.label}
                   </span>
                 </button>
@@ -577,7 +577,7 @@ export function EditForm({
 
             {/* Custom hex input */}
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
                 Custom hex color (tanpa #)
               </label>
               <input
@@ -592,10 +592,10 @@ export function EditForm({
                   )
                 }
                 placeholder="f59e0b"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-mono focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white font-mono focus:border-slate-900 dark:focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-slate-400/10"
               />
               {accentColor.length > 0 && accentColor.length !== 6 && (
-                <p className="mt-1 text-xs text-amber-600">
+                <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
                   Hex color harus tepat 6 karakter (saat ini:{" "}
                   {accentColor.length})
                 </p>
@@ -675,10 +675,10 @@ export function EditForm({
           {services.map((svc, i) => (
             <div
               key={i}
-              className="rounded-xl border border-slate-200 bg-slate-50/50 p-4"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 p-4"
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   LAYANAN #{i + 1}
                 </span>
                 {services.length > 1 && (
@@ -711,7 +711,7 @@ export function EditForm({
                     onChange={(e) =>
                       updateService(i, { title: e.target.value })
                     }
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-slate-400/10"
                   />
                   <textarea
                     placeholder="Deskripsi singkat"
@@ -720,7 +720,7 @@ export function EditForm({
                       updateService(i, { description: e.target.value })
                     }
                     rows={2}
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 resize-none"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-slate-400/10 resize-none"
                   />
                   <input
                     type="text"
@@ -729,13 +729,13 @@ export function EditForm({
                     onChange={(e) =>
                       updateService(i, { harga: e.target.value })
                     }
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-slate-900 dark:focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-slate-400/10"
                   />
                 </div>
               </div>
 
               <div className="mt-3">
-                <span className="block text-xs font-medium text-slate-500 mb-1.5">
+                <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">
                   Galeri tambahan (maks 5)
                 </span>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
@@ -780,7 +780,7 @@ export function EditForm({
             <button
               type="button"
               onClick={addService}
-              className="w-full rounded-xl border-2 border-dashed border-slate-300 px-4 py-3 text-sm font-medium text-slate-600 hover:border-slate-400 hover:text-slate-900 transition"
+              className="w-full rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-white transition"
             >
               + Tambah Layanan
             </button>
@@ -810,15 +810,15 @@ export function EditForm({
       </Section>
 
       {/* Submit */}
-      <div className="sticky bottom-0 -mx-4 sm:-mx-6 -mb-8 px-4 sm:px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
+      <div className="sticky bottom-0 -mx-4 sm:-mx-6 -mb-8 px-4 sm:px-6 py-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex items-center justify-end gap-3">
         <button
           type="button"
           onClick={handleCopyUrl}
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition"
           title="Salin URL website"
         >
           {copied ? (
-            <Check className="h-4 w-4 text-emerald-600" />
+            <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
           ) : (
             <Copy className="h-4 w-4" />
           )}
@@ -828,7 +828,7 @@ export function EditForm({
           href={siteUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm font-medium text-slate-600 hover:text-slate-900"
+          className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
         >
           Preview ↗
         </a>
@@ -859,11 +859,17 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl bg-white border border-slate-200 p-5 sm:p-6 space-y-4">
+    <section className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-5 sm:p-6 space-y-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-base font-semibold text-slate-900">{title}</h2>
-          {desc && <p className="text-xs text-slate-500 mt-0.5">{desc}</p>}
+          <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+            {title}
+          </h2>
+          {desc && (
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              {desc}
+            </p>
+          )}
         </div>
         {action && <div className="flex-shrink-0">{action}</div>}
       </div>
@@ -895,7 +901,7 @@ function RegenerateSectionButton({
       type="button"
       onClick={onClick}
       disabled={loading}
-      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50"
+      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition disabled:opacity-50"
     >
       {loading ? (
         <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -930,16 +936,16 @@ function Field({
 }: FieldProps) {
   const overLimit = hint.used > hint.max;
   const inputClass =
-    "w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10";
+    "w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-slate-900 dark:focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-slate-400/10";
 
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
           {label}
         </label>
         <span
-          className={`text-xs ${overLimit ? "text-red-600 font-semibold" : "text-slate-400"}`}
+          className={`text-xs ${overLimit ? "text-red-600 dark:text-red-400 font-semibold" : "text-slate-400 dark:text-slate-500"}`}
         >
           {hint.used}/{hint.max}
         </span>
@@ -961,7 +967,11 @@ function Field({
           className={`${inputClass} resize-y`}
         />
       )}
-      {hint2 && <p className="mt-1.5 text-xs text-slate-500">{hint2}</p>}
+      {hint2 && (
+        <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+          {hint2}
+        </p>
+      )}
     </div>
   );
 }

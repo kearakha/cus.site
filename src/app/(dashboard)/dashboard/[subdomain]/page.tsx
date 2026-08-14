@@ -58,14 +58,16 @@ export default async function EditBisnisPage({ params }: Props) {
   // 3. Verify ownership (email match ATAU ownerToken match)
   if (!isOwner(bisnis)) {
     return (
-      <div className="rounded-2xl bg-white border border-slate-200 p-8 text-center">
-        <h1 className="text-xl font-semibold text-slate-900">Akses ditolak</h1>
-        <p className="mt-2 text-sm text-slate-600">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-8 text-center">
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
+          Akses ditolak
+        </h1>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
           Kamu bukan owner dari website ini.
         </p>
         <Link
           href="/dashboard"
-          className="mt-6 inline-flex items-center text-sm font-medium text-slate-900 hover:underline"
+          className="mt-6 inline-flex items-center text-sm font-medium text-slate-900 dark:text-white hover:underline"
         >
           ← Kembali ke Dashboard
         </Link>
@@ -83,22 +85,22 @@ export default async function EditBisnisPage({ params }: Props) {
       <div className="mb-6">
         <Link
           href="/dashboard"
-          className="text-xs font-medium text-slate-500 hover:text-slate-700"
+          className="text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
         >
           ← Dashboard
         </Link>
         <div className="mt-2 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               {bisnis.namaBisnis}
             </h1>
-            <p className="mt-1 text-sm text-slate-500 font-mono">
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 font-mono">
               {tenantHost(bisnis.subdomain)} ·{" "}
-              <span className="text-slate-700">
+              <span className="text-slate-700 dark:text-slate-300">
                 {vibeInfo?.title || bisnis.vibe}
               </span>
             </p>
-            <p className="mt-0.5 text-xs text-slate-400">
+            <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
               Terakhir diubah:{" "}
               {bisnis.kontenAI.updatedAt.toLocaleDateString("id-ID", {
                 day: "numeric",
@@ -113,7 +115,7 @@ export default async function EditBisnisPage({ params }: Props) {
             href={buildSiteUrl(bisnis)}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+            className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
           >
             Lihat Live ↗
           </a>
