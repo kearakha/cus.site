@@ -1,8 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Check, Edit3, LogOut, MoreHorizontal, ExternalLink, Copy } from 'lucide-react';
-import { tenantHost } from '@/lib/domain';
+import { useState } from "react";
+import {
+  Check,
+  Edit3,
+  LogOut,
+  MoreHorizontal,
+  ExternalLink,
+  Copy,
+} from "lucide-react";
+import { rootUrl, tenantHost } from "@/lib/domain";
 
 type Props = {
   subdomain: string;
@@ -30,7 +37,7 @@ export function FloatingAdminBar({ subdomain, siteUrl }: Props) {
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback: select text
-      window.prompt('Copy URL ini:', visitorUrl);
+      window.prompt("Copy URL ini:", visitorUrl);
     }
   };
 
@@ -51,14 +58,14 @@ export function FloatingAdminBar({ subdomain, siteUrl }: Props) {
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <a
-              href={`/dashboard/${subdomain}`}
+              href={`${rootUrl()}/dashboard/${subdomain}`}
               className="inline-flex items-center gap-1.5 rounded-full bg-white text-slate-900 px-3 py-1 font-semibold hover:bg-slate-100 transition"
             >
               <Edit3 className="h-3.5 w-3.5" strokeWidth={2} />
               Edit Website
             </a>
             <a
-              href="/dashboard"
+              href={`${rootUrl()}/dashboard`}
               className="hidden sm:inline-flex items-center gap-1 text-slate-300 hover:text-white"
             >
               Dashboard
@@ -94,7 +101,10 @@ export function FloatingAdminBar({ subdomain, siteUrl }: Props) {
             >
               {copied ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-emerald-400" strokeWidth={2.5} />
+                  <Check
+                    className="h-3.5 w-3.5 text-emerald-400"
+                    strokeWidth={2.5}
+                  />
                   <span className="text-emerald-400">Tersalin!</span>
                 </>
               ) : (
