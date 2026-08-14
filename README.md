@@ -2,6 +2,17 @@
 
 > Generator website instan untuk UMKM Indonesia. Multi-tenant via wildcard subdomain.
 
+**Status: MVP scope frozen.** Semua fitur inti (wizard, AI generation, edit,
+publish/unpublish, analytics, magic link login, owner claim) sudah live di
+production dan terverifikasi end-to-end. Fitur baru masuk backlog, bukan
+dikerjakan langsung — lihat `.docs/PRD.md` §5.3.
+
+## Screenshot
+
+| Landing | Tenant Site | Dashboard |
+| --- | --- | --- |
+| ![Landing page](.docs/screenshots/landing.jpg) | ![Tenant site](.docs/screenshots/tenant-site.png) | ![Dashboard](.docs/screenshots/dashboard.png) |
+
 ## Quick Start (Local Dev)
 
 ```bash
