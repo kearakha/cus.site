@@ -144,18 +144,22 @@ export async function submitBisnisAction(
     setSessionCookies(data.email, ownerToken);
 
     // 8. Kirim welcome email dengan claim link (one-time) + link permanen.
-    //    Fire-and-forget — kalo email gagal, user tetap punya cookies + accessLink.
+    //    Di-await (bukan fire-and-forget) karena Vercel serverless bisa matiin
+    //    invocation begitu response ke-return, motong promise yang belum selesai.
+    //    Kalo email gagal, user tetap punya cookies + accessLink.
     //    Dev mode: email.log akan print link ke terminal.
     const accessLink = buildAccessLink(ownerToken);
-    sendWelcomeEmail({
-      to: data.email,
-      businessName: data.namaBisnis,
-      subdomain: data.subdomain,
-      claimUrl: accessLink,
-      permanentAccessUrl: accessLink, // sama untuk first claim
-    }).catch((err) => {
+    try {
+      await sendWelcomeEmail({
+        to: data.email,
+        businessName: data.namaBisnis,
+        subdomain: data.subdomain,
+        claimUrl: accessLink,
+        permanentAccessUrl: accessLink, // sama untuk first claim
+      });
+    } catch (err) {
       console.error("[submitBisnisAction] Gagal kirim welcome email:", err);
-    });
+    }
 
     return {
       success: true,
