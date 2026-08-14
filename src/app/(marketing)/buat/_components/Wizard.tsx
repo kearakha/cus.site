@@ -272,7 +272,7 @@ function GeneratingOverlay({ state }: { state: SubmitState }) {
           AI lagi nulis copywriting...
         </h2>
         <p className="mt-2 text-sm text-slate-600">
-          Sabar ya, biasanya 10-30 detik.
+          Sabar ya, biasanya 3-5 menit.
         </p>
       </div>
     );
