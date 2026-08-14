@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { useState } from "react";
+import { Copy, Check } from "lucide-react";
 
 type Props = {
   link: string;
@@ -12,7 +12,7 @@ type Props = {
  * Card untuk menampilkan "access link" yang bisa di-bookmark.
  * Tombol copy menyalin URL ke clipboard.
  */
-export function AccessLinkCard({ link, label = 'Copy Link' }: Props) {
+export function AccessLinkCard({ link, label = "Copy Link" }: Props) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -22,7 +22,7 @@ export function AccessLinkCard({ link, label = 'Copy Link' }: Props) {
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback: select text
-      const el = document.getElementById('access-link-input');
+      const el = document.getElementById("access-link-input");
       if (el) {
         (el as HTMLInputElement).select();
       }
@@ -37,15 +37,15 @@ export function AccessLinkCard({ link, label = 'Copy Link' }: Props) {
         readOnly
         value={link}
         onClick={(e) => (e.target as HTMLInputElement).select()}
-        className="flex-1 min-w-0 rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs font-mono text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+        className="flex-1 min-w-0 rounded-lg border border-amber-300 dark:border-amber-800 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-mono text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
       />
       <button
         type="button"
         onClick={handleCopy}
         className={`flex-shrink-0 inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition ${
           copied
-            ? 'bg-emerald-600 text-white'
-            : 'bg-amber-900 text-amber-50 hover:bg-amber-800'
+            ? "bg-emerald-600 text-white"
+            : "bg-amber-900 text-amber-50 hover:bg-amber-800"
         }`}
       >
         {copied ? (
