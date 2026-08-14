@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import { getBisnisBySubdomain } from "@/lib/db";
-import { tenantHost } from "@/lib/domain";
+import { ROOT_DOMAIN, tenantHost } from "@/lib/domain";
 
 export async function GET(request: NextRequest) {
   const subdomain = request.nextUrl.searchParams.get("subdomain");
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
             letterSpacing: "0.05em",
           }}
         >
-          cus.site
+          {ROOT_DOMAIN}
         </div>
       </div>
     </div>,
