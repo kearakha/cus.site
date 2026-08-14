@@ -28,7 +28,7 @@ import {
 import { OWNER_COOKIE_NAME, SESSION_COOKIE_NAME_EXPORT } from "@/lib/auth";
 import { buildSiteUrl } from "@/components/TenantSite/types";
 
-const DEMO_SUBDOMAIN = "kopisrawung";
+const DEMO_SUBDOMAIN = "barber-in";
 
 export default function HomePage() {
   // Check apakah user sudah login
