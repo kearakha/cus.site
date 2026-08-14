@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { OWNER_COOKIE_NAME } from "@/lib/auth";
+import { clearSessionCookies } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -11,10 +10,10 @@ export const dynamic = "force-dynamic";
  * - Floating Admin Bar (di tenant page)
  * - Top nav dashboard
  *
- * Hapus cookie owner, redirect ke landing page.
+ * Hapus cookie owner + session, redirect ke landing page.
  */
 export async function POST(request: NextRequest) {
-  cookies().delete(OWNER_COOKIE_NAME);
+  clearSessionCookies();
 
   const origin = request.nextUrl.origin;
   return NextResponse.redirect(new URL("/", origin), {
