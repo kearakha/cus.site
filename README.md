@@ -47,7 +47,7 @@ Buka beberapa URL di browser (Chrome/Firefox auto-resolve `*.localhost`):
 | `http://kopisrawung.localhost:3000`    | Tenant: kopisrawung   |
 | `http://salon-makmur.localhost:3000`   | Tenant: salon-makmur  |
 
-Catatan: jika pakai Safari/某些 browser yang tidak auto-resolve `*.localhost`,
+Catatan: jika pakai Safari/browser lain yang tidak auto-resolve `*.localhost`,
 tambah manual di `/etc/hosts`:
 
 ```
