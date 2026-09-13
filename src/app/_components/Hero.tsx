@@ -70,7 +70,6 @@ export function Hero({ demoUrl }: { demoUrl: string }) {
           <Mockup
             src="/landing/barber-in.png"
             alt="Website Barber In yang dibuat dengan Cus.site"
-            url={new URL(demoUrl).host}
             priority
             sizes="(min-width: 1024px) 640px, 100vw"
           />

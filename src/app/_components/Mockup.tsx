@@ -4,8 +4,8 @@ type MockupProps = {
   /** Path screenshot 1440×900 di public/landing/ */
   src: string;
   alt: string;
-  /** Teks di URL bar, mis. "barber-in.cus.kearakha.me" */
-  url: string;
+  /** Teks di URL bar, mis. "barber-in.cus.kearakha.me". Kosongin buat sembunyiin teksnya. */
+  url?: string;
   priority?: boolean;
   sizes?: string;
   className?: string;
@@ -30,9 +30,11 @@ export function Mockup({
           <i className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
           <i className="h-2.5 w-2.5 rounded-full bg-[#28C840]" />
         </span>
-        <span className="truncate rounded-md bg-white/70 px-3 py-0.5 text-center font-mono text-[13px] text-ink-3">
-          {url}
-        </span>
+        {url && (
+          <span className="truncate rounded-md bg-white/70 px-3 py-0.5 text-center font-mono text-[13px] text-ink-3">
+            {url}
+          </span>
+        )}
       </div>
       <Image
         src={src}

@@ -8,7 +8,6 @@ type StepDef = {
   desc: string;
   src: string;
   alt: string;
-  url: string;
 };
 
 /** Server component — 3 baris bergantian kiri/kanan, tiap baris ada visual. */
@@ -20,7 +19,6 @@ export function Steps() {
       desc: "Nama bisnis, jenis, lokasi, WhatsApp, pilih vibe. Cuma 5 menit.",
       src: "/landing/wizard-step1.png",
       alt: "Form wizard langkah 1: nama dan jenis bisnis",
-      url: `${ROOT_DOMAIN}/buat`,
     },
     {
       number: "02",
@@ -28,7 +26,6 @@ export function Steps() {
       desc: "Cus Engine nulis headline, tentang bisnis, dan layanan sesuai vibe kamu.",
       src: "/landing/wizard-step3.png",
       alt: "Form wizard langkah 3: pilih vibe website",
-      url: `${ROOT_DOMAIN}/buat`,
     },
     {
       number: "03",
@@ -36,7 +33,6 @@ export function Steps() {
       desc: `Website kamu otomatis online di nama.${ROOT_DOMAIN}. Bisa langsung di-edit.`,
       src: "/landing/kopisrawung.png",
       alt: "Website Kopi Srawung yang sudah live",
-      url: `kopisrawung.${ROOT_DOMAIN}`,
     },
   ];
 
@@ -77,7 +73,6 @@ export function Steps() {
                 <Mockup
                   src={step.src}
                   alt={step.alt}
-                  url={step.url}
                   sizes="(min-width: 1024px) 560px, 100vw"
                 />
               </Item>
