@@ -28,6 +28,7 @@ import {
 import { OWNER_COOKIE_NAME, SESSION_COOKIE_NAME_EXPORT } from "@/lib/auth";
 import { buildSiteUrl } from "@/components/TenantSite/types";
 import { Hero } from "./_components/Hero";
+import { Steps } from "./_components/Steps";
 
 const DEMO_SUBDOMAIN = "barber-in";
 
@@ -71,59 +72,7 @@ export default function HomePage() {
       <Hero demoUrl={demoUrl} />
 
       {/* === CARA KERJA === */}
-      <section className="py-16 sm:py-20 bg-white">
-        <div className="mx-auto max-w-5xl px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-              3 langkah, website langsung jadi
-            </h2>
-            <p className="mt-3 text-slate-600">
-              Gak perlu skill coding atau design.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-6">
-            {[
-              {
-                step: "01",
-                title: "Isi Form Wizard",
-                desc: "Nama bisnis, jenis, lokasi, WhatsApp, pilih vibe. Cuma 5 menit.",
-                Icon: Edit3,
-              },
-              {
-                step: "02",
-                title: "AI Generate Copy",
-                desc: "Cus Engine nulis headline, tentang bisnis, dan layanan sesuai vibe kamu.",
-                Icon: Sparkles,
-              },
-              {
-                step: "03",
-                title: "Langsung Live",
-                desc: `Website kamu otomatis online di nama.${ROOT_DOMAIN}. Bisa langsung di-edit.`,
-                Icon: Rocket,
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="relative rounded-2xl border border-slate-200 bg-slate-50/50 p-6"
-              >
-                <span className="absolute -top-3 -left-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white text-xs font-bold">
-                  {item.step}
-                </span>
-                <item.Icon
-                  className="h-8 w-8 text-slate-700 mb-3"
-                  strokeWidth={1.5}
-                />
-                <h3 className="font-semibold text-slate-900 mb-1.5">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  {item.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Steps />
 
       {/* === FITUR === */}
       <section className="py-16 sm:py-20 bg-slate-50 border-y border-slate-200/60">
