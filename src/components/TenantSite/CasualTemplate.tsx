@@ -60,7 +60,7 @@ export function CasualTemplate({ data, siteUrl }: TemplateProps) {
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-white via-white/60 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 px-5 pb-8">
+            <div className="absolute inset-x-0 bottom-0 px-5 pb-8 text-center">
               <HeroContent
                 namaBisnis={namaBisnis}
                 logoUrl={logoUrl}
