@@ -6,17 +6,13 @@ export const dynamic = "force-dynamic";
 import {
   Zap,
   ExternalLink,
-  Sparkles,
-  Edit3,
-  Smartphone,
-  Search,
   Rocket,
-  Heart,
 } from "lucide-react";
 import { OWNER_COOKIE_NAME, SESSION_COOKIE_NAME_EXPORT } from "@/lib/auth";
 import { buildSiteUrl } from "@/components/TenantSite/types";
 import { Hero } from "./_components/Hero";
 import { Steps } from "./_components/Steps";
+import { Features } from "./_components/Features";
 import { TemplateSwitcher } from "./_components/TemplateSwitcher";
 
 const DEMO_SUBDOMAIN = "barber-in";
@@ -64,67 +60,7 @@ export default function HomePage() {
       <Steps />
 
       {/* === FITUR === */}
-      <section className="py-16 sm:py-20 bg-slate-50 border-y border-slate-200/60">
-        <div className="mx-auto max-w-5xl px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-              Bukan cuma jadi, tapi siap jualan
-            </h2>
-            <p className="mt-3 text-slate-600 max-w-xl mx-auto">
-              Setiap website Cus.site punya fitur yang langsung bisa dipakai
-              untuk jualan & dapat pelanggan.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            {[
-              {
-                Icon: Sparkles,
-                title: "3 Template Profesional",
-                desc: "Casual (kafe/laundry), Professional (klinik/bimbel), Elegant (spa/butik). Masing-masing dengan font & warna yang sesuai.",
-              },
-              {
-                Icon: Heart,
-                title: "AI Copywriting Indonesia",
-                desc: "Bukan terjemahan feel. Cus Engine paham kultur lokal, pakai bahasa yang natural untuk target market kamu.",
-              },
-              {
-                Icon: Edit3,
-                title: "Edit Langsung dari Website",
-                desc: "Owner punya Floating Admin Bar rahasia. Klik tombol, langsung edit copy & warna. Gak perlu login ke dashboard.",
-              },
-              {
-                Icon: Smartphone,
-                title: "Mobile-First Design",
-                desc: "90% traffic UMKM dari HP. Website otomatis optimal di semua ukuran layar, loading cepat, CTA WhatsApp langsung bisa diklik.",
-              },
-              {
-                Icon: Search,
-                title: "SEO Lokal Ready",
-                desc: 'Setiap website punya SEO title, description, dan struktur yang dioptimasi untuk "kafe di [kota kamu]" di Google.',
-              },
-              {
-                Icon: Zap,
-                title: "Live dalam Hitungan Detik",
-                desc: "Begitu klik Generate, website langsung online. Share link ke customer, masuk WhatsApp, post IG — langsung bisa.",
-              },
-            ].map((f) => (
-              <div
-                key={f.title}
-                className="rounded-2xl bg-white border border-slate-200 p-5 hover:shadow-sm transition"
-              >
-                <f.Icon
-                  className="h-7 w-7 text-slate-700 mb-3"
-                  strokeWidth={1.5}
-                />
-                <h3 className="font-semibold text-slate-900 mb-1">{f.title}</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  {f.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Features />
 
       {/* === TEMPLATE SWITCHER === */}
       <TemplateSwitcher />
