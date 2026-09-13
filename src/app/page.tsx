@@ -5,30 +5,19 @@ import { ROOT_DOMAIN } from "@/lib/domain";
 export const dynamic = "force-dynamic";
 import {
   Zap,
-  ArrowRight,
   ExternalLink,
   Sparkles,
   Edit3,
   Smartphone,
   Search,
   Rocket,
-  Check,
-  Mail,
-  Phone,
-  MapPin,
-  Coffee,
-  Scissors,
-  Shirt,
-  BookOpen,
-  Stethoscope,
-  ShoppingBag,
-  Briefcase,
   Heart,
 } from "lucide-react";
 import { OWNER_COOKIE_NAME, SESSION_COOKIE_NAME_EXPORT } from "@/lib/auth";
 import { buildSiteUrl } from "@/components/TenantSite/types";
 import { Hero } from "./_components/Hero";
 import { Steps } from "./_components/Steps";
+import { TemplateSwitcher } from "./_components/TemplateSwitcher";
 
 const DEMO_SUBDOMAIN = "barber-in";
 
@@ -137,39 +126,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* === UNTUK SIAPA === */}
-      <section className="py-16 sm:py-20 bg-white">
-        <div className="mx-auto max-w-5xl px-4">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-              Untuk kamu yang lagi fokus jualan
-            </h2>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-            {[
-              { Icon: Coffee, label: "Kafe / Restoran" },
-              { Icon: Scissors, label: "Salon / Barbershop" },
-              { Icon: Shirt, label: "Laundry" },
-              { Icon: BookOpen, label: "Bimbel / Kursus" },
-              { Icon: Stethoscope, label: "Klinik" },
-              { Icon: ShoppingBag, label: "Toko Retail" },
-              { Icon: Briefcase, label: "Jasa Profesional" },
-              { Icon: Sparkles, label: "Spa / Butik" },
-            ].map((c) => (
-              <div
-                key={c.label}
-                className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 hover:bg-white hover:border-slate-300 transition"
-              >
-                <c.Icon
-                  className="h-8 w-8 mx-auto mb-2 text-slate-700"
-                  strokeWidth={1.5}
-                />
-                <p className="text-sm font-medium text-slate-700">{c.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* === TEMPLATE SWITCHER === */}
+      <TemplateSwitcher />
 
       {/* === FINAL CTA === */}
       <section className="py-20 bg-gradient-to-b from-slate-900 to-slate-800 text-white">
