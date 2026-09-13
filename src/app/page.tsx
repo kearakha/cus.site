@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { OWNER_COOKIE_NAME, SESSION_COOKIE_NAME_EXPORT } from "@/lib/auth";
 import { buildSiteUrl } from "@/components/TenantSite/types";
+import { Hero } from "./_components/Hero";
 
 const DEMO_SUBDOMAIN = "barber-in";
 
@@ -40,10 +41,10 @@ export default function HomePage() {
   const demoUrl = buildSiteUrl({ subdomain: DEMO_SUBDOMAIN });
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col bg-cream font-body text-navy">
       {/* === HEADER === */}
-      <header className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm sticky top-0 z-10">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-10 border-b border-line bg-cream/80 backdrop-blur-sm">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-1.5">
             <span className="text-xl font-bold tracking-tight text-slate-900">
               Cus<span className="text-amber-500">.</span>site
@@ -52,13 +53,13 @@ export default function HomePage() {
           <nav className="flex items-center gap-1.5 sm:gap-3">
             <Link
               href="/login"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 px-2.5 py-1.5"
+              className="px-2.5 py-1.5 text-sm font-medium text-ink-2 transition duration-200 hover:text-navy"
             >
               Login
             </Link>
             <Link
               href={isLoggedIn ? "/dashboard" : "/buat"}
-              className="inline-flex items-center justify-center rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 transition"
+              className="inline-flex items-center justify-center rounded-full bg-orange px-4 py-2 text-sm font-semibold text-navy transition duration-200 ease-out hover:-translate-y-1 hover:shadow-card-hover active:translate-y-0 active:bg-orange-deep"
             >
               {isLoggedIn ? "Dashboard" : "Bikin Website"}
             </Link>
@@ -67,51 +68,7 @@ export default function HomePage() {
       </header>
 
       {/* === HERO === */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-white via-amber-50/30 to-white">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.08),transparent_50%)]" />
-        <div className="relative mx-auto max-w-4xl px-4 py-16 sm:py-24 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800 mb-6">
-            <Zap className="h-3.5 w-3.5" strokeWidth={2.5} />5 menit jadi, AI
-            yang nulis
-          </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-slate-900 leading-[1.1]">
-            Website untuk bisnis kamu,
-            <br />
-            <span className="bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
-              tanpa ribet.
-            </span>
-          </h1>
-          <p className="mt-6 text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Isi 5 langkah singkat. AI yang nulis copywriting-nya. Website UMKM
-            kamu langsung jadi di{" "}
-            <code className="text-amber-700 font-mono text-base">
-              nama.{ROOT_DOMAIN}
-            </code>
-            .
-          </p>
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              href="/buat"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-7 py-3.5 text-base font-semibold text-white hover:bg-slate-800 transition shadow-lg shadow-slate-900/10"
-            >
-              <Rocket className="h-4 w-4" strokeWidth={2.5} />
-              Mulai Bikin Website Gratis
-            </Link>
-            <a
-              href={demoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
-            >
-              Lihat Contoh Live
-              <ExternalLink className="h-3.5 w-3.5" strokeWidth={2} />
-            </a>
-          </div>
-          <p className="mt-6 text-xs text-slate-500">
-            Tidak butuh kartu kredit · Langsung jadi · Bisa edit kapan aja
-          </p>
-        </div>
-      </section>
+      <Hero demoUrl={demoUrl} />
 
       {/* === CARA KERJA === */}
       <section className="py-16 sm:py-20 bg-white">
